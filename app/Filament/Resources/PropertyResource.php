@@ -5,10 +5,9 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PropertyResource\Pages;
 use App\Models\Property;
 use Filament\Forms;
-use Filament\Tables;
-use Filament\Resources\Resource;
-
 use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
 use Filament\Tables\Table;
 
 class PropertyResource extends Resource
@@ -30,12 +29,11 @@ class PropertyResource extends Resource
                         Forms\Components\DatePicker::make('property_added_date'),
 
                         Forms\Components\TextInput::make('nid')
-                            ->numeric(),
+                            ->hidden(),
 
                         Forms\Components\Toggle::make('published'),
 
-                        Forms\Components\Textarea::make('property_body')
-                            ->rows(4),
+                        Forms\Components\RichEditor::make('property_body'),
 
                         Forms\Components\TextInput::make('property_bathrooms')
                             ->numeric(),
@@ -116,6 +114,8 @@ class PropertyResource extends Resource
                             ->relationship('features', 'feature_name'),
 
                     ]),
+
+
             ]);
     }
 
@@ -124,9 +124,12 @@ class PropertyResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('property_title')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('property_status.status_name')->label('Status')->sortable(),
-                Tables\Columns\TextColumn::make('property_type.type_name')->label('Type')->sortable(),
-                Tables\Columns\TextColumn::make('property_price')->label('Price')->sortable(),
+
+                Tables\Columns\TextColumn::make('status.status_name')->label('Status')->sortable(),
+                Tables\Columns\TextColumn::make('type.type_name')->label('Type')->sortable(),
+
+                Tables\Columns\TextColumn::make('property_price')->label('Price')->money('usd')->sortable(),
+
                 Tables\Columns\TextColumn::make('property_added_date')->date()->sortable(),
                 Tables\Columns\BooleanColumn::make('published'),
             ])
@@ -151,4 +154,15 @@ class PropertyResource extends Resource
             'edit' => Pages\EditProperty::route('/{record}/edit'),
         ];
     }
+
+    public static function getRelations(): array
+    {
+        return [
+            PropertyResource\RelationManagers\SoldReferencesRelationManager::class,
+
+        ];
+    }
+
+
+
 }

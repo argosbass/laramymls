@@ -16,4 +16,16 @@ class EditProperty extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
+    // 👇 Esta línea activa los tabs de relaciones
+    protected function hasRelationManagersInTabs(): bool
+    {
+        return true;
+    }
+
+    // 👇 Esta asegura que los relation managers estén activos
+    protected function hasRelationManagers(): bool
+    {
+        return true;
+    }
 }
