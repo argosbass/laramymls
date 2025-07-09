@@ -20,5 +20,5 @@ Route::get('/', function () {
 });
 
 Route::get('/start-migration', [MigrateController::class, 'start_migration']);
-Route::get('/properties', [PropertyController::class, 'index']);
-Route::get('/properties/{id}', [PropertyController::class, 'show']);
+// Route::get('/properties', [PropertyController::class, 'index']);
+// Route::get('/properties/{id}', [PropertyController::class, 'show']);

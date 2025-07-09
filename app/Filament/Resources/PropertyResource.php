@@ -2,13 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\PropertyResource\Pages;
+
+
+
 use App\Models\Property;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
+use App\Filament\Resources\PropertyResource\Pages;
 
 class PropertyResource extends Resource
 {
@@ -139,6 +143,10 @@ class PropertyResource extends Resource
                 Tables\Filters\SelectFilter::make('property_type_id')->relationship('type', 'type_name'),
             ])
             ->actions([
+                Action::make('view')
+                    ->label('View')
+                    ->icon('heroicon-o-eye')
+                    ->url(fn ($record) => PropertyResource::getUrl('view', ['record' => $record])),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -150,10 +158,11 @@ class PropertyResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListProperties::route('/'),
-            'create' => Pages\CreateProperty::route('/create'),
-            'edit' => Pages\EditProperty::route('/{record}/edit'),
-        ];
+        'index' => Pages\ListProperties::route('/'),
+        'create' => Pages\CreateProperty::route('/create'),
+        'edit' => Pages\EditProperty::route('/{record}/edit'),
+        'view' => Pages\ViewProperty::route('/{record}'), // ✅ ESTA ES CLAVE
+    ];
     }
 
     public static function getRelations(): array
