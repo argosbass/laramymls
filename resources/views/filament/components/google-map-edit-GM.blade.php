@@ -1,6 +1,7 @@
 @php
-    $lat = $getRecord()->property_geolocation_lat;
-    $lng = $getRecord()->property_geolocation_lng;
+    $lat        = $getRecord()->property_geolocation_lat;
+    $lng        = $getRecord()->property_geolocation_lng;
+    $gmap_key   = env('GMAP_KEY');
 @endphp
 
 @if($lat && $lng)
@@ -28,7 +29,7 @@
             if (typeof google === 'undefined' || typeof google.maps === 'undefined') {
                 console.log('[Google Maps] Loading script...');
                 const script = document.createElement('script');
-                script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBu78OS1PKpTUg0ArtlGIEhl-WYhWJYOsM&callback=initPropertyMap`;
+                script.src = `https://maps.googleapis.com/maps/api/js?key={{ $gmap_key }}&callback=initPropertyMap`;
                 script.async = true;
                 script.defer = true;
                 document.head.appendChild(script);
