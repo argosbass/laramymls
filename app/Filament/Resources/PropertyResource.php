@@ -67,11 +67,12 @@ class PropertyResource extends Resource
 
                 Forms\Components\Section::make('Geolocation')
                     ->schema([
-                        Forms\Components\TextInput::make('property_geolocation_lat')->numeric(),
-                        Forms\Components\TextInput::make('property_geolocation_lng')->numeric(),
+                        Forms\Components\TextInput::make('property_geolocation_lat')->numeric()->id('latitude-input'),
+                        Forms\Components\TextInput::make('property_geolocation_lng')->numeric()->id('longitude-input'),
                         Forms\Components\TextInput::make('property_geolocation_lat_sin')->numeric(),
                         Forms\Components\TextInput::make('property_geolocation_lat_cos')->numeric(),
                         Forms\Components\TextInput::make('property_geolocation_lng_rad')->numeric(),
+                        Forms\Components\View::make('filament.components.google-map-edit')
                     ]),
 
                 Forms\Components\Section::make('Other Details')
