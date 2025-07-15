@@ -194,21 +194,27 @@ class PropertyResource extends Resource
 
 
                         Tab::make('Where Listed')->schema([
+
                             Repeater::make('listingCompetitors')
                                 ->label('Listing Competitors List')
-                                ->relationship('listingCompetitors') // clave para cargar la relación
+                                ->relationship('listingCompetitors')
                                 ->schema([
-
-                                    Forms\Components\hidden::make('nid')
+                                    Forms\Components\Hidden::make('nid')
                                         ->default(fn ($state) => $state ?? 0),
 
+                                    Forms\Components\Select::make('real_estate_company_id')
+                                        ->label('Company Name')
+                                        ->options(function () {
+                                            return \App\Models\RealEstateCompany::query()
+                                                ->orderBy('company_name')
+                                                ->pluck('company_name', 'id');
+                                        })
 
+                                        ->preload()
+                                        ->required(),
 
                                     Forms\Components\TextInput::make('competitor_listing_agent')
                                         ->label('Listing Agent'),
-
-                                    Forms\Components\TextInput::make('competitor_company_name')
-                                        ->label('Company Name'),
 
                                     Forms\Components\TextInput::make('competitor_property_link')
                                         ->label('Property Link'),
@@ -217,23 +223,22 @@ class PropertyResource extends Resource
                                         ->label('List Price'),
 
                                     Forms\Components\RichEditor::make('competitor_notes')
-                                        ->label('Notes')->toolbarButtons([
-                                            'bold',
-                                            'italic',
-                                            'strike',
-                                            'link',
-                                            'bulletList',
-                                            'orderedList',
-                                            'blockquote',
-                                            'codeBlock',
-                                        ])->columnSpanFull(),
+                                        ->label('Notes')
+                                        ->toolbarButtons([
+                                            'bold', 'italic', 'strike', 'link',
+                                            'bulletList', 'orderedList', 'blockquote', 'codeBlock',
+                                        ])
+                                        ->columnSpanFull(),
                                 ])
-                                ->columns(2) // columnas internas del repeater
+                                ->columns(2)
                                 ->defaultItems(0)
-                                ->itemLabel(fn ($state) => $state['competitor_company_name'] ?? 'New Listing Competitor')
+                                ->itemLabel(fn ($state) => $state['competitor_real_estate_company_id'] ?? 'New Listing Competitor')
                                 ->addActionLabel('+ Add Listing Competitor')
                                 ->collapsible()
-                                ->columnSpanFull(), // para que ocupe todo el ancho dentro del tab
+                                ->columnSpanFull()
+
+
+
                         ])->columns(3),
 
 
