@@ -6,31 +6,31 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+use Kalnoy\Nestedset\NodeTrait;
+
 class PropertyLocations extends Model
 {
+    use NodeTrait;
+
     protected $fillable = [
         'location_name',
         'parent_id',
     ];
 
-    /**
-     * Sububicaciones (hijos)
-     */
-    public function children(): HasMany
-    {
-        return $this->hasMany(PropertyLocations::class, 'parent_id');
-    }
 
-    /**
-     * Ubicación padre
-     */
-    public function parent(): BelongsTo
+    public function parent()
     {
         return $this->belongsTo(PropertyLocations::class, 'parent_id');
     }
 
+    public function children()
+    {
+        return $this->hasMany(PropertyLocations::class, 'parent_id');
+    }
+
+
     /**
-     * Propiedades que usan esta ubicación
+     * Propiedades que usan esta location
      */
     public function properties()
     {
@@ -39,7 +39,7 @@ class PropertyLocations extends Model
 
 
     /**
-     * Accesor para obtener la ruta completa de la ubicación.
+     * Accesor para obtener la ruta completa de la location.
      *
      * Ej: "Costa Rica > San José > Escazú"
      */
@@ -56,4 +56,8 @@ class PropertyLocations extends Model
         return implode(' > ', array_reverse($names));
     }
 
+    public function ancestorsAndSelf()
+    {
+        return $this->ancestors()->addSelf();
+    }
 }

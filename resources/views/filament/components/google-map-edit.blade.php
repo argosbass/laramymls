@@ -1,8 +1,10 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<div 
-    x-data="leafletMap()" 
-    x-init="init()" 
+
+<div
+    x-data="leafletMap()"
+    x-init="init()"
     wire:ignore
+    id="leaflet-wrapper"
     style="width: 100%; height: 400px; margin-top: 1rem; border: 1px solid #ddd;"
 >
     <div id="map" style="width: 100%; height: 100%;"></div>
@@ -10,63 +12,78 @@
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script>
-function leafletMap() {
-    return {
-        map: null,
-        marker: null,
+    function leafletMap() {
+        return {
+            map: null,
+            marker: null,
 
-        init() {
-            console.log('[Leaflet] init()');
+            init() {
+                // Limpia si ya había un mapa inicializado
+                if (L.DomUtil.get('map') !== null) {
+                    L.DomUtil.get('map')._leaflet_id = null;
+                }
 
-            const latInput = document.getElementById('latitude-input');
-            const lngInput = document.getElementById('longitude-input');
+                const latInput = document.getElementById('latitude-input');
+                const lngInput = document.getElementById('longitude-input');
+                const initialLat = parseFloat(latInput?.value) || 9.7489;
+                const initialLng = parseFloat(lngInput?.value) || -83.7534;
 
-            const initialLat = parseFloat(latInput.value) || 9.7489;
-            const initialLng = parseFloat(lngInput.value) || -83.7534;
+                this.map = L.map('map').setView([initialLat, initialLng], 14);
 
-            console.log(`[Leaflet] Initial coordinates: ${initialLat}, ${initialLng}`);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a>'
+                }).addTo(this.map);
 
-            this.map = L.map('map', {
-                zoomAnimation: true,
-                fadeAnimation: true
-            }).setView([initialLat, initialLng], 14);
+                this.marker = L.marker([initialLat, initialLng], { draggable: true }).addTo(this.map);
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(this.map);
+                this.marker.on('dragend', () => {
+                    const position = this.marker.getLatLng();
+                    this.updateInputs(position.lat, position.lng);
+                });
 
-            this.marker = L.marker([initialLat, initialLng], { draggable: true, autoPan: true }).addTo(this.map);
+                this.map.on('click', (e) => {
+                    this.marker.setLatLng(e.latlng);
+                    this.updateInputs(e.latlng.lat, e.latlng.lng);
+                });
 
-            this.marker.on('dragend', () => {
-                const position = this.marker.getLatLng();
-                console.log(`[Leaflet] Marker dragged to: ${position.lat}, ${position.lng}`);
-                this.updateInputs(position.lat, position.lng);
-            });
+                this.deferMapRedraw(); // fuerza render
+            },
 
-            this.map.on('click', (e) => {
-                console.log(`[Leaflet] Map clicked at: ${e.latlng.lat}, ${e.latlng.lng}`);
-                this.marker.setLatLng(e.latlng);
-                this.updateInputs(e.latlng.lat, e.latlng.lng);
-            });
+            updateInputs(lat, lng) {
+                const latInput = document.getElementById('latitude-input');
+                const lngInput = document.getElementById('longitude-input');
 
-            setTimeout(() => {
-                console.log('[Leaflet] invalidating size after init');
-                this.map.invalidateSize();
-            }, 300);
-        },
+                if (latInput && lngInput) {
+                    latInput.value = lat.toFixed(6);
+                    lngInput.value = lng.toFixed(6);
 
-        updateInputs(lat, lng) {
-            const latInput = document.getElementById('latitude-input');
-            const lngInput = document.getElementById('longitude-input');
+                    latInput.dispatchEvent(new Event('input'));
+                    lngInput.dispatchEvent(new Event('input'));
+                }
+            },
 
-            latInput.value = lat.toFixed(6);
-            lngInput.value = lng.toFixed(6);
+            deferMapRedraw() {
+                // pequeño retraso para evitar glitches iniciales
+                setTimeout(() => {
+                    this.map.invalidateSize();
+                }, 300);
 
-            latInput.dispatchEvent(new Event('input'));
-            lngInput.dispatchEvent(new Event('input'));
+                // Observa cambios en el DOM por tabs o modales
+                const wrapper = document.getElementById('leaflet-wrapper');
+                if (!wrapper) return;
 
-            console.log(`[Leaflet] Inputs updated: ${latInput.value}, ${lngInput.value}`);
-        }
+                const observer = new MutationObserver(() => {
+                    if (document.getElementById('map')?.offsetParent !== null) {
+                        this.map.invalidateSize();
+                    }
+                });
+
+                observer.observe(wrapper, {
+                    attributes: true,
+                    childList: true,
+                    subtree: true,
+                });
+            }
+        };
     }
-}
 </script>

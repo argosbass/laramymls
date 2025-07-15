@@ -13,6 +13,11 @@ return new class extends Migration {
                 ->nullable()
                 ->constrained('property_locations')
                 ->nullOnDelete();
+
+            $table->unsignedInteger('_lft')->nullable();
+            $table->unsignedInteger('_rgt')->nullable();
+            $table->unsignedInteger('depth')->nullable();
+
             $table->timestamps();
         });
     }
