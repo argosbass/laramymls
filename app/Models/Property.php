@@ -1,12 +1,14 @@
 <?php
 namespace App\Models;
-
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 
 class Property extends Model
 {
     protected $fillable = [
         'nid',
+        'user_id',
+        'slug',
         'published',
         'property_title',
         'property_added_date',
@@ -36,6 +38,16 @@ class Property extends Model
         'property_video',
     ];
 
+    protected static function booted()
+    {
+        static::saving(function ($property) {
+
+            if (empty($property->slug)) {
+                $property->slug = Str::slug($property->property_title);
+            }
+        });
+    }
+
     public function status() {
         return $this->belongsTo(PropertyStatus::class, 'property_status_id');
     }
@@ -44,6 +56,11 @@ class Property extends Model
     }
     public function location() {
         return $this->belongsTo(PropertyLocations::class, 'property_location_id');
+    }
+
+    public function author()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     public function features() {

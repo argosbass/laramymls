@@ -34,8 +34,7 @@ class PropertyResource extends Resource
                         Tab::make('Basic Property Details')->schema([
                             Forms\Components\Section::make()
                                 ->schema([
-                                    Forms\Components\TextInput::make('nid')->hidden(),
-                                    Forms\Components\Toggle::make('published'),
+
                                     Forms\Components\DatePicker::make('property_added_date'),
                                     Forms\Components\TextInput::make('property_title')->required()->maxLength(500),
 
@@ -191,8 +190,6 @@ class PropertyResource extends Resource
                         ])->columns(3),
 
 
-
-
                         Tab::make('Where Listed')->schema([
 
                             Repeater::make('listingCompetitors')
@@ -240,6 +237,30 @@ class PropertyResource extends Resource
 
 
                         ])->columns(3),
+
+                        Tab::make('General')->schema([
+
+                            Forms\Components\TextInput::make('nid')->hidden(),
+                            Forms\Components\Toggle::make('published'),
+
+                            Forms\Components\Select::make('user_id')
+                                ->label('Author')
+                                ->relationship('author', 'name') // usa la relación que creaste en el modelo Property
+                                ->searchable()
+                                ->preload(),
+
+                            Forms\Components\TextInput::make('slug')
+                                ->label('URL')
+                                ->default(fn ($record) => $record ? url('/property-listing/' . $record->slug) : null)
+
+
+                                ->visible(fn ($record) => filled($record?->slug)),
+
+
+
+                        ]),
+
+
 
 
                     ]),

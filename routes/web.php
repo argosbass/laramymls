@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\MigrateController;
 use App\Http\Controllers\PropertyController;
+use App\Http\Controllers\PublicPropertyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +20,17 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/start-migration', [MigrateController::class, 'start_migration']);
-// Route::get('/properties', [PropertyController::class, 'index']);
-// Route::get('/properties/{id}', [PropertyController::class, 'show']);
+Route::get('/login', function () {
+    return redirect()->route('filament.admin.auth.login');
+})->name('login');
+
+
+Route::get('/property-access/{property}', [PublicPropertyController::class, 'showSigned'])
+    ->name('property.signed.show')
+    ->middleware('signed');
+
+Route::middleware(['auth'])->group(function ()
+{
+    Route::get('/property-listing/{slug}', [PublicPropertyController::class, 'show'])
+        ->name('property.public.show');
+});

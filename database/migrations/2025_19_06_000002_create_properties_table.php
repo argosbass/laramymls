@@ -9,6 +9,9 @@ return new class extends Migration {
         Schema::create('properties', function (Blueprint $table) {
             $table->id(); // BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY
             $table->unsignedInteger('nid')->unique()->nullable();
+
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->string('slug')->unique();
             $table->tinyInteger('published')->nullable();
             $table->string('property_title', 500)->nullable();
             $table->date('property_added_date')->nullable();
@@ -34,9 +37,11 @@ return new class extends Migration {
             $table->float('property_osnid')->nullable();
             $table->float('property_price')->nullable();
 
+
             $table->foreignId('property_status_id')->nullable()->constrained('property_status')->nullOnDelete();
             $table->foreignId('property_type_id')->nullable()->constrained('property_types')->nullOnDelete();
             $table->foreignId('property_location_id')->nullable()->constrained('property_locations')->nullOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
 
             $table->string('property_video', 500)->nullable();
 

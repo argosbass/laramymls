@@ -4,6 +4,15 @@
     <div class="container">
         <h1 class="mb-4">{{ $property->property_title }}</h1>
 
+        @if (auth()->check() && isset($signedUrl))
+            <div class="mb-4">
+                <a href="{{ $signedUrl }}" target="_blank" class="btn btn-primary">
+                    Ver enlace temporal (15 días)
+                </a>
+                <p class="text-sm text-muted mt-2">{{ $signedUrl }}</p>
+            </div>
+        @endif
+
         {{-- Datos principales --}}
         <div class="row mb-4">
             <div class="col-md-8">
