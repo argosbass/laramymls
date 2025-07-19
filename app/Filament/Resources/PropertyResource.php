@@ -25,6 +25,14 @@ class PropertyResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-home';
     protected static ?string $activeNavigationIcon = 'heroicon-s-home-modern';
 
+    protected static ?string $navigationGroup = 'Search Tools';
+
+    public static function getNavigationLabel(): string
+    {
+        return 'Property Manager';
+    }
+
+
     public static function form(Form $form): Form
     {
         return $form
@@ -302,11 +310,16 @@ class PropertyResource extends Resource
                 Tables\Columns\TextColumn::make('type.type_name')->label('Type')->sortable(),
                 Tables\Columns\TextColumn::make('property_price')->label('Price')->money('usd')->sortable(),
                 Tables\Columns\TextColumn::make('property_added_date')->date()->sortable(),
+                Tables\Columns\TextColumn::make('author.name')
+                    ->label('Author')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\BooleanColumn::make('published'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('property_status_id')->relationship('status', 'status_name'),
                 Tables\Filters\SelectFilter::make('property_type_id')->relationship('type', 'type_name'),
+                Tables\Filters\SelectFilter::make('author.name')->relationship('author', 'name'),
             ])
             ->actions([
                 Action::make('view')
