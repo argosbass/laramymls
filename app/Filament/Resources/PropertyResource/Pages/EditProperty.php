@@ -17,18 +17,59 @@ class EditProperty extends EditRecord
         ];
     }
 
-    // 👇 Esta línea activa los tabs de relaciones
     protected function hasRelationManagersInTabs(): bool
     {
         return true;
     }
 
-    // 👇 Esta asegura que los relation managers estén activos
     protected function hasRelationManagers(): bool
     {
         return true;
     }
 
+    public function mount($record): void
+    {
+        parent::mount($record);
 
+        $state = $this->form->getState();
+
+        $state['temp_images'] = $this->record->getImagePaths();
+
+        $this->form->fill($state);
+    }
+
+    protected function afterSave(): void
+    {
+        $tempImages = $this->form->getState()['temp_images'] ?? [];
+
+        // Obtener los media actuales
+        $currentMedia = $this->record->getMedia('images');
+
+        // Mapear paths actuales
+        $currentPaths = $currentMedia->map(fn ($media) => str_replace('public/', '', $media->getPathRelativeToRoot()))->toArray();
+
+        // Detectar qué archivos eliminar (están en current pero no en tempImages)
+        $toDelete = array_diff($currentPaths, $tempImages);
+
+        // Eliminar media correspondientes
+        foreach ($currentMedia as $media) {
+            $mediaPath = str_replace('public/', '', $media->getPathRelativeToRoot());
+            if (in_array($mediaPath, $toDelete)) {
+                $media->delete();
+            }
+        }
+
+        // Agregar nuevas imágenes que no estén ya en la colección
+        foreach ($tempImages as $path) {
+            if (!in_array($path, $currentPaths)) {
+                $fullPath = storage_path("app/public/{$path}");
+                if (file_exists($fullPath)) {
+                    $this->record
+                        ->addMedia($fullPath)
+                        ->preservingOriginal()
+                        ->toMediaCollection('images');
+                }
+            }
+        }
+    }
 }
-

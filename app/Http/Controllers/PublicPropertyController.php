@@ -25,6 +25,22 @@ class PublicPropertyController extends Controller
 
         return view('properties.show', compact('property', 'signedUrl') );
     }
+    public function showById($id)
+    {
+        $property = Property::where('id', $id)->firstOrFail();
+
+
+        // generar enlace firmado válido por 15 días
+        $signedUrl = URL::temporarySignedRoute(
+            'property.signed.show',
+            now()->addDays(15),
+            ['property' => $property->id]
+        );
+
+
+        return view('properties.show', compact('property', 'signedUrl') );
+    }
+
 
     public function showSigned(Property $property)
     {

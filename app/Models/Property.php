@@ -2,12 +2,15 @@
 namespace App\Models;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
+
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Property extends Model implements HasMedia
 {
      use InteractsWithMedia;
+
     protected $fillable = [
         'nid',
         'user_id',
@@ -40,6 +43,26 @@ class Property extends Model implements HasMedia
         'property_type_id',
         'property_video',
     ];
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('images')->useFallbackUrl('/default.jpg');
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->width(368)
+            ->height(232)
+            ->nonQueued(); // opcional
+    }
+
+    public function getImagePaths(): array
+    {
+        return $this->getMedia('images')
+            ->map(fn ($media) => str_replace('storage/', '', $media->getPathRelativeToRoot()))
+            ->toArray();
+    }
 
     protected static function booted()
     {
@@ -78,5 +101,11 @@ class Property extends Model implements HasMedia
     }
     public function listingCompetitors() {
         return $this->hasMany(PropertyListingCompetitor::class);
+    }
+
+    public function sold_at()
+    {
+        // Relación con el sold reference más reciente
+        return $this->hasOne(PropertySoldReferences::class)->latestOfMany('sold_reference_date');
     }
 }

@@ -18,8 +18,8 @@
 @endphp
 
 <div wire:ignore>
-    <label class="block font-medium text-sm text-gray-700 mb-1">Seleccionar ubicación</label>
-    <input type="text" id="location-search" placeholder="Buscar..." class="mb-2 px-2 py-1 border rounded w-full" />
+    <label class="block font-medium text-sm text-gray-700 mb-1">Select Location</label>
+    <input type="text" id="location-search" placeholder="Search..." class="mb-2 px-2 py-1 border rounded w-full" />
     <div id="location-tree"></div>
 </div>
 

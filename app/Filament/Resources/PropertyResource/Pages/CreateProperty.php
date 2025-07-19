@@ -9,4 +9,18 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateProperty extends CreateRecord
 {
     protected static string $resource = PropertyResource::class;
+
+    protected function afterCreate(): void
+    {
+        $tempImages = $this->form->getState()['temp_images'] ?? [];
+
+        if (! empty($tempImages)) {
+            foreach ($tempImages as $path) {
+                $this->record
+                    ->addMedia(storage_path("app/public/{$path}"))
+                    ->preservingOriginal()
+                    ->toMediaCollection('images');
+            }
+        }
+    }
 }

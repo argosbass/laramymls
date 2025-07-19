@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\MigrateController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\PublicPropertyController;
+use App\Models\Property;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,8 +31,23 @@ Route::get('/property-access/{property}', [PublicPropertyController::class, 'sho
     ->name('property.signed.show')
     ->middleware('signed');
 
+Route::get('/property/{property}/export', function (Property $property) {
+    $signedUrl = null; // O genera el que usas normalmente
+
+    $pdf = Pdf::loadView('properties.showPDF', compact('property', 'signedUrl'));
+
+    //return $pdf->download('property-' . $property->id . '.pdf');
+    return $pdf->stream('property-' . $property->id . '.pdf');
+    // return view('properties.showPDF', compact('property', 'signedUrl'));
+
+})->name('property.export');
+
+
 Route::middleware(['auth'])->group(function ()
 {
     Route::get('/property-listing/{slug}', [PublicPropertyController::class, 'show'])
         ->name('property.public.show');
+
+    Route::get('/property-listing-id/{id}', [PublicPropertyController::class, 'showById'])
+        ->name('property.public.showById');
 });

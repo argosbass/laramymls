@@ -29,7 +29,6 @@ class PropertyResource extends Resource
     {
         return $form
             ->schema([
-                 
                 Tabs::make('Property Tabs')
                     ->columnSpanFull() // Ocupa todo el ancho del formulario
                     ->tabs([
@@ -135,6 +134,21 @@ class PropertyResource extends Resource
                         ]),
 
                         Tab::make('Property Photos')->schema([
+                           /*
+                             Forms\Components\FileUpload::make('temp_images')
+                                ->label('Upload Photos')
+                                ->disk('public')
+                                ->visibility('public')
+                                ->multiple()
+                                ->reorderable()
+                                ->preserveFilenames()
+                                ->directory('temp-property-photos')
+                                ->previewable()
+                                ->openable()
+                                ->downloadable()
+                                ->columnSpanFull(),
+                            */
+
                             SpatieMediaLibraryFileUpload::make('gallery')
                             ->collection('gallery')
                             ->multiple()
