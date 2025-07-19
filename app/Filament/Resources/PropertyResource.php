@@ -16,6 +16,7 @@ use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Tabs\Tab;
 
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 
 class PropertyResource extends Resource
 {
@@ -28,6 +29,7 @@ class PropertyResource extends Resource
     {
         return $form
             ->schema([
+                 
                 Tabs::make('Property Tabs')
                     ->columnSpanFull() // Ocupa todo el ancho del formulario
                     ->tabs([
@@ -133,8 +135,18 @@ class PropertyResource extends Resource
                         ]),
 
                         Tab::make('Property Photos')->schema([
-                            // Aquí podés agregar los campos para fotos si los tenés
-                        ])->columns(3),
+                            SpatieMediaLibraryFileUpload::make('gallery')
+                            ->collection('gallery')
+                            ->multiple()
+                            ->image()
+                            ->responsiveImages()
+                            ->reorderable()
+                            ->openable()
+                            ->previewable()
+                            ->panelLayout('grid')
+                            ->columnSpanFull()
+                        ])
+                        ->columns(3),
 
                         Tab::make('Sold References')->schema([
                             Repeater::make('soldReferences')

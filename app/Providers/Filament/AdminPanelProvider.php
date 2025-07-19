@@ -28,6 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->passwordReset()
             ->maxContentWidth(MaxWidth::Full)
             ->colors([
                 'primary' => Color::Red,
