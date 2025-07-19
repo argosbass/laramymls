@@ -32,6 +32,8 @@ class PropertySearchForm extends Component
     public $year;
     public $features = [];
 
+    public int $page = 1;
+
     protected $queryString = ['page'];
 
     public function updated($property)
@@ -94,7 +96,8 @@ class PropertySearchForm extends Component
                 }
             })
             ->with(['type', 'status', 'location', 'features'])
-            ->paginate(100);
+//            ->paginate(100);
+        ->paginate(100, pageName: $this->getPageName());
 
         return view('livewire.property-search-form', compact(
             'types',
