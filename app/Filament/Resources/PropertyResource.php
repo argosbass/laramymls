@@ -18,6 +18,8 @@ use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 
+use Filament\Navigation\NavigationItem;
+
 class PropertyResource extends Resource
 {
     protected static ?string $model = Property::class;
@@ -344,11 +346,18 @@ class PropertyResource extends Resource
         ];
     }
 
-    public static function getRelations(): array
+    public static function getNavigationItems(): array
     {
         return [
-            // Ya no usás RelationManager porque usás Repeater
-            // SoldReferencesRelationManager::class,
+            // Este es el ítem de navegación normal del recurso
+            parent::getNavigationItems()[0],
+
+            // Este es el ítem personalizado
+            NavigationItem::make('Add Property')
+                ->url(static::getUrl('create')) // link al formulario de creación
+                ->icon('heroicon-o-plus')
+                ->group('Search Tools') // mismo grupo
+                ->sort(1), // posición dentro del grupo
         ];
     }
 }
