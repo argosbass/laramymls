@@ -290,6 +290,6 @@
         </div>
 
     @else
-        <p class="text-sm text-gray-500 mt-4">No se encontraron resultados.</p>
+        <p class="text-sm text-gray-500 mt-4">No results.</p>
     @endif
 </div>

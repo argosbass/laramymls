@@ -45,11 +45,6 @@ class PropertySearchForm extends Component
     {
 
 
-
-
-
-
-
         $types = PropertyType::all();
         $statuses = PropertyStatus::all();
         $locations = PropertyLocations::orderBy('_lft')->get();
