@@ -67,9 +67,17 @@ class Property extends Model implements HasMedia
     protected static function booted()
     {
         static::saving(function ($property) {
-
             if (empty($property->slug)) {
-                $property->slug = Str::slug($property->property_title);
+                $baseSlug = Str::slug($property->property_title);
+                $slug = $baseSlug;
+                $count = 1;
+
+                while (static::where('slug', $slug)->where('id', '!=', $property->id)->exists()) {
+                    $slug = "{$baseSlug}-{$count}";
+                    $count++;
+                }
+
+                $property->slug = $slug;
             }
         });
     }

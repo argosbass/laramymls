@@ -10,8 +10,8 @@ return new class extends Migration {
             $table->id(); // BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY
             $table->unsignedInteger('nid')->unique()->nullable();
 
-            $table->unsignedBigInteger('user_id')->nullable();
-            $table->string('slug')->unique();
+            // $table->unsignedBigInteger('user_id')->nullable();
+            $table->string('slug')->unique()->nullable();
             $table->tinyInteger('published')->nullable();
             $table->string('property_title', 500)->nullable();
             $table->date('property_added_date')->nullable();

@@ -160,15 +160,20 @@ class PropertyResource extends Resource
                             */
 
                             SpatieMediaLibraryFileUpload::make('gallery')
-                            ->collection('gallery')
-                            ->multiple()
-                            ->image()
-                            ->responsiveImages()
-                            ->reorderable()
-                            ->openable()
-                            ->previewable()
-                            ->panelLayout('grid')
-                            ->columnSpanFull()
+                                ->collection('gallery')
+                                ->multiple()
+                                ->image()
+                                ->responsiveImages()
+                                ->reorderable()
+                                ->openable()
+                                ->previewable()
+                                ->panelLayout('grid')
+                                ->columnSpanFull()
+                                ->getUploadedFileNameForStorageUsing(function (UploadedFile $file) {
+                                    $name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                                    $ext = $file->getClientOriginalExtension();
+                                    return $name . '-' . time() . '.' . $ext;  // nombre único con timestamp
+                                }),
                         ])
                         ->columns(3),
 

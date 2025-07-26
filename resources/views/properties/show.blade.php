@@ -7,9 +7,11 @@
 <!-- Tailwind CDN for quick styling -->
 <script src="https://cdn.tailwindcss.com"></script>
 
-<!-- Slick Slider CSS -->
+{{-- Incluye estilos de Slick y Magnific Popup --}}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/magnific-popup@1.1.0/dist/magnific-popup.css"/>
+
 
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -57,17 +59,24 @@
         @endphp
 
         @if ($photos->count())
-            <div class="slider">
+            <div class="slider mb-4">
                 @foreach($photos as $media)
                     <div>
-                        <img src="{{ $media->getFullUrl() }}" alt="Photo" class="rounded-md">
+                        <a href="{{ $media->getFullUrl() }}">
+                            <img src="{{ $media->getFullUrl() }}"
+                                 alt="Foto"
+                                 class="rounded-md w-full object-cover max-h-[450px] mx-auto" />
+                        </a>
                     </div>
                 @endforeach
             </div>
-            <div class="slider-nav mt-2">
+
+            <div class="slider-nav">
                 @foreach($photos as $media)
-                    <div>
-                        <img src="{{ $media->getFullUrl('thumb') ?? $media->getFullUrl() }}" alt="Thumbnail" class="h-20 object-cover rounded">
+                    <div class="px-1">
+                        <img src="{{ $media->getFullUrl('thumb') ?? $media->getFullUrl() }}"
+                             alt="Miniatura"
+                             class="h-20 w-28 object-cover rounded border" />
                     </div>
                 @endforeach
             </div>
@@ -253,22 +262,37 @@
     </div>
 </div>
 
-{{-- Slick Slider JS --}}
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+{{-- Scripts necesarios --}}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/magnific-popup@1.1.0/dist/jquery.magnific-popup.min.js"></script>
 
 <script>
     $(document).ready(function(){
         $('.slider').slick({
             slidesToShow: 1,
             arrows: true,
+            fade: true,
             asNavFor: '.slider-nav',
         });
+
         $('.slider-nav').slick({
             slidesToShow: 4,
             asNavFor: '.slider',
             focusOnSelect: true,
             arrows: false,
+            centerMode: true,
+        });
+
+        // Popup al hacer clic
+        $('.slider').magnificPopup({
+            delegate: 'a',
+            type: 'image',
+            gallery: {
+                enabled: true
+            },
+            mainClass: 'mfp-fade',
+            removalDelay: 200,
         });
     });
 </script>
