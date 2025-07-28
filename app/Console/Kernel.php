@@ -20,6 +20,11 @@ class Kernel extends ConsoleKernel
 //
 //          crontab -e
 
+
+        // php artisan photos:import-batch
+        // php artisan photos:revert-batch
+        // php artisan photos:delete-all
+
     }
 
     /**

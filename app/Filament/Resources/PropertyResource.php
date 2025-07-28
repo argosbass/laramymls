@@ -34,6 +34,10 @@ class PropertyResource extends Resource
         return 'Property Manager';
     }
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->hasAnyRole(['admin', 'Data Entry']);
+    }
 
     public static function form(Form $form): Form
     {
@@ -160,20 +164,15 @@ class PropertyResource extends Resource
                             */
 
                             SpatieMediaLibraryFileUpload::make('gallery')
-                                ->collection('gallery')
-                                ->multiple()
-                                ->image()
-                                ->responsiveImages()
-                                ->reorderable()
-                                ->openable()
-                                ->previewable()
-                                ->panelLayout('grid')
-                                ->columnSpanFull()
-                                ->getUploadedFileNameForStorageUsing(function (UploadedFile $file) {
-                                    $name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                                    $ext = $file->getClientOriginalExtension();
-                                    return $name . '-' . time() . '.' . $ext;  // nombre único con timestamp
-                                }),
+                            ->collection('gallery')
+                            ->multiple()
+                            ->image()
+                            ->responsiveImages()
+                            ->reorderable()
+                            ->openable()
+                            ->previewable()
+                            ->panelLayout('grid')
+                            ->columnSpanFull()
                         ])
                         ->columns(3),
 

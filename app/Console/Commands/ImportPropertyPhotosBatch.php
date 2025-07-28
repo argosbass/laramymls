@@ -42,6 +42,8 @@ class ImportPropertyPhotosBatch extends Command
             }
 
             $fileName = basename(parse_url($cleanUrl, PHP_URL_PATH));
+            $fileName = str_replace('%20', '', $fileName);
+            $fileName = str_replace(' ', '', $fileName);
 
             // Evita duplicados
             if ($property->getMedia('gallery')->where('file_name', $fileName)->isNotEmpty()) {
