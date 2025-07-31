@@ -36,7 +36,7 @@ class PropertyResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->hasAnyRole(['admin', 'Data Entry']);
+        return auth()->user()?->hasAnyRole(['Super Admin', 'Data Entry']);
     }
 
     public static function form(Form $form): Form
@@ -114,11 +114,11 @@ class PropertyResource extends Resource
                         ])->columns(3),
 
                         Tab::make('Property Location')->schema([
-                           // Forms\Components\Select::make('property_location_id')
-                           //     ->label('Location')
-                           //     ->relationship('location', 'location_name')
-                           //     ->preload()
-                           //     ->nullable(),
+                            // Forms\Components\Select::make('property_location_id')
+                            //     ->label('Location')
+                            //     ->relationship('location', 'location_name')
+                            //     ->preload()
+                            //     ->nullable(),
 
 
                             Forms\Components\Select::make('property_location_id')
@@ -148,33 +148,33 @@ class PropertyResource extends Resource
                         ]),
 
                         Tab::make('Property Photos')->schema([
-                           /*
-                             Forms\Components\FileUpload::make('temp_images')
-                                ->label('Upload Photos')
-                                ->disk('public')
-                                ->visibility('public')
-                                ->multiple()
-                                ->reorderable()
-                                ->preserveFilenames()
-                                ->directory('temp-property-photos')
-                                ->previewable()
-                                ->openable()
-                                ->downloadable()
-                                ->columnSpanFull(),
-                            */
+                            /*
+                              Forms\Components\FileUpload::make('temp_images')
+                                 ->label('Upload Photos')
+                                 ->disk('public')
+                                 ->visibility('public')
+                                 ->multiple()
+                                 ->reorderable()
+                                 ->preserveFilenames()
+                                 ->directory('temp-property-photos')
+                                 ->previewable()
+                                 ->openable()
+                                 ->downloadable()
+                                 ->columnSpanFull(),
+                             */
 
                             SpatieMediaLibraryFileUpload::make('gallery')
-                            ->collection('gallery')
-                            ->multiple()
-                            ->image()
-                            ->responsiveImages()
-                            ->reorderable()
-                            ->openable()
-                            ->previewable()
-                            ->panelLayout('grid')
-                            ->columnSpanFull()
+                                ->collection('gallery')
+                                ->multiple()
+                                ->image()
+                                ->responsiveImages()
+                                ->reorderable()
+                                ->openable()
+                                ->previewable()
+                                ->panelLayout('grid')
+                                ->columnSpanFull()
                         ])
-                        ->columns(3),
+                            ->columns(3),
 
                         Tab::make('Sold References')->schema([
                             Repeater::make('soldReferences')
