@@ -23,4 +23,14 @@ class CreateProperty extends CreateRecord
             }
         }
     }
+
+    protected function getFormActions(): array
+    {
+        return [
+            $this->getCreateFormAction()->label('Save'),
+            $this->getCreateAnotherFormAction()
+                ->label('Save and add New'),
+            $this->getCancelFormAction(),
+        ];
+    }
 }

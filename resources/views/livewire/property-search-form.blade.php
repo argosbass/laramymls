@@ -2,6 +2,37 @@
     use Carbon\Carbon;
 @endphp
 
+@push('styles')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/styles/choices.min.css"/>
+    <style>
+        .choices {
+            margin-bottom: 0 !important;
+        }
+
+        .choices__inner {
+            background-color: white !important;
+            border: 1px solid rgb(209 213 219) !important;
+            border-radius: 0.375rem !important;
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important;
+            font-size: 0.875rem !important;
+            min-height: 42px !important;
+            padding: 0.3rem 0.75rem !important;
+        }
+
+        .choices__inner:focus {
+            border-color: rgb(147 197 253) !important;
+            box-shadow: 0 0 0 3px rgb(147 197 253 / 0.1) !important;
+        }
+        .choices[data-type*=select-one]::after {
+            right: 15.5px;
+        }
+
+        .choices__list--dropdown {
+            border: 1px solid rgb(209 213 219) !important;
+            border-radius: 0.375rem !important;
+        }
+    </style>
+@endpush
 
 <div class="space-y-6 w-full">
     <form wire:submit.prevent="search">
@@ -19,7 +50,7 @@
                        class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
             </div>
 
-            <div>
+            <div wire:ignore>
                 <label class="block text-sm font-medium text-gray-700 mb-1" for="typeId">Type</label>
                 <select id="typeId" wire:model="typeId"
                         class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300">
@@ -30,7 +61,7 @@
                 </select>
             </div>
 
-            <div>
+            <div wire:ignore>
                 <label class="block text-sm font-medium text-gray-700 mb-1" for="statusId">Status</label>
                 <select id="statusId" wire:model="statusId"
                         class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300">
@@ -41,7 +72,7 @@
                 </select>
             </div>
 
-            <div>
+            <div wire:ignore>
                 <label class="block text-sm font-medium text-gray-700 mb-1" for="locationId">Location</label>
                 <select id="locationId" wire:model="locationId"
                         class="block w-full rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300">
@@ -54,7 +85,7 @@
                 </select>
             </div>
 
-            <div>
+            <div wire:ignore>
                 <label class="block text-sm font-medium text-gray-700 mb-1" for="year">Year</label>
                 <select id="year" wire:model="year"
                         class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300">
@@ -272,10 +303,10 @@
                             </td>
                         @endforeach
                         <td class="px-2 py-1">
-                        <a target="_blank" href="{{ route('property.export', $property) }}"
-                           class="">
-                            <x-heroicon-o-printer class="w-5 h-5" />
-                        </a>
+                            <a target="_blank" href="{{ route('property.export', $property) }}"
+                               class="">
+                                <x-heroicon-o-printer class="w-5 h-5" />
+                            </a>
                         </td>
 
                     </tr>
@@ -293,3 +324,110 @@
         <p class="text-sm text-gray-500 mt-4">No results.</p>
     @endif
 </div>
+
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/scripts/choices.min.js"></script>
+    <script>
+        let typeChoices, statusChoices, locationChoices, yearChoices;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeChoices();
+        });
+
+        function initializeChoices() {
+            // Destruir instancias previas si existen
+            if (typeChoices) typeChoices.destroy();
+            if (statusChoices) statusChoices.destroy();
+            if (locationChoices) locationChoices.destroy();
+            if (yearChoices) yearChoices.destroy();
+
+            // Inicializar Choices para Type
+            typeChoices = new Choices('#typeId', {
+                searchEnabled: true,
+                placeholder: true,
+                placeholderValue: 'All',
+                allowHTML: true,
+                shouldSort: false
+            });
+
+            // Inicializar Choices para Status
+            statusChoices = new Choices('#statusId', {
+                searchEnabled: true,
+                placeholder: true,
+                placeholderValue: 'All',
+                allowHTML: false,
+                shouldSort: false
+            });
+
+            // Inicializar Choices para Location
+            locationChoices = new Choices('#locationId', {
+                searchEnabled: true,
+                placeholder: true,
+                placeholderValue: 'All',
+                allowHTML: true, // Permitir HTML para las indentaciones
+                shouldSort: false
+            });
+
+            // Inicializar Choices para Year
+            yearChoices = new Choices('#year', {
+                searchEnabled: true,
+                placeholder: true,
+                placeholderValue: 'All',
+                allowHTML: false,
+                shouldSort: false
+            });
+
+            // Manejar cambios para Livewire
+            document.getElementById('typeId').addEventListener('change', function(e) {
+            @this.set('typeId', e.target.value);
+            });
+
+            document.getElementById('statusId').addEventListener('change', function(e) {
+            @this.set('statusId', e.target.value);
+            });
+
+            document.getElementById('locationId').addEventListener('change', function(e) {
+            @this.set('locationId', e.target.value);
+            });
+
+            document.getElementById('year').addEventListener('change', function(e) {
+            @this.set('year', e.target.value);
+            });
+
+            // Establecer valores actuales si existen
+            const currentTypeId = '{{ $typeId ?? "" }}';
+            const currentStatusId = '{{ $statusId ?? "" }}';
+            const currentLocationId = '{{ $locationId ?? "" }}';
+            const currentYear = '{{ $year ?? "" }}';
+
+            if (currentTypeId) {
+                typeChoices.setChoiceByValue(currentTypeId);
+            }
+            if (currentStatusId) {
+                statusChoices.setChoiceByValue(currentStatusId);
+            }
+            if (currentLocationId) {
+                locationChoices.setChoiceByValue(currentLocationId);
+            }
+            if (currentYear) {
+                yearChoices.setChoiceByValue(currentYear);
+            }
+        }
+
+        // Reinicializar cuando Livewire actualice el componente
+        document.addEventListener('livewire:update', function () {
+            setTimeout(() => {
+                initializeChoices();
+            }, 100);
+        });
+
+        // Para versiones más nuevas de Livewire
+        if (typeof Livewire !== 'undefined') {
+            Livewire.hook('message.processed', (message, component) => {
+                setTimeout(() => {
+                    initializeChoices();
+                }, 100);
+            });
+        }
+    </script>
+@endpush

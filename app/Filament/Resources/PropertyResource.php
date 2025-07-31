@@ -50,7 +50,11 @@ class PropertyResource extends Resource
                             Forms\Components\Section::make()
                                 ->schema([
 
-                                    Forms\Components\DatePicker::make('property_added_date'),
+                                    Forms\Components\DatePicker::make('property_added_date')
+                                        ->label('Date property added')
+                                        ->default(today())
+                                        ->displayFormat('dd/mm/yyyy'),
+
                                     Forms\Components\TextInput::make('property_title')->required()->maxLength(500),
 
                                     Forms\Components\Select::make('property_type_id')
@@ -73,17 +77,17 @@ class PropertyResource extends Resource
                                     Forms\Components\TextInput::make('property_price')->numeric(),
                                     Forms\Components\TextInput::make('property_hoa_fee')->numeric(),
 
-                                    Forms\Components\TextInput::make('property_building_size_m2')->numeric(),
-                                    Forms\Components\TextInput::make('property_building_size_area_quantity')->numeric(),
-                                    Forms\Components\Select::make('property_building_size_area_unit')
+                                    Forms\Components\TextInput::make('property_building_size_m2')->label('Building Size M2')->suffix('m²')->numeric()->helperText('For inner use. Do not edit this field manually.'),
+                                    Forms\Components\TextInput::make('property_building_size_area_quantity')->label('Building Size')->numeric(),
+                                    Forms\Components\Select::make('property_building_size_area_unit')->label('Building Size Unit')
                                         ->options([
                                             'sqm' => 'sqm',
                                             'sqft' => 'sqft',
                                         ]),
 
-                                    Forms\Components\TextInput::make('property_lot_size_m2')->numeric(),
-                                    Forms\Components\TextInput::make('property_lot_size_area_quantity')->numeric(),
-                                    Forms\Components\Select::make('property_lot_size_area_unit')
+                                    Forms\Components\TextInput::make('property_lot_size_m2')->label('Lot Size M2')->suffix('m²')->numeric()->helperText('For inner use. Do not edit this field manually.'),
+                                    Forms\Components\TextInput::make('property_lot_size_area_quantity')->label('Lot Size')->numeric(),
+                                    Forms\Components\Select::make('property_lot_size_area_unit')->label('Lot Size Unit')
                                         ->options([
                                             'sqm' => 'sqm',
                                             'sqft' => 'sqft',
@@ -134,13 +138,13 @@ class PropertyResource extends Resource
                                             ];
                                         });
                                 })
-
+                                ->searchable()
                                 ->preload()
                                 ->nullable(),
 
 
-                            Forms\Components\TextInput::make('property_geolocation_lat')->numeric()->id('latitude-input'),
-                            Forms\Components\TextInput::make('property_geolocation_lng')->numeric()->id('longitude-input'),
+                            Forms\Components\TextInput::make('property_geolocation_lat')->label('Property Latitude')->numeric()->id('latitude-input'),
+                            Forms\Components\TextInput::make('property_geolocation_lng')->label('Property Longitude')->numeric()->id('longitude-input'),
                             Forms\Components\Hidden::make('property_geolocation_lat_sin'),
                             Forms\Components\Hidden::make('property_geolocation_lat_cos'),
                             Forms\Components\Hidden::make('property_geolocation_lng_rad'),
@@ -246,7 +250,7 @@ class PropertyResource extends Resource
                                                 ->orderBy('company_name')
                                                 ->pluck('company_name', 'id');
                                         })
-
+                                        ->searchable()
                                         ->preload()
                                         ->required(),
 
@@ -364,4 +368,6 @@ class PropertyResource extends Resource
                 ->sort(1), // posición dentro del grupo
         ];
     }
+
+
 }
