@@ -9,6 +9,8 @@ class PropertiesByTypeChart extends ChartWidget
 {
     protected static ?string $heading = 'Properties by Type';
     protected static ?int $sort = 2;
+// Controla la altura del gráfico (en píxeles)
+    protected static ?string $height = '200'; // Valor por defecto suele ser ~400px
 
     protected function getData(): array
     {
@@ -45,5 +47,19 @@ class PropertiesByTypeChart extends ChartWidget
     protected function getType(): string
     {
         return 'doughnut';
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            'maintainAspectRatio' => false,
+            'responsive' => true,
+            'aspectRatio' => 0.7, // Hace el gráfico más ancho que alto
+            'plugins' => [
+                'legend' => [
+                    'position' => 'bottom',
+                ],
+            ],
+        ];
     }
 }
