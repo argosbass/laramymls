@@ -20,6 +20,13 @@ use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 
 use Filament\Navigation\NavigationItem;
 
+use App\Console\Commands\ImportPropertyPhotosBatch;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
+use Filament\Notifications\Notification;
+
+
+
 class PropertyResource extends Resource
 {
     protected static ?string $model = Property::class;
@@ -167,6 +174,7 @@ class PropertyResource extends Resource
                                  ->columnSpanFull(),
                              */
 
+                            /*
                             SpatieMediaLibraryFileUpload::make('gallery')
                                 ->collection('gallery')
                                 ->multiple()
@@ -176,7 +184,36 @@ class PropertyResource extends Resource
                                 ->openable()
                                 ->previewable()
                                 ->panelLayout('grid')
+                                ->columnSpanFull()*/
+
+                            SpatieMediaLibraryFileUpload::make('gallery')
+                                ->collection('gallery')
+                                ->multiple()
+                                ->image()
+                                ->responsiveImages()
+                                ->reorderable()
+                                ->openable()
+                                ->downloadable()
+                                ->previewable()
+                                ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp'])
+                                ->maxFiles(20)
+                                ->maxSize(10240)
+                                ->panelLayout('grid')
+                                ->columns([
+                                    'sm' => 2,
+                                    'lg' => 3,
+                                    'xl' => 4,
+                                ])
                                 ->columnSpanFull()
+                                ->disk('public')
+                                ->visibility('public')
+                                ->directory('property-gallery')
+                                ->conversion('thumb')
+                                ->reactive() // IMPORTANTE: Hace que el campo reaccione a cambios
+                                ->afterStateUpdated(fn ($component) => $component->getContainer()->getLivewire()->dispatch('refreshGallery'))
+                                ->helperText('Property Photos')
+
+
                         ])
                             ->columns(3),
 
@@ -332,6 +369,30 @@ class PropertyResource extends Resource
                 Tables\Filters\SelectFilter::make('author.name')->relationship('author', 'name'),
             ])
             ->actions([
+
+
+                Action::make('migratePhotos')
+                    ->label('Migrate Photos')
+                    ->icon('heroicon-o-photo')
+                    ->visible(fn($record) => DB::table('property_photos')
+                        ->where('property_id', $record->id)
+                        ->whereNull('photo_alt')
+                        ->exists()
+                    )
+                    ->requiresConfirmation()
+                    ->action(function ($record) {
+                        Artisan::call(ImportPropertyPhotosBatch::class, [
+                            '--property-id' => $record->id,
+                        ]);
+
+                        Notification::make()
+                            ->title('Migrate Photos Complete')
+                            ->body("Photos of property #{$record->id} was finished.")
+                            ->success()
+                            ->send();
+                    }),
+
+
                 Action::make('view')
                     ->label('View')
                     ->icon('heroicon-o-eye')
