@@ -378,56 +378,53 @@
             });
 
             // Manejar cambios para Livewire
-            document.getElementById('typeId').addEventListener('change', function(e) {
-            @this.set('typeId', e.target.value);
-            });
+            //document.getElementById('typeId').addEventListener('change', function(e) {
+            //@this.set('typeId', e.target.value);
+            //});
 
-            document.getElementById('statusId').addEventListener('change', function(e) {
-            @this.set('statusId', e.target.value);
-            });
+            //document.getElementById('statusId').addEventListener('change', function(e) {
+            //@this.set('statusId', e.target.value);
+            //});
 
-            document.getElementById('locationId').addEventListener('change', function(e) {
-            @this.set('locationId', e.target.value);
-            });
+            //document.getElementById('locationId').addEventListener('change', function(e) {
+            //@this.set('locationId', e.target.value);
+            //});
 
-            document.getElementById('year').addEventListener('change', function(e) {
-            @this.set('year', e.target.value);
-            });
+            //document.getElementById('year').addEventListener('change', function(e) {
+            //@this.set('year', e.target.value);
+            //});
 
             // Establecer valores actuales si existen
-            const currentTypeId = '{{ $typeId ?? "" }}';
-            const currentStatusId = '{{ $statusId ?? "" }}';
-            const currentLocationId = '{{ $locationId ?? "" }}';
-            const currentYear = '{{ $year ?? "" }}';
 
-            if (currentTypeId) {
-                typeChoices.setChoiceByValue(currentTypeId);
-            }
-            if (currentStatusId) {
-                statusChoices.setChoiceByValue(currentStatusId);
-            }
-            if (currentLocationId) {
-                locationChoices.setChoiceByValue(currentLocationId);
-            }
-            if (currentYear) {
-                yearChoices.setChoiceByValue(currentYear);
-            }
+
+            //if (currentTypeId) {
+            //    typeChoices.setChoiceByValue(currentTypeId);
+            //}
+            //if (currentStatusId) {
+            //    statusChoices.setChoiceByValue(currentStatusId);
+            //}
+            //if (currentLocationId) {
+            //    locationChoices.setChoiceByValue(currentLocationId);
+            //}
+            //if (currentYear) {
+            //    yearChoices.setChoiceByValue(currentYear);
+            //}
         }
 
         // Reinicializar cuando Livewire actualice el componente
-        document.addEventListener('livewire:update', function () {
-            setTimeout(() => {
-                initializeChoices();
-            }, 100);
-        });
+        //document.addEventListener('livewire:update', function () {
+        //    setTimeout(() => {
+        //        initializeChoices();
+        //    }, 100);
+        //});
 
         // Para versiones más nuevas de Livewire
-        if (typeof Livewire !== 'undefined') {
-            Livewire.hook('message.processed', (message, component) => {
-                setTimeout(() => {
-                    initializeChoices();
-                }, 100);
-            });
-        }
+        //if (typeof Livewire !== 'undefined') {
+        //    Livewire.hook('message.processed', (message, component) => {
+         //       setTimeout(() => {
+         //           initializeChoices();
+         //       }, 100);
+         //   });
+        //}
     </script>
 @endpush

@@ -69,8 +69,25 @@ class PropertySearchForm extends Component
         $results = Property::query()
             ->when($this->title, fn($q) => $q->where('property_title', 'like', '%' . $this->title . '%'))
             ->when($this->propertyId, fn($q) => $q->where('id', $this->propertyId))
-            ->when($this->typeId, fn($q) => $q->where('property_type_id', $this->typeId))
-            ->when($this->statusId, fn($q) => $q->where('property_status_id', $this->statusId))
+
+            ->when(
+                $this->typeId &&
+                isset($this->typeId['value']) &&
+                $this->typeId['value'] !== '' &&
+                $this->typeId['value'] !== 'all',
+                fn($q) => $q->where('property_type_id', $this->typeId['value'])
+            )
+
+            ->when(
+                $this->statusId &&
+                isset($this->statusId['value']) &&
+                $this->statusId['value'] !== '' &&
+                $this->statusId['value'] !== 'all',
+                fn($q) => $q->where('property_status_id', $this->statusId['value'])
+            )
+
+
+
             ->when($this->getLocationIdsToSearch(), function ($q, $ids) {
                 $q->whereIn('property_location_id', $ids);
             })
@@ -84,7 +101,16 @@ class PropertySearchForm extends Component
             ->when($this->buildingTo, fn($q) => $q->where('property_building_size_m2', '<=', $this->buildingTo))
             ->when($this->lotFrom, fn($q) => $q->where('property_lot_size_m2', '>=', $this->lotFrom))
             ->when($this->lotTo, fn($q) => $q->where('property_lot_size_m2', '<=', $this->lotTo))
-            ->when($this->year, fn($q) => $q->whereYear('property_added_date', $this->year))
+            //->when($this->year, fn($q) => $q->whereYear('property_added_date', $this->year))
+
+            ->when(
+                $this->year &&
+                isset($this->year['value']) &&
+                $this->year['value'] !== '' &&
+                $this->year['value'] !== 'all',
+                fn($q) => $q->whereYear('property_added_date', $this->year['value'])
+            )
+
             ->when(count($this->features), function ($q) {
                 foreach ($this->features as $fid) {
                     $q->whereHas('features', fn($q) => $q->where('property_features.id', $fid));
@@ -103,6 +129,8 @@ class PropertySearchForm extends Component
             'results'
         ));
     }
+
+
 
     public function search()
     {
@@ -126,12 +154,13 @@ class PropertySearchForm extends Component
             return null;
         }
 
-        $location = PropertyLocations::find($this->locationId);
+        $location = PropertyLocations::where('id', $this->locationId)->first();
 
         if (!$location) {
             return null;
         }
 
-        return $location->descendantsAndSelf($this->locationId)->pluck('id')->toArray();
+        return PropertyLocations::descendantsAndSelf($this->locationId)->pluck('id')->toArray();
+
     }
 }
