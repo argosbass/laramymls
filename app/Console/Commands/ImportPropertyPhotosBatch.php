@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
@@ -15,6 +14,10 @@ class ImportPropertyPhotosBatch extends Command
 
     public function handle()
     {
+        // Aumentar límites para el servidor
+        ini_set('memory_limit', '512M');
+        set_time_limit(300);
+
         $propertyId = $this->option('property-id');
 
         if ($propertyId) {
@@ -96,7 +99,7 @@ class ImportPropertyPhotosBatch extends Command
     }
 
     /**
-     * Procesa una foto individual
+     * Procesa una foto individual con descarga manual
      */
     protected function processPhoto($photo, $property)
     {
@@ -115,22 +118,7 @@ class ImportPropertyPhotosBatch extends Command
             return false;
         }
 
-
         $fileName = $this->generateFileName($cleanUrl);
-
-        $fileName = basename(parse_url($cleanUrl, PHP_URL_PATH));
-        $fileName = str_replace('%20', '', $fileName);
-        $fileName = str_replace('%21', '', $fileName);
-        $fileName = str_replace('%22', '', $fileName);
-        $fileName = str_replace('%23', '', $fileName);
-        $fileName = str_replace('%24', '', $fileName);
-        $fileName = str_replace('%25', '', $fileName);
-        $fileName = str_replace('%26', '', $fileName);
-        $fileName = str_replace('%27', '', $fileName);
-        $fileName = str_replace('%28', '', $fileName);
-        $fileName = str_replace('%29', '', $fileName);
-        $fileName = str_replace(' ', '', $fileName);
-
 
         // Evita duplicados
         if ($property->getMedia('gallery')->where('file_name', $fileName)->isNotEmpty()) {
@@ -139,21 +127,100 @@ class ImportPropertyPhotosBatch extends Command
             return true;
         }
 
+        // Descargar imagen manualmente
+        $tempFile = $this->downloadImage($cleanUrl);
+
+        if (!$tempFile) {
+            $this->warn("⚠️ No se pudo descargar: {$cleanUrl}");
+            $this->markAsProcessed($photo->id);
+            return false;
+        }
+
         try {
             $property
-                ->addMediaFromUrl($cleanUrl)
+                ->addMedia($tempFile)
                 ->usingFileName($fileName)
                 ->withResponsiveImages()
                 ->toMediaCollection('gallery');
+
+            // Limpiar archivo temporal
+            unlink($tempFile);
 
             $this->info("✅ Foto importada: {$fileName} en propiedad {$property->id}");
             $this->markAsProcessed($photo->id);
             return true;
 
         } catch (\Exception $e) {
+            // Limpiar archivo temporal en caso de error
+            if (file_exists($tempFile)) {
+                unlink($tempFile);
+            }
             $this->error("❌ Error con {$photo->photo_url}: " . $e->getMessage());
             return false;
         }
+    }
+
+    /**
+     * Descarga imagen usando cURL con configuración robusta
+     */
+    protected function downloadImage($url)
+    {
+        $this->info("📥 Descargando: {$url}");
+
+        $ch = curl_init();
+
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_USERAGENT => 'Mozilla/5.0 (compatible; PropertyImporter/1.0)',
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_MAXREDIRS => 3,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        ]);
+
+        $data = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+
+        curl_close($ch);
+
+        if ($error) {
+            $this->error("❌ cURL Error: {$error}");
+            return false;
+        }
+
+        if ($httpCode !== 200) {
+            $this->error("❌ HTTP Error: {$httpCode}");
+            return false;
+        }
+
+        if (!$data) {
+            $this->error("❌ No se recibieron datos");
+            return false;
+        }
+
+        // Verificar que sea realmente una imagen
+        if (!str_contains($contentType, 'image/')) {
+            $this->error("❌ Tipo de contenido no válido: {$contentType}");
+            return false;
+        }
+
+        // Crear archivo temporal
+        $tempFile = tempnam(sys_get_temp_dir(), 'photo_');
+        $written = file_put_contents($tempFile, $data);
+
+        if ($written === false) {
+            $this->error("❌ No se pudo escribir archivo temporal");
+            return false;
+        }
+
+        $this->info("✅ Descargado: " . number_format(strlen($data)) . " bytes");
+        return $tempFile;
     }
 
     /**
@@ -175,7 +242,19 @@ class ImportPropertyPhotosBatch extends Command
     protected function generateFileName($url)
     {
         $fileName = basename(parse_url($url, PHP_URL_PATH));
-        $fileName = str_replace(['%20', ' '], '', $fileName);
+
+        // Limpiar caracteres especiales de URL
+        $fileName = str_replace('%20', '', $fileName);
+        $fileName = str_replace('%21', '', $fileName);
+        $fileName = str_replace('%22', '', $fileName);
+        $fileName = str_replace('%23', '', $fileName);
+        $fileName = str_replace('%24', '', $fileName);
+        $fileName = str_replace('%25', '', $fileName);
+        $fileName = str_replace('%26', '', $fileName);
+        $fileName = str_replace('%27', '', $fileName);
+        $fileName = str_replace('%28', '', $fileName);
+        $fileName = str_replace('%29', '', $fileName);
+        $fileName = str_replace(' ', '', $fileName);
 
         // Si no tiene extensión, añadir .jpg por defecto
         if (!pathinfo($fileName, PATHINFO_EXTENSION)) {
