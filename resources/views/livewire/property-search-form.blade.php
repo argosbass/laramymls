@@ -35,7 +35,7 @@
 @endpush
 
 <div class="space-y-6 w-full">
-    <form wire:submit.prevent="search">
+
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
             <div>
@@ -221,12 +221,21 @@
         </div>
 
         <div class="mt-6">
-            <button type="submit"
-                    class="inline-flex items-center px-4 py-2 bg-primary-600 border border-transparent rounded-md font-semibold text-white hover:bg-primary-700 focus:outline-none focus:ring focus:ring-primary-300 active:bg-primary-900 transition">
+
+            <button
+                type="button"
+                wire:click="search"
+                    class="bg-primary-600 text-white px-4 py-2 rounded shadow hover:bg-primary-700 transition">
                 Search
             </button>
+            &nbsp;
+            <button
+                type="button"
+                onclick="resetFilters()"
+                class="bg-gray-400 text-white px-4 py-2 rounded-md shadow hover:bg-red-600 transition">
+                Reset
+            </button>
         </div>
-    </form>
 
     {{-- Tabla de resultados --}}
     @if ($results && $results->count())
@@ -344,37 +353,33 @@
             // Inicializar Choices para Type
             typeChoices = new Choices('#typeId', {
                 searchEnabled: true,
-                placeholder: true,
-                placeholderValue: 'All',
-                allowHTML: true,
-                shouldSort: false
+                placeholder: false,
+                placeholderValue: '',
+                allowHTML: false
             });
 
             // Inicializar Choices para Status
             statusChoices = new Choices('#statusId', {
                 searchEnabled: true,
-                placeholder: true,
-                placeholderValue: 'All',
-                allowHTML: false,
-                shouldSort: false
+                placeholder: false,
+                placeholderValue: '',
+                allowHTML: false
             });
 
             // Inicializar Choices para Location
             locationChoices = new Choices('#locationId', {
                 searchEnabled: true,
-                placeholder: true,
-                placeholderValue: 'All',
-                allowHTML: true, // Permitir HTML para las indentaciones
-                shouldSort: false
+                placeholder: false,
+                placeholderValue: '',
+                allowHTML: true
             });
 
             // Inicializar Choices para Year
             yearChoices = new Choices('#year', {
                 searchEnabled: true,
-                placeholder: true,
-                placeholderValue: 'All',
-                allowHTML: false,
-                shouldSort: false
+                placeholder: false,
+                placeholderValue: '',
+                allowHTML: false
             });
 
             // Manejar cambios para Livewire
@@ -426,5 +431,43 @@
          //       }, 100);
          //   });
         //}
+        function resetFilters() {
+            // Resetear inputs de texto y número
+            document.querySelectorAll('input[type="text"], input[type="number"]').forEach(el => el.value = '');
+
+            // Resetear checkboxes
+            document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+
+            // Resetear Choices.js
+            typeChoices.setChoiceByValue('');
+            statusChoices.setChoiceByValue('');
+            locationChoices.setChoiceByValue('');
+            yearChoices.setChoiceByValue('');
+
+            // Resetear en Livewire (IMPORTANTE)
+        @this.set('title', '');
+        @this.set('propertyId', '');
+        @this.set('priceFrom', '');
+        @this.set('priceTo', '');
+        @this.set('bedroomsFrom', '');
+        @this.set('bedroomsTo', '');
+        @this.set('bathroomsFrom', '');
+        @this.set('bathroomsTo', '');
+        @this.set('buildingFrom', '');
+        @this.set('buildingTo', '');
+        @this.set('lotFrom', '');
+        @this.set('lotTo', '');
+        @this.set('features', []); // checkboxes
+
+        @this.set('typeId', '');
+        @this.set('statusId', '');
+        @this.set('locationId', '');
+        @this.set('year', '');
+
+        @this.call('resetFilters');
+
+        @this.call('search');
+        }
+
     </script>
 @endpush

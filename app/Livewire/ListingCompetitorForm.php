@@ -37,18 +37,37 @@ class ListingCompetitorForm extends Component
 
     public function render()
     {
-//        $companies = RealEstateCompany::all();
+
         $companies = RealEstateCompany::orderBy('company_name')->get();
         $statuses = PropertyStatus::all();
 
         $results = PropertyListingCompetitor::query()
-            ->when($this->companyId, fn($q) => $q->where('real_estate_company_id', $this->companyId))
+
+            ->when(
+        $this->companyId &&
+        isset($this->companyId['value']) &&
+        $this->companyId['value'] !== '' &&
+        $this->companyId['value'] !== 'all',
+        fn($q) => $q->where('real_estate_company_id', $this->companyId['value'])
+            )
+
+
+
+           ->when(
+               $this->statusId
+               && isset($this->statusId['value'])
+               && $this->statusId['value'] !== ''
+               && $this->statusId['value'] !== 'all',
+               function ($q) {
+                   $q->whereHas('property', fn($q) =>
+                   $q->where('property_status_id', $this->statusId['value'])
+                   );
+               }
+           )
+
             ->when($this->referenceLink, fn($q) => $q->where('competitor_property_link', 'like', '%' . $this->referenceLink . '%'))
-            ->when($this->statusId, function ($q) {
-                $q->whereHas('property', fn($q) =>
-                $q->where('property_status_id', $this->statusId)
-                );
-            })
+
+
             ->join('real_estate_companies', 'property_listing_competitors.real_estate_company_id', '=', 'real_estate_companies.id')
             ->orderBy('real_estate_companies.company_name') // Ordena por nombre de compañía
             ->with(['company', 'property.status'])
@@ -64,5 +83,16 @@ class ListingCompetitorForm extends Component
     public function search()
     {
         $this->resetPage();
+    }
+
+    public function resetFilters()
+    {
+        $this->reset([
+            'companyId', 'statusId',
+            'referenceLink'
+        ]);
+
+
+        $this->search(); // para refrescar resultados vacíos
     }
 }

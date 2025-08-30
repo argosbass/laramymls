@@ -24,6 +24,7 @@
             border-color: rgb(147 197 253) !important;
             box-shadow: 0 0 0 3px rgb(147 197 253 / 0.1) !important;
         }
+
         .choices[data-type*=select-one]::after {
             right: 15.5px;
         }
@@ -33,7 +34,8 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div wire:ignore>
             <label class="block text-sm font-medium">Listing Company</label>
-            <select wire:model="companyId" id="company-select" class="select2 block w-full rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300">
+            <select wire:model="companyId" id="company-select"
+                    class="select2 block w-full rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300">
                 <option value="">-- All --</option>
                 @foreach($companies as $company)
                     <option value="{{ $company->id }}">{{ $company->company_name }}</option>
@@ -43,7 +45,8 @@
 
         <div wire:ignore>
             <label class="block text-sm font-medium">Property Status</label>
-            <select wire:model="statusId" id="status-select" class="select2 block w-full rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300">
+            <select wire:model="statusId" id="status-select"
+                    class="select2 block w-full rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300">
                 <option value="">-- All --</option>
                 @foreach($statuses as $status)
                     <option value="{{ $status->id }}">{{ $status->status_name }}</option>
@@ -53,7 +56,8 @@
 
         <div>
             <label class="block text-sm font-medium">Reference URL</label>
-            <input type="text" wire:model.debounce.500ms="referenceLink" class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300" >
+            <input type="text" wire:model.debounce.500ms="referenceLink"
+                   class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300">
         </div>
 
         <div class="flex items-end">
@@ -61,7 +65,20 @@
                     class="bg-primary-600 text-white px-4 py-2 rounded shadow hover:bg-primary-700 transition">
                 Search
             </button>
+            &nbsp;
+            <button
+                type="button"
+                onclick="resetFilters()"
+                class="bg-gray-400 text-white px-4 py-2 rounded-md shadow hover:bg-red-600 transition">
+                Reset
+            </button>
+
         </div>
+    </div>
+
+
+    <div class="mt-4">
+        {{ $results->links() }}
     </div>
 
     <table class="w-full table-auto text-sm text-left border border-gray-300">
@@ -103,13 +120,13 @@
                 <td class="border px-3 py-2 space-x-2">
                     <a href="{{ route('filament.admin.resources.properties.view', ['record' => $competitor->property->id]) }}"
                        class="fi-link group/link relative inline-flex items-center justify-center outline-none fi-size-sm fi-link-size-sm gap-1 fi-color-custom fi-color-primary fi-ac-action fi-ac-link-action">
-                        <x-heroicon-o-eye class="w-5 h-5" />
+                        <x-heroicon-o-eye class="w-5 h-5"/>
                         View
                     </a>
 
                     <a href="{{ route('filament.admin.resources.properties.edit', ['record' => $competitor->property->id]) }}"
                        class="fi-link group/link relative inline-flex items-center justify-center outline-none fi-size-sm fi-link-size-sm gap-1 fi-color-custom fi-color-primary fi-ac-action fi-ac-link-action">
-                        <x-heroicon-o-pencil class="w-5 h-5" />
+                        <x-heroicon-o-pencil class="w-5 h-5"/>
                         Edit
                     </a>
                 </td>
@@ -130,29 +147,43 @@
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/scripts/choices.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const companySelect = new Choices('#company-select', {
+        let companySelect, statusSelect;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            companySelect = new Choices('#company-select', {
                 searchEnabled: true,
                 placeholder: false,
                 placeholderValue: '',
                 allowHTML: false
             });
 
-            const statusSelect = new Choices('#status-select', {
+            statusSelect = new Choices('#status-select', {
                 searchEnabled: true,
                 placeholder: false,
                 placeholderValue: '',
                 allowHTML: false
             });
 
-            // Manejar cambios para Livewire
-            companySelect.passedElement.element.addEventListener('change', function(e) {
-            @this.set('companyId', e.target.value);
-            });
 
-            statusSelect.passedElement.element.addEventListener('change', function(e) {
-            @this.set('statusId', e.target.value);
-            });
         });
+
+
+        function resetFilters() {
+            // Resetear selects
+            companySelect.setChoiceByValue('');
+            statusSelect.setChoiceByValue('');
+
+            // Resetear input de referencia
+            document.querySelector('input[wire\\:model\\.debounce\\.500ms="referenceLink"]').value = '';
+
+        @this.set('referenceLink', '');
+        @this.set('companyId', '');
+        @this.set('statusId', '');
+
+        @this.call('resetFilters');
+
+            // Ejecutar búsqueda
+        @this.call('search');
+        }
     </script>
 @endpush

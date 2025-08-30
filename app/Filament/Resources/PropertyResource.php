@@ -10,22 +10,16 @@ use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
 use App\Filament\Resources\PropertyResource\Pages;
-//use App\Filament\Resources\PropertyResource\RelationManagers\SoldReferencesRelationManager;
 use App\Models\PropertyLocations;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Tabs\Tab;
-
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-
 use Filament\Navigation\NavigationItem;
-
 use App\Console\Commands\ImportPropertyPhotosBatch;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
 use Filament\Notifications\Notification;
-
-
 
 class PropertyResource extends Resource
 {
@@ -51,12 +45,11 @@ class PropertyResource extends Resource
         return $form
             ->schema([
                 Tabs::make('Property Tabs')
-                    ->columnSpanFull() // Ocupa todo el ancho del formulario
+                    ->columnSpanFull()
                     ->tabs([
                         Tab::make('Basic Property Details')->schema([
                             Forms\Components\Section::make()
                                 ->schema([
-
                                     Forms\Components\DatePicker::make('property_added_date')
                                         ->label('Date property added')
                                         ->default(today())
@@ -125,19 +118,12 @@ class PropertyResource extends Resource
                         ])->columns(3),
 
                         Tab::make('Property Location')->schema([
-                            // Forms\Components\Select::make('property_location_id')
-                            //     ->label('Location')
-                            //     ->relationship('location', 'location_name')
-                            //     ->preload()
-                            //     ->nullable(),
-
-
                             Forms\Components\Select::make('property_location_id')
                                 ->label('Location')
                                 ->relationship('location', 'location_name')
                                 ->options(function () {
                                     return PropertyLocations::query()
-                                        ->orderBy('_lft') // si usás NestedSet
+                                        ->orderBy('_lft')
                                         ->get()
                                         ->mapWithKeys(function ($location) {
                                             return [
@@ -149,7 +135,6 @@ class PropertyResource extends Resource
                                 ->preload()
                                 ->nullable(),
 
-
                             Forms\Components\TextInput::make('property_geolocation_lat')->label('Property Latitude')->numeric()->id('latitude-input'),
                             Forms\Components\TextInput::make('property_geolocation_lng')->label('Property Longitude')->numeric()->id('longitude-input'),
                             Forms\Components\Hidden::make('property_geolocation_lat_sin'),
@@ -159,33 +144,6 @@ class PropertyResource extends Resource
                         ]),
 
                         Tab::make('Property Photos')->schema([
-                            /*
-                              Forms\Components\FileUpload::make('temp_images')
-                                 ->label('Upload Photos')
-                                 ->disk('public')
-                                 ->visibility('public')
-                                 ->multiple()
-                                 ->reorderable()
-                                 ->preserveFilenames()
-                                 ->directory('temp-property-photos')
-                                 ->previewable()
-                                 ->openable()
-                                 ->downloadable()
-                                 ->columnSpanFull(),
-                             */
-
-                            /*
-                            SpatieMediaLibraryFileUpload::make('gallery')
-                                ->collection('gallery')
-                                ->multiple()
-                                ->image()
-                                ->responsiveImages()
-                                ->reorderable()
-                                ->openable()
-                                ->previewable()
-                                ->panelLayout('grid')
-                                ->columnSpanFull()*/
-
                             SpatieMediaLibraryFileUpload::make('gallery')
                                 ->collection('gallery')
                                 ->multiple()
@@ -209,20 +167,17 @@ class PropertyResource extends Resource
                                 ->visibility('public')
                                 ->directory('property-gallery')
                                 ->conversion('thumb')
-                                ->reactive() // IMPORTANTE: Hace que el campo reaccione a cambios
+                                ->reactive()
                                 ->afterStateUpdated(fn ($component) => $component->getContainer()->getLivewire()->dispatch('refreshGallery'))
                                 ->helperText('Property Photos')
-
-
                         ])
                             ->columns(3),
 
                         Tab::make('Sold References')->schema([
                             Repeater::make('soldReferences')
                                 ->label('Sold References List')
-                                ->relationship('soldReferences') // clave para cargar la relación
+                                ->relationship('soldReferences')
                                 ->schema([
-
                                     Forms\Components\hidden::make('nid')
                                         ->default(fn ($state) => $state ?? 0),
 
@@ -245,16 +200,13 @@ class PropertyResource extends Resource
                                             'codeBlock',
                                         ])->columnSpanFull(),
                                 ])
-                                ->columns(2) // columnas internas del repeater
+                                ->columns(2)
                                 ->defaultItems(0)
                                 ->itemLabel(fn ($state) => $state['sold_reference_date'] ?? 'New Sold Reference')
                                 ->addActionLabel('+ Add Sold Reference')
                                 ->collapsible()
-                                ->columnSpanFull(), // para que ocupe todo el ancho dentro del tab
+                                ->columnSpanFull(),
                         ])->columns(3),
-
-
-
 
                         Tab::make('Notes to Agent')->schema([
                             Forms\Components\RichEditor::make('property_notes_to_agents')
@@ -270,9 +222,7 @@ class PropertyResource extends Resource
                                 ])->columnSpanFull(),
                         ])->columns(3),
 
-
                         Tab::make('Where Listed')->schema([
-
                             Repeater::make('listingCompetitors')
                                 ->label('Listing Competitors List')
                                 ->relationship('listingCompetitors')
@@ -314,36 +264,23 @@ class PropertyResource extends Resource
                                 ->addActionLabel('+ Add Listing Competitor')
                                 ->collapsible()
                                 ->columnSpanFull()
-
-
-
                         ])->columns(3),
 
                         Tab::make('General')->schema([
-
                             Forms\Components\TextInput::make('nid')->hidden(),
                             Forms\Components\Toggle::make('published'),
 
                             Forms\Components\Select::make('user_id')
                                 ->label('Author')
-                                ->relationship('author', 'name') // usa la relación que creaste en el modelo Property
+                                ->relationship('author', 'name')
                                 ->searchable()
                                 ->preload(),
 
                             Forms\Components\TextInput::make('slug')
                                 ->label('URL')
                                 ->default(fn ($record) => $record ? url('/property-listing/' . $record->slug) : null)
-
-
                                 ->visible(fn ($record) => filled($record?->slug)),
-
-
-
                         ]),
-
-
-
-
                     ]),
             ]);
     }
@@ -364,13 +301,16 @@ class PropertyResource extends Resource
                 Tables\Columns\BooleanColumn::make('published'),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('property_status_id')->relationship('status', 'status_name'),
-                Tables\Filters\SelectFilter::make('property_type_id')->relationship('type', 'type_name'),
-                Tables\Filters\SelectFilter::make('author.name')->relationship('author', 'name'),
-            ])
+                Tables\Filters\SelectFilter::make('property_status_id')
+                    ->relationship('status', 'status_name'),
+                Tables\Filters\SelectFilter::make('property_type_id')
+                    ->relationship('type', 'type_name'),
+                Tables\Filters\SelectFilter::make('author.name')
+                    ->relationship('author', 'name'),
+            ], layout: Tables\Enums\FiltersLayout::AboveContent) // 👈 Esto hace que se vean como inputs arriba
+            ->filtersFormColumns(2)
+            ->filtersFormWidth('full')
             ->actions([
-
-
                 Action::make('migratePhotos')
                     ->label('Migrate Photos')
                     ->icon('heroicon-o-photo')
@@ -391,7 +331,6 @@ class PropertyResource extends Resource
                             ->success()
                             ->send();
                     }),
-
 
                 Action::make('view')
                     ->label('View')
@@ -418,17 +357,12 @@ class PropertyResource extends Resource
     public static function getNavigationItems(): array
     {
         return [
-            // Este es el ítem de navegación normal del recurso
             parent::getNavigationItems()[0],
-
-            // Este es el ítem personalizado
             NavigationItem::make('Add Property')
-                ->url(static::getUrl('create')) // link al formulario de creación
+                ->url(static::getUrl('create'))
                 ->icon('heroicon-o-plus')
-                ->group('Search Tools') // mismo grupo
-                ->sort(1), // posición dentro del grupo
+                ->group('Search Tools')
+                ->sort(1),
         ];
     }
-
-
 }

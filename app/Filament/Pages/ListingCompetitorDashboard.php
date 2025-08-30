@@ -9,6 +9,8 @@ class ListingCompetitorDashboard extends Page
     protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
     protected static string $view = 'filament.pages.listing-competitor-dashboard';
 
-    protected static ?string $title = 'Does it exists';
+    protected static ?string $title = 'Does it exist';
     protected static ?string $navigationGroup = 'Search Tools';
+
+
 }

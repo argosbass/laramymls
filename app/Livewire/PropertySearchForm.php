@@ -130,7 +130,21 @@ class PropertySearchForm extends Component
         ));
     }
 
+    public function resetFilters()
+    {
+        $this->reset([
+            'title', 'propertyId',
+            'typeId', 'statusId', 'locationId', 'year',
+            'priceFrom', 'priceTo',
+            'bedroomsFrom', 'bedroomsTo',
+            'bathroomsFrom', 'bathroomsTo',
+            'buildingFrom', 'buildingTo',
+            'lotFrom', 'lotTo',
+            'features',
+        ]);
 
+        $this->search(); // para refrescar resultados vacíos
+    }
 
     public function search()
     {
