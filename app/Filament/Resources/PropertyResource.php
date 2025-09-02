@@ -301,11 +301,31 @@ class PropertyResource extends Resource
                 Tables\Columns\BooleanColumn::make('published'),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('property_status_id')
+                Tables\Filters\Filter::make('property_title')
+                    ->form([
+                        Forms\Components\TextInput::make('property_title')
+                            ->label('Property Title')
+                            ->placeholder('Search by title...'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        return $query->when(
+                            $data['property_title'] ?? null,
+                            fn($q, $value) => $q->where('property_title', 'like', "%{$value}%")
+                        );
+                    }),
+
+                Tables\Filters\SelectFilter::make('published')
+                    ->label('Published')
+                    ->options([
+                        1 => 'Yes',
+                        0 => 'No',
+                    ]),
+
+                Tables\Filters\SelectFilter::make('property_status_id')->label('Property Status')
                     ->relationship('status', 'status_name'),
-                Tables\Filters\SelectFilter::make('property_type_id')
+                Tables\Filters\SelectFilter::make('property_type_id')->label('Property Type')
                     ->relationship('type', 'type_name'),
-                Tables\Filters\SelectFilter::make('author.name')
+                Tables\Filters\SelectFilter::make('author.name')->label('Author')
                     ->relationship('author', 'name'),
             ], layout: Tables\Enums\FiltersLayout::AboveContent) // 👈 Esto hace que se vean como inputs arriba
             ->filtersFormColumns(2)
@@ -335,8 +355,8 @@ class PropertyResource extends Resource
                 Action::make('view')
                     ->label('View')
                     ->icon('heroicon-o-eye')
-                    ->url(fn ($record) => PropertyResource::getUrl('view', ['record' => $record])),
-                Tables\Actions\EditAction::make(),
+                    ->url(fn ($record) => PropertyResource::getUrl('view', ['record' => $record]))->openUrlInNewTab(),
+                Tables\Actions\EditAction::make()->openUrlInNewTab(),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

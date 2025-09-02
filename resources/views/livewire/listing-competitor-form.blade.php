@@ -118,13 +118,13 @@
                     @endif
                 </td>
                 <td class="border px-3 py-2 space-x-2">
-                    <a href="{{ route('filament.admin.resources.properties.view', ['record' => $competitor->property->id]) }}"
+                    <a target="_blank" href="{{ route('filament.admin.resources.properties.view', ['record' => $competitor->property->id]) }}"
                        class="fi-link group/link relative inline-flex items-center justify-center outline-none fi-size-sm fi-link-size-sm gap-1 fi-color-custom fi-color-primary fi-ac-action fi-ac-link-action">
                         <x-heroicon-o-eye class="w-5 h-5"/>
                         View
                     </a>
 
-                    <a href="{{ route('filament.admin.resources.properties.edit', ['record' => $competitor->property->id]) }}"
+                    <a target="_blank" href="{{ route('filament.admin.resources.properties.edit', ['record' => $competitor->property->id]) }}"
                        class="fi-link group/link relative inline-flex items-center justify-center outline-none fi-size-sm fi-link-size-sm gap-1 fi-color-custom fi-color-primary fi-ac-action fi-ac-link-action">
                         <x-heroicon-o-pencil class="w-5 h-5"/>
                         Edit

@@ -288,7 +288,7 @@
 
                         <td class="px-2 py-1">
 
-                            <a href="{{ $property->slug
+                            <a target="_blank" href="{{ $property->slug
             ? route('property.public.show',     ['slug' => $property->slug])
             : route('property.public.showById', ['id' => $property->id]) }}"
                                class="text-primary-600 hover:underline font-semibold">
