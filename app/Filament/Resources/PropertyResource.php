@@ -63,6 +63,7 @@ class PropertyResource extends Resource
                                         ->searchable()
                                         ->preload()
                                         ->nullable(),
+                                        //->multiple(),
 
                                     Forms\Components\Select::make('property_status_id')
                                         ->label('Status')
@@ -72,12 +73,9 @@ class PropertyResource extends Resource
                                         ->nullable(),
 
                                     Forms\Components\TextInput::make('property_bedrooms')->numeric(),
-                                    Forms\Components\TextInput::make('property_bathrooms_inner')->numeric(),
-                                    Forms\Components\TextInput::make('property_bathrooms')->numeric(),
+                                    Forms\Components\TextInput::make('property_bathrooms')->numeric()->step(0.5),
                                     Forms\Components\TextInput::make('property_price')->numeric(),
                                     Forms\Components\TextInput::make('property_hoa_fee')->numeric(),
-
-                                    Forms\Components\TextInput::make('property_building_size_m2')->label('Building Size M2')->suffix('m²')->numeric()->helperText('For inner use. Do not edit this field manually.'),
                                     Forms\Components\TextInput::make('property_building_size_area_quantity')->label('Building Size')->numeric(),
                                     Forms\Components\Select::make('property_building_size_area_unit')->label('Building Size Unit')
                                         ->options([
@@ -85,7 +83,6 @@ class PropertyResource extends Resource
                                             'sqft' => 'sqft',
                                         ]),
 
-                                    Forms\Components\TextInput::make('property_lot_size_m2')->label('Lot Size M2')->suffix('m²')->numeric()->helperText('For inner use. Do not edit this field manually.'),
                                     Forms\Components\TextInput::make('property_lot_size_area_quantity')->label('Lot Size')->numeric(),
                                     Forms\Components\Select::make('property_lot_size_area_unit')->label('Lot Size Unit')
                                         ->options([
@@ -105,10 +102,18 @@ class PropertyResource extends Resource
                                         'orderedList',
                                         'blockquote',
                                         'codeBlock',
-                                    ])->columnSpan('full'),
+                                        'clearFormatting'
+                                    ])->columnSpan('full')
+                                    ,
 
                                     Forms\Components\TextInput::make('property_video')->url(),
                                     Forms\Components\TextInput::make('property_osnid')->numeric(),
+
+                                    Forms\Components\TextInput::make('property_bathrooms_inner')->numeric()->helperText('For inner use. Do not edit this field manually.')->readOnly(),
+                                    Forms\Components\TextInput::make('property_building_size_m2')->label('Building Size M2')->suffix('m²')->numeric()->helperText('For inner use. Do not edit this field manually.')->readOnly(),
+                                    Forms\Components\TextInput::make('property_lot_size_m2')->label('Lot Size M2')->suffix('m²')->numeric()->helperText('For inner use. Do not edit this field manually.')->readOnly(),
+
+
                                 ])->columns(2),
                         ])->columns(3),
 
@@ -135,8 +140,8 @@ class PropertyResource extends Resource
                                 ->preload()
                                 ->nullable(),
 
-                            Forms\Components\TextInput::make('property_geolocation_lat')->label('Property Latitude')->numeric()->id('latitude-input'),
-                            Forms\Components\TextInput::make('property_geolocation_lng')->label('Property Longitude')->numeric()->id('longitude-input'),
+                            Forms\Components\TextInput::make('property_geolocation_lat')->label('Property Latitude')->numeric()->id('latitude-input')->default("10.301872741595053"),
+                            Forms\Components\TextInput::make('property_geolocation_lng')->label('Property Longitude')->numeric()->id('longitude-input')->default("-85.83992471107912"),
                             Forms\Components\Hidden::make('property_geolocation_lat_sin'),
                             Forms\Components\Hidden::make('property_geolocation_lat_cos'),
                             Forms\Components\Hidden::make('property_geolocation_lng_rad'),
@@ -198,6 +203,7 @@ class PropertyResource extends Resource
                                             'orderedList',
                                             'blockquote',
                                             'codeBlock',
+                                            'clearFormatting'
                                         ])->columnSpanFull(),
                                 ])
                                 ->columns(2)
@@ -219,6 +225,7 @@ class PropertyResource extends Resource
                                     'orderedList',
                                     'blockquote',
                                     'codeBlock',
+                                    'clearFormatting'
                                 ])->columnSpanFull(),
                         ])->columns(3),
 
@@ -253,8 +260,15 @@ class PropertyResource extends Resource
                                     Forms\Components\RichEditor::make('competitor_notes')
                                         ->label('Notes')
                                         ->toolbarButtons([
-                                            'bold', 'italic', 'strike', 'link',
-                                            'bulletList', 'orderedList', 'blockquote', 'codeBlock',
+                                            'bold',
+                                            'italic',
+                                            'strike',
+                                            'link',
+                                            'bulletList',
+                                            'orderedList',
+                                            'blockquote',
+                                            'codeBlock',
+                                            'clearFormatting'
                                         ])
                                         ->columnSpanFull(),
                                 ])
