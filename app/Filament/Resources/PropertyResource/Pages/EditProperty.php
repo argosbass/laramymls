@@ -13,8 +13,19 @@ class EditProperty extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+
+            Actions\Action::make('view')
+                ->label('View Property')
+                ->icon('heroicon-o-eye')
+                ->url(fn () => PropertyResource::getUrl('view', ['record' => $this->record]))
+                ->openUrlInNewTab(),
+
+            Actions\DeleteAction::make()
+
         ];
+
+
+
     }
 
     protected function hasRelationManagersInTabs(): bool

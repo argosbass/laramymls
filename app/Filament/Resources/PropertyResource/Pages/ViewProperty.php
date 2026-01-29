@@ -11,6 +11,9 @@ use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\View;
 use Filament\Infolists\Components\ImageEntry;
 
+use Illuminate\Support\HtmlString;
+use Filament\Support\Facades\FilamentView;
+
 class ViewProperty extends ViewRecord
 {
     protected static string $resource = PropertyResource::class;
@@ -111,9 +114,7 @@ class ViewProperty extends ViewRecord
                         ]),
                         Grid::make(1)->schema([
                             TextEntry::make('property_notes_to_agents')->label('Notes to Agents'),
-                            TextEntry::make('property_body')->label('Description')->html()->extraAttributes([
-                                'class' => 'property-ul-enabled',
-                            ]),
+                            TextEntry::make('property_body')->label('Description')->html()->extraAttributes(['class' => 'mls-custom-rich-content']),
                             TextEntry::make('property_video')->label('Video (URL)'),
                             TextEntry::make('property_hoa_fee')->label('HOA Fee'),
                             TextEntry::make('property_osnid')->label('OSN ID'),
@@ -181,5 +182,28 @@ class ViewProperty extends ViewRecord
 
 
             ]);
+    }
+
+
+    public function mount(int | string $record): void
+    {
+        parent::mount($record);
+
+        FilamentView::registerRenderHook(
+            'panels::head.end',
+            fn () => new HtmlString('
+                <style>
+                    .mls-custom-rich-content ul {
+                        list-style: disc !important;
+                        padding-left: 1.5rem !important;
+                    }
+
+                    .mls-custom-rich-content ol {
+                        list-style: decimal !important;
+                        padding-left: 1.5rem !important;
+                    }
+                </style>
+            ')
+        );
     }
 }

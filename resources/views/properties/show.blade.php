@@ -40,6 +40,16 @@
     {
         height: auto;
     }
+
+    .mls-custom-rich-content ul {
+        list-style: disc !important;
+        padding-left: 1.5rem !important;
+    }
+
+    .mls-custom-rich-content ol {
+        list-style: decimal !important;
+        padding-left: 1.5rem !important;
+    }
 </style>
 
 <div class="section" style="background-color: #ccc; text-align: center">
@@ -89,7 +99,11 @@
         {{-- Description --}}
         <div>
             <h2 class="text-xl font-semibold mb-2">Description</h2>
-            <div class="prose max-w-none">{!! $property->property_body !!}</div>
+
+            <div class="mls-custom-rich-content prose max-w-none prose-ul:list-disc prose-ol:list-decimal prose-ul:pl-6 prose-ol:pl-6">
+                {!! $property->property_body !!}
+            </div>
+
         </div>
 
         {{-- Features --}}
@@ -177,6 +191,7 @@
             <div><span class="info-label">Price:</span> ${{ number_format($property->property_price, 2) }}</div>
             <div><span class="info-label">Status:</span> {{ $property->status?->status_name }}</div>
             <div><span class="info-label">Location:</span> {{ $property->location?->full_path  }}</div>
+            <div><span class="info-label">HOA Fee:</span> {{ $property->property_hoa_fee  }}</div>
         </div>
 
         {{-- Sold References --}}
