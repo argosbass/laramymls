@@ -144,7 +144,9 @@ class ImportPropertyPhotosBatch extends Command
                 ->toMediaCollection('gallery');
 
             // Limpiar archivo temporal
-            unlink($tempFile);
+            if (file_exists($tempFile)) {
+                unlink($tempFile);
+            }
 
             $this->info("✅ Foto importada: {$fileName} en propiedad {$property->id}");
             $this->markAsProcessed($photo->id);

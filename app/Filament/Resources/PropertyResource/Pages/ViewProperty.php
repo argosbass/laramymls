@@ -111,7 +111,9 @@ class ViewProperty extends ViewRecord
                         ]),
                         Grid::make(1)->schema([
                             TextEntry::make('property_notes_to_agents')->label('Notes to Agents'),
-                            TextEntry::make('property_body')->label('Description')->html(),
+                            TextEntry::make('property_body')->label('Description')->html()->extraAttributes([
+                                'class' => 'property-ul-enabled',
+                            ]),
                             TextEntry::make('property_video')->label('Video (URL)'),
                             TextEntry::make('property_hoa_fee')->label('HOA Fee'),
                             TextEntry::make('property_osnid')->label('OSN ID'),

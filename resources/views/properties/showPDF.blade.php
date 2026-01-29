@@ -186,13 +186,13 @@
 
 {{-- Notes to Agents --}}
 @if ($property->property_notes_to_agents)
-    <div class="section">
-        <h2>Notes To Agents</h2>
-        <div>{!! $property->property_notes_to_agents !!}</div>
-    </div>
-@endif
+    {{--    <div class="section">
+            <h2>Notes To Agents</h2>
+            <div>{!! $property->property_notes_to_agents !!}</div>
+        </div> --}}
+    @endif
 
-{{-- Photos as thumbnails at the end --}}
+    {{-- Photos as thumbnails at the end --}}
 @php
     $photos = $property->getMedia('gallery');
 @endphp
