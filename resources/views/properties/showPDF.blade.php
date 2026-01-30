@@ -128,7 +128,7 @@
 
 {{-- Sold References --}}
 @if ($property->soldReferences->count())
-    <div class="section">
+<!--     <div class="section">
         <h2>Sold References</h2>
         <table>
             <thead>
@@ -148,12 +148,12 @@
             @endforeach
             </tbody>
         </table>
-    </div>
+    </div>-->
 @endif
 
 {{-- Listing Competitors --}}
 @if ($property->listingCompetitors->count())
-    <div class="section">
+    <!--    <div class="section">
         <h2>Listing Competitors</h2>
         <table>
             <thead>
@@ -181,7 +181,7 @@
             @endforeach
             </tbody>
         </table>
-    </div>
+    </div> -->
 @endif
 
 {{-- Notes to Agents --}}

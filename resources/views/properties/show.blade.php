@@ -122,7 +122,7 @@
     {{-- Right Column --}}
     <div class="space-y-6">
 
-        @if (auth()->check())
+
 
             <h2 class="text-xl font-semibold border-b pb-1">Options</h2>
 
@@ -132,7 +132,7 @@
                 <x-heroicon-o-printer class="w-5 h-5" />
                 Print to PDF
             </a>
-
+        @if (auth()->check())
             {{-- Edit in Filament --}}
             <a href="{{ route('filament.admin.resources.properties.edit', ['record' => $property->id]) }}"
                class="inline-flex items-center gap-2 bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700">
