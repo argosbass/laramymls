@@ -250,14 +250,52 @@
             <table class="w-full table-auto text-sm text-left border border-gray-300">
                 <thead>
                 <tr class="bg-gray-100 text-xs uppercase">
-                    <th class="px-2 py-1">ID</th>
+                    <th class="px-2 py-1">   <button type="button"
+                                                     wire:click="sortByColumn('id')"
+                                                     class="flex items-center gap-1 uppercase text-xs hover:underline">
+                            ID
+                            @if($sortBy === 'id')
+                                <span class="text-[10px]">{{ $sortDir === 'asc' ? '▲' : '▼' }}</span>
+                            @else
+                                <span class="text-[10px]">{{  '▲▼'  }}</span>
+                            @endif
+                        </button></th>
                     <th class="px-2 py-1">Date Added</th>
                     <th class="px-2 py-1">Date Sold</th>
                     <th class="px-2 py-1">Type</th>
                     <th class="px-2 py-1">Status</th>
-                    <th class="px-2 py-1">Title</th>
+                    <th class="px-2 py-1">q
+
+                        <button type="button"
+                                wire:click="sortByColumn('property_title')"
+                                class="flex items-center gap-1 uppercase text-xs hover:underline">
+                            Title
+
+                            @if($sortBy === 'property_title')
+                                <span class="text-[10px]">
+                                    {{ $sortDir === 'asc' ? '▲' : '▼' }}
+                                </span>
+                            @else
+                                <span class="text-[10px]">{{  '▲▼'  }}</span>
+                            @endif
+                        </button>
+
+                    </th>
                     <th class="px-2 py-1">Location</th>
-                    <th class="px-2 py-1">Price</th>
+                    <th class="px-2 py-1">
+
+                        <button type="button"
+                                wire:click="sortByColumn('property_price')"
+                                class="flex items-center gap-1 uppercase text-xs hover:underline">
+                                Price
+                            @if($sortBy === 'property_price')
+                                <span class="text-[10px]">{{ $sortDir === 'asc' ? '▲' : '▼' }}</span>
+                            @else
+                                <span class="text-[10px]">{{  '▲▼'  }}</span>
+                            @endif
+                        </button>
+
+                    </th>
                     <th class="px-2 py-1">Beds</th>
                     <th class="px-2 py-1">Baths</th>
                     <th class="px-2 py-1">HOA</th>

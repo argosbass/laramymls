@@ -34,11 +34,42 @@ class PropertySearchForm extends Component
 
     public int $page = 1;
 
+    public string $sortBy = 'id';
+    public string $sortDir = 'desc';
+
     protected $queryString = ['page'];
 
     public function updated($property)
     {
         $this->resetPage(); // Cuando cambia cualquier filtro, vuelve a la página 1
+    }
+
+    public function sortByColumn(string $column): void
+    {
+        $allowed = [
+            'id',
+            'created_at',
+            'property_title',
+            'property_price',
+            'property_bedrooms',
+            'property_bathrooms',
+            'property_building_size_m2',
+            'property_lot_size_m2',
+            'property_no_of_floors',
+        ];
+
+        if (! in_array($column, $allowed, true)) {
+            return;
+        }
+
+        if ($this->sortBy === $column) {
+            $this->sortDir = $this->sortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortBy = $column;
+            $this->sortDir = 'asc';
+        }
+
+        $this->resetPage();
     }
 
     public function render()
@@ -118,6 +149,9 @@ class PropertySearchForm extends Component
             })
             ->with(['type', 'status', 'location', 'features'])
 //            ->paginate(100);
+
+            ->orderBy($this->sortBy, $this->sortDir)
+
         ->paginate(100, pageName: $this->getPageName());
 
         return view('livewire.property-search-form', compact(
