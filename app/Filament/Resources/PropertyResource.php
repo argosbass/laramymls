@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Models\Property;
+use App\Models\PropertyFeatures;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -109,8 +110,24 @@ class PropertyResource extends Resource
                         ])->columns(3),
 
                         Tab::make('Standard Features')->schema([
+
                             Forms\Components\CheckboxList::make('features')
-                                ->relationship('features', 'feature_name'),
+                                ->relationship(
+                                     'features',
+                                     'feature_name'
+                                )
+                                ->options(function () {
+                                    return PropertyFeatures::query()
+                                        ->orderBy('weight')
+                                        ->orderBy('feature_name')
+                                        ->get()
+                                        ->mapWithKeys(function ($feature) {
+                                            return [
+                                                $feature->id =>  $feature->feature_name,
+                                            ];
+                                        });
+                                })
+
                         ])->columns(3),
 
                         Tab::make('Property Location')->schema([

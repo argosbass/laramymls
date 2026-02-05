@@ -9,7 +9,7 @@ return new class extends Migration {
         Schema::create('property_features', function (Blueprint $table) {
             $table->id(); // BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY
             $table->string('feature_name', 100)->unique(); // evitar nombres duplicados opcionalmente
-
+            $table->unsignedInteger('weight')->nullable();
             $table->timestamps(); // created_at y updated_at
         });
     }

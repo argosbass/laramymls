@@ -371,7 +371,9 @@
                 searchEnabled: true,
                 placeholder: false,
                 placeholderValue: '',
-                allowHTML: true
+                allowHTML: true,
+                shouldSort: false,
+                shouldSortItems: false,
             });
 
             // Inicializar Choices para Year
