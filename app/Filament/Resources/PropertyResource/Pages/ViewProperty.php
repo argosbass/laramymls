@@ -140,7 +140,7 @@ class ViewProperty extends ViewRecord
                             'icon' => 'map',
                             'color' => 'text-blue-600',
                         ]),
-                        View::make('filament.components.property-map'),
+                        View::make('filament.components.property-map-GM'),
                     ])
                     ->columnSpanFull(),
 

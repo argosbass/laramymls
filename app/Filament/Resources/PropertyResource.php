@@ -161,7 +161,7 @@ class PropertyResource extends Resource
                             Forms\Components\Hidden::make('property_geolocation_lat_sin'),
                             Forms\Components\Hidden::make('property_geolocation_lat_cos'),
                             Forms\Components\Hidden::make('property_geolocation_lng_rad'),
-                            Forms\Components\View::make('filament.components.google-map-edit'),
+                            Forms\Components\View::make('filament.components.google-map-edit-GM'),
                         ]),
 
                         Tab::make('Property Photos')->schema([
