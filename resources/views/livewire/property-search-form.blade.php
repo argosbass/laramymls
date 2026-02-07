@@ -264,7 +264,7 @@
                     <th class="px-2 py-1">Date Sold</th>
                     <th class="px-2 py-1">Type</th>
                     <th class="px-2 py-1">Status</th>
-                    <th class="px-2 py-1">q
+                    <th class="px-2 py-1">
 
                         <button type="button"
                                 wire:click="sortByColumn('property_title')"
