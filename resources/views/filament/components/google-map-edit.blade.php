@@ -22,8 +22,8 @@
 
         const latInput = document.getElementById('latitude-input');
         const lngInput = document.getElementById('longitude-input');
-        const initialLat = parseFloat(latInput?.value) || 9.7489;
-        const initialLng = parseFloat(lngInput?.value) || -83.7534;
+        const initialLat = parseFloat(latInput?.value) || 10.29913;
+        const initialLng = parseFloat(lngInput?.value) || -85.84107;
 
         // initialize Leaflet
         var map = L.map('map').setView([initialLat, initialLng], 14);
