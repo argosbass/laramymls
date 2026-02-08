@@ -11,15 +11,16 @@ use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
 use App\Filament\Resources\PropertyResource\Pages;
-//use App\Filament\Resources\PropertyResource\RelationManagers\SoldReferencesRelationManager;
 use App\Models\PropertyLocations;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Tabs\Tab;
-
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-
 use Filament\Navigation\NavigationItem;
+use App\Console\Commands\ImportPropertyPhotosBatch;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
+use Filament\Notifications\Notification;
 
 class PropertyResource extends Resource
 {
