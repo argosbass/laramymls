@@ -345,6 +345,27 @@ class PropertyResource extends Resource
                 Tables\Filters\SelectFilter::make('author.name')->relationship('author', 'name'),
             ])
             ->actions([
+                Action::make('migratePhotos')
+                    ->label('Migrate Photos')
+                    ->icon('heroicon-o-photo')
+                    ->visible(fn($record) => DB::table('property_photos')
+                        ->where('property_id', $record->id)
+                        ->whereNull('photo_alt')
+                        ->exists()
+                    )
+                    ->requiresConfirmation()
+                    ->action(function ($record) {
+                        Artisan::call(ImportPropertyPhotosBatch::class, [
+                            '--property-id' => $record->id,
+                        ]);
+
+                        Notification::make()
+                            ->title('Migrate Photos Complete')
+                            ->body("Photos of property #{$record->id} was finished.")
+                            ->success()
+                            ->send();
+                    }),
+
                 Action::make('view')
                     ->label('View')
                     ->icon('heroicon-o-eye')
