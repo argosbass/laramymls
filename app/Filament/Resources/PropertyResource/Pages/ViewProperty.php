@@ -196,12 +196,32 @@ class ViewProperty extends ViewRecord
                     .mls-custom-rich-content ul {
                         list-style: disc !important;
                         padding-left: 1.5rem !important;
+                        margin-bottom: 1rem !important;
                     }
 
                     .mls-custom-rich-content ol {
                         list-style: decimal !important;
                         padding-left: 1.5rem !important;
+                        margin-bottom: 1rem !important;
                     }
+
+                    .mls-custom-rich-content blockquote,
+                    .mls-custom-rich-content dd,
+                    .mls-custom-rich-content dl,
+                    .mls-custom-rich-content figure,
+                    .mls-custom-rich-content h1,
+                    .mls-custom-rich-content h2,
+                    .mls-custom-rich-content h3,
+                    .mls-custom-rich-content h4,
+                    .mls-custom-rich-content h5,
+                    .mls-custom-rich-content h6,
+                    .mls-custom-rich-content hr,
+                    .mls-custom-rich-content p,
+                    .mls-custom-rich-content pre
+                    {
+                        margin-bottom: 1rem;
+                    }
+
                 </style>
             ')
         );

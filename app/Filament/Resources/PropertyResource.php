@@ -182,15 +182,16 @@ class PropertyResource extends Resource
                             */
 
                             SpatieMediaLibraryFileUpload::make('gallery')
-                            ->collection('gallery')
-                            ->multiple()
-                            ->image()
-                            ->responsiveImages()
-                            ->reorderable()
-                            ->openable()
-                            ->previewable()
-                            ->panelLayout('grid')
-                            ->columnSpanFull()
+                                ->collection('gallery')
+                                ->multiple()
+                                ->image()
+                                ->reorderable()
+                                ->panelLayout('grid')
+                                ->imagePreviewHeight('200q')   // previews más livianos
+                                ->openable(false)            // evita carga extra al abrir
+                                ->previewable(true)          // o false si quieres ultra rápido
+                                // ->responsiveImages()         // mantenlo solo si lo ocupas
+                                ->columnSpanFull()
                         ])
                         ->columns(3),
 
