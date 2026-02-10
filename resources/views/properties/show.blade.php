@@ -176,7 +176,7 @@
                     id="showLinkBtn"
                     onclick="toggleLink()"
                     class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded shadow">
-                    Show Temporary Link (15 days)
+                    Show Temporary Link (5 days)
                 </button>
 
                 <div id="linkContainer" class="mt-3 hidden">
@@ -194,7 +194,7 @@
                             Copy
                         </button>
                     </div>
-                    <p class="text-xs text-gray-500 mt-1">Anyone with this link can view the property for 15 days.</p>
+                    <p class="text-xs text-gray-500 mt-1">Anyone with this link can view the property for 5 days.</p>
                 </div>
             </div>
         @endif

@@ -18,7 +18,7 @@ class PublicPropertyController extends Controller
         // generar enlace firmado válido por 15 días
         $signedUrl = URL::temporarySignedRoute(
             'property.signed.show',
-            now()->addDays(15),
+            now()->addDays(5),
             ['property' => $property->id]
         );
 
@@ -33,7 +33,7 @@ class PublicPropertyController extends Controller
         // generar enlace firmado válido por 15 días
         $signedUrl = URL::temporarySignedRoute(
             'property.signed.show',
-            now()->addDays(15),
+            now()->addDays(5),
             ['property' => $property->id]
         );
 
