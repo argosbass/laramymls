@@ -207,7 +207,7 @@
                 searchEnabled: true,
                 placeholder: false,
                 placeholderValue: '',
-                allowHTML: false
+                allowHTML: true
             });
 
             // Inicializar Choices para Status

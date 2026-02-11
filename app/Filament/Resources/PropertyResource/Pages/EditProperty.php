@@ -14,11 +14,19 @@ class EditProperty extends EditRecord
     {
         return [
 
+            Actions\Action::make('public_view')
+                ->label('Public View')
+                ->icon('heroicon-o-globe-alt')
+                ->url(fn () => url('/property-listing-id/' . $this->record->id))
+                ->color('gray'),
+            //         ->openUrlInNewTab(),
+
             Actions\Action::make('view')
                 ->label('View Property')
                 ->icon('heroicon-o-eye')
                 ->url(fn () => PropertyResource::getUrl('view', ['record' => $this->record]))
-                ->openUrlInNewTab(),
+                ->color('gray'),
+             //   ->openUrlInNewTab(),
 
             Actions\DeleteAction::make()
 

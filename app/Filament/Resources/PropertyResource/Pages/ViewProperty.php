@@ -10,6 +10,7 @@ use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\View;
 use Filament\Infolists\Components\ImageEntry;
+use Filament\Actions;
 
 use Illuminate\Support\HtmlString;
 use Filament\Support\Facades\FilamentView;
@@ -17,6 +18,35 @@ use Filament\Support\Facades\FilamentView;
 class ViewProperty extends ViewRecord
 {
     protected static string $resource = PropertyResource::class;
+
+
+    protected function getHeaderActions(): array
+    {
+        return [
+
+            Actions\Action::make('public_view')
+                ->label('Public View')
+                ->icon('heroicon-o-globe-alt')
+                ->url(fn () => url('/property-listing-id/' . $this->record->id))
+                ->color('gray'),
+            //         ->openUrlInNewTab(),
+
+
+            Actions\Action::make('Edit')
+                ->label('Edit Property')
+                ->icon('heroicon-o-pencil')
+                ->url(fn () => PropertyResource::getUrl('edit', ['record' => $this->record]))
+                ->color('gray'),
+       //         ->openUrlInNewTab(),
+
+            Actions\DeleteAction::make()
+
+        ];
+
+
+
+    }
+
 
     public function infolist(Infolist $infolist): Infolist
     {

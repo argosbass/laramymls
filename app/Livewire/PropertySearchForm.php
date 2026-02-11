@@ -34,8 +34,8 @@ class PropertySearchForm extends Component
 
     public int $page = 1;
 
-    public string $sortBy = 'id';
-    public string $sortDir = 'desc';
+    public string $sortBy = 'property_price';
+    public string $sortDir = 'asc';
 
     protected $queryString = ['page'];
 
