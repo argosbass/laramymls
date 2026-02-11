@@ -116,27 +116,64 @@
             </div>
         @endif
 
-        {{-- Description --}}
-        <div>
-            <h2 class="text-xl font-semibold mb-2">Description</h2>
 
-            <div class="mls-custom-rich-content prose max-w-none prose-ul:list-disc prose-ol:list-decimal prose-ul:pl-6 prose-ol:pl-6">
-                {!! $property->property_body !!}
+
+
+
+        <div class="mt-6">
+
+            <!-- Tabs header -->
+            <div class="flex border-b mb-4">
+                <button
+                    onclick="openTab('tab1')"
+                    class="tab-btn px-4 py-2 font-semibold border-b-2 border-blue-600 text-blue-600"
+                    id="btn-tab1">
+                    Description
+                </button>
+
+                <button
+                    onclick="openTab('tab2')"
+                    class="tab-btn px-4 py-2 font-semibold text-gray-500"
+                    id="btn-tab2">
+                    Features
+                </button>
+            </div>
+
+            <!-- Tab 1 -->
+            <div id="tab1" class="tab-content">
+                {{-- Description --}}
+                <div>
+
+                    <div class="mls-custom-rich-content prose max-w-none prose-ul:list-disc prose-ol:list-decimal prose-ul:pl-6 prose-ol:pl-6">
+                        {!! $property->property_body !!}
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Tab 2 -->
+            <div id="tab2" class="tab-content hidden">
+
+
+                {{-- Features --}}
+                @if ($property->features->count())
+                    <div>
+
+                        <ul class="list-disc list-inside space-y-1">
+                            @foreach ($property->features as $feature)
+                                <li>{{ $feature->feature_name }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+
             </div>
 
         </div>
 
-        {{-- Features --}}
-        @if ($property->features->count())
-            <div>
-                <h2 class="text-xl font-semibold mb-2">Features</h2>
-                <ul class="list-disc list-inside space-y-1">
-                    @foreach ($property->features as $feature)
-                        <li>{{ $feature->feature_name }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+
     </div>
 
     {{-- Right Column --}}
@@ -327,6 +364,8 @@
 
 <script>
     $(document).ready(function(){
+
+
         $('.slider').slick({
             slidesToShow: 1,
             arrows: true,
@@ -353,6 +392,23 @@
             removalDelay: 200,
         });
     });
+</script>
+<script>
+    function openTab(tabId) {
+
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+
+        document.querySelectorAll('.tab-btn').forEach(el => {
+            el.classList.remove('border-blue-600','text-blue-600','border-b-2');
+            el.classList.add('text-gray-500');
+        });
+
+        document.getElementById(tabId).classList.remove('hidden');
+
+        const btn = document.getElementById('btn-' + tabId);
+        btn.classList.add('border-blue-600','text-blue-600','border-b-2');
+        btn.classList.remove('text-gray-500');
+    }
 </script>
 
 {{-- Leaflet Map --}}

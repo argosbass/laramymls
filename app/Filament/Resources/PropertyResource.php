@@ -58,15 +58,15 @@ class PropertyResource extends Resource
                                     Forms\Components\Select::make('property_type_id')
                                         ->label('Type')
                                         ->relationship('type', 'type_name')
-                                        ->searchable()
-                                        ->preload()
+                                        //->searchable()
+                                        //->preload()
                                         ->nullable(),
 
                                     Forms\Components\Select::make('property_status_id')
                                         ->label('Status')
                                         ->relationship('status', 'status_name')
-                                        ->searchable()
-                                        ->preload()
+                                        //->searchable()
+                                        //->preload()
                                         ->nullable(),
 
                                     Forms\Components\TextInput::make('property_bedrooms')->numeric(),
