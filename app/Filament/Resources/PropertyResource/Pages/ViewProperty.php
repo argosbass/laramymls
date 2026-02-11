@@ -147,7 +147,7 @@ class ViewProperty extends ViewRecord
                             TextEntry::make('property_body')->label('Description')->html()->extraAttributes(['class' => 'mls-custom-rich-content']),
                             TextEntry::make('property_video')->label('Video (URL)'),
                             TextEntry::make('property_hoa_fee')->label('HOA Fee'),
-                            TextEntry::make('property_osnid')->label('OSN ID'),
+                            //TextEntry::make('property_osnid')->label('OSN ID'),
                         ]),
                     ])
                     ->columnSpanFull(),

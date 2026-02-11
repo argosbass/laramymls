@@ -106,7 +106,7 @@ class PropertyResource extends Resource
                                     ])->columnSpan('full'),
 
                                     Forms\Components\TextInput::make('property_video')->url(),
-                                    Forms\Components\TextInput::make('property_osnid')->numeric(),
+                                    Forms\Components\Hidden::make('property_osnid'),
                                 ])->columns(2),
                         ])->columns(3),
 
