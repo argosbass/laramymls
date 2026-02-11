@@ -6,27 +6,27 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            font-size: 12px;
+            font-size: 11px;
             color: #333;
-            margin: 20px;
+            margin: 10px;
         }
         h1 {
             font-size: 24px;
             margin-bottom: 10px;
         }
-        h2 {
+        h3 {
             font-size: 18px;
-            margin-top: 25px;
-            margin-bottom: 8px;
+            margin-top: 5px;
+            margin-bottom: 3px;
             border-bottom: 1px solid #ccc;
-            padding-bottom: 4px;
+            padding-bottom: 2px;
         }
         .info-label {
             font-weight: bold;
             color: #555;
         }
         .section {
-            margin-bottom: 15px;
+            margin-bottom: 2px;
         }
         ul {
             padding-left: 20px;
@@ -37,12 +37,12 @@
         }
         table {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 5px;
+            border: none !important;
+            margin-top: 2px;
         }
         th, td {
-            border: 1px solid #bbb;
-            padding: 6px;
+            border: none !important;
+            padding:2px;
             font-size: 11px;
         }
         th {
@@ -59,7 +59,7 @@
         }
 
         .photos img {
-            max-width: 300px;
+            max-width: 200px;
             height: auto;
             margin: 10px 10px 10px 0;
             border: 1px solid #ddd;
@@ -67,71 +67,105 @@
             display: inline-block;
             vertical-align: top;
         }
+
+
+        ul._features {
+            margin: 0;
+            padding: 0;
+            list-style: none; /* quítalo si quieres viñetas */
+            font-size: 12px;
+        }
+
+        ul._features  > li{
+            display: inline-block;
+            width: 30%;          /* 100 / 5 */
+            vertical-align: top;
+            box-sizing: border-box;
+            padding: 2px 6px;
+            margin: 0;
+        }
+
+
     </style>
 </head>
 <body>
 
 <div class="section" style="background-color: #ccc; text-align: center">
-    <img src="{{ public_path('images/remax-header-pdf.png') }}" style="width: 50%;">
+    <img src="{{ public_path('images/remax-header-pdf.png') }}" style="width: 40%;">
 </div>
 
-
-<h1>{{ $property->property_title }}</h1>
+<h3>{{ $property->property_title }}</h3>
 
 {{-- Description --}}
 <div class="section">
-    <h2>Description</h2>
     <div>{!! $property->property_body !!}</div>
 </div>
 
-<table style="border: none;" border="0" cellpadding="0" >
-    <tr>
-        <td width="50%">
-            <h2>Details</h2>
-        </td>
+<div class="section">
+    <h3>Details</h3>
+    <div>
 
-        <td>
-            <h2>Features</h2>
-        </td>
-    </tr>
-    <tr>
-        <td width="50%">
-            <p><span class="info-label">Property ID:</span> {{ $property->id }}</p>
-            <p><span class="info-label">Property Type:</span> {{ $property->type?->type_name }}</p>
-            <p><span class="info-label">Bedrooms:</span> {{ $property->property_bedrooms }}</p>
-            <p><span class="info-label">Bathrooms:</span> {{ $property->property_bathrooms }}</p>
-            <p><span class="info-label">Building Size (m2):</span> {{ $property->property_building_size_area_quantity }} {{ $property->property_building_size_area_unit }}</p>
-            <p><span class="info-label">Lot Size (m2):</span> {{ $property->property_lot_size_area_quantity }} {{ $property->property_lot_size_area_unit }}</p>
-            <p><span class="info-label">On Floor No.:</span> {{ $property->property_on_floor_no }}</p>
-            <p><span class="info-label">No. of Floors:</span> {{ $property->property_no_of_floors }}</p>
-            <p><span class="info-label">Price:</span> ${{ number_format($property->property_price, 2) }}</p>
-            <p><span class="info-label">Status:</span> {{ $property->status?->status_name }}</p>
-            <p><span class="info-label">Location:</span> {{ $property->location?->full_path ?? $property->location?->location_name }}</p>
-            <p><span class="info-label">Monthly HOA Fee: $</span> {{ $property->property_hoa_fee }}</p>
-        </td>
+        <table style="border: none;" border="0" cellpadding="0" >
+            <tr>
+                <td width="33%">
+                    <p><span class="info-label">Property ID:</span> {{ $property->id }}</p>
+                    <p><span class="info-label">Property Type:</span> {{ $property->type?->type_name }}</p>
+                    <p><span class="info-label">Bedrooms:</span> {{ $property->property_bedrooms }}</p>
+                    <p><span class="info-label">Bathrooms:</span> {{ $property->property_bathrooms }}</p>
 
-        <td>
-            @if ($property->features->count())
+                </td>
+
+                <td width="33%">
+
+                    <p><span class="info-label">Building Size (m2):</span> {{ $property->property_building_size_area_quantity }} {{ $property->property_building_size_area_unit }}</p>
+                    <p><span class="info-label">Lot Size (m2):</span> {{ $property->property_lot_size_area_quantity }} {{ $property->property_lot_size_area_unit }}</p>
+                    <p><span class="info-label">On Floor No.:</span> {{ $property->property_on_floor_no }}</p>
+                    <p><span class="info-label">No. of Floors:</span> {{ $property->property_no_of_floors }}</p>
+
+                </td>
+                <td width="33%">
+
+                    <p><span class="info-label">Price:</span> ${{ number_format($property->property_price, 2) }}</p>
+                    <p><span class="info-label">Status:</span> {{ $property->status?->status_name }}</p>
+                    <p><span class="info-label">Location:</span> {{ $property->location?->full_path ?? $property->location?->location_name }}</p>
+                    <p><span class="info-label">Monthly HOA Fee: $</span> {{ $property->property_hoa_fee }}</p>
+
+                </td>
+
+            </tr>
+
+        </table>
+
+    </div>
+</div>
+
+<div class="section">
+    <h3>Features</h3>
+    <div>
+
+        @if ($property->features->count())
 
 
-                <ul>
-                    @foreach ($property->features as $feature)
-                        <li>{{ $feature->feature_name }}</li>
-                    @endforeach
-                </ul>
+            <ul class="_features">
+                @foreach ($property->features as $feature)
+                    <li>{{ $feature->feature_name }}</li>
+                @endforeach
+            </ul>
 
-            @endif
+        @endif
 
-        </td>
-    </tr>
-</table>
+    </div>
+</div>
+
+
+
 
 
 
 {{-- Sold References --}}
 @if ($property->soldReferences->count())
 <!--     <div class="section">
-        <h2>Sold References</h2>
+        <h3>Sold References</h3>
         <table>
             <thead>
             <tr>
@@ -156,7 +190,7 @@
 {{-- Listing Competitors --}}
 @if ($property->listingCompetitors->count())
     <!--    <div class="section">
-        <h2>Listing Competitors</h2>
+        <h3>Listing Competitors</h3>
         <table>
             <thead>
             <tr>
@@ -189,7 +223,7 @@
 {{-- Notes to Agents --}}
 @if ($property->property_notes_to_agents)
     {{--    <div class="section">
-            <h2>Notes To Agents</h2>
+            <h3>Notes To Agents</h3>
             <div>{!! $property->property_notes_to_agents !!}</div>
         </div> --}}
     @endif
@@ -201,7 +235,7 @@
 
 @if ($photos->count())
     <div class="section photos">
-        <h2>Photos</h2>
+        <h3>Photos</h3>
         @foreach($photos as $media)
             <img src="{{ $media->getPath() }}" alt="Photo">
         @endforeach
