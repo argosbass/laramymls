@@ -98,6 +98,8 @@
         <td width="50%">
             <p><span class="info-label">Property ID:</span> {{ $property->id }}</p>
             <p><span class="info-label">Property Type:</span> {{ $property->type?->type_name }}</p>
+            <p><span class="info-label">Bedrooms:</span> {{ $property->property_bedrooms }}</p>
+            <p><span class="info-label">Bathrooms:</span> {{ $property->property_bathrooms }}</p>
             <p><span class="info-label">Building Size (m2):</span> {{ $property->property_building_size_area_quantity }} {{ $property->property_building_size_area_unit }}</p>
             <p><span class="info-label">Lot Size (m2):</span> {{ $property->property_lot_size_area_quantity }} {{ $property->property_lot_size_area_unit }}</p>
             <p><span class="info-label">On Floor No.:</span> {{ $property->property_on_floor_no }}</p>
@@ -105,7 +107,7 @@
             <p><span class="info-label">Price:</span> ${{ number_format($property->property_price, 2) }}</p>
             <p><span class="info-label">Status:</span> {{ $property->status?->status_name }}</p>
             <p><span class="info-label">Location:</span> {{ $property->location?->full_path ?? $property->location?->location_name }}</p>
-            <p><span class="info-label">HOA Fee:</span> {{ $property->property_hoa_feegi }}</p>
+            <p><span class="info-label">Monthly HOA Fee: $</span> {{ $property->property_hoa_fee }}</p>
         </td>
 
         <td>

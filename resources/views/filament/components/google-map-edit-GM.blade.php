@@ -57,9 +57,13 @@
                 this.map = new google.maps.Map(document.getElementById('map'), {
                     center,
                     zoom: 14,
-                    mapTypeControl: false,
+                    mapTypeControl: true,
+                    mapTypeControlOptions: {
+                        style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+                        position: google.maps.ControlPosition.TOP_RIGHT,
+                    },
                     streetViewControl: false,
-                    fullscreenControl: true,
+                    fullscreenControl: falseq,
                 });
 
                 this.marker = new google.maps.Marker({

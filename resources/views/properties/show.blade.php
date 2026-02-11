@@ -204,6 +204,8 @@
             <h2 class="text-xl font-semibold border-b pb-1">Details</h2>
             <div><span class="info-label">Property ID:</span> {{ $property->id }}</div>
             <div><span class="info-label">Property Type:</span> {{ $property->type?->type_name }}</div>
+            <div><span class="info-label">Bedrooms:</span> {{ $property->property_bedrooms }}</div>
+            <div><span class="info-label">Bathrooms:</span> {{ $property->property_bathrooms }}</div>
             <div><span class="info-label">Building Size:</span> {{ $property->property_building_size_area_quantity }} {{ $property->property_building_size_area_unit }}</div>
             <div><span class="info-label">Lot Size:</span> {{ $property->property_lot_size_area_quantity }} {{ $property->property_lot_size_area_unit }}</div>
             <div><span class="info-label">On Floor No.:</span> {{ $property->property_on_floor_no }}</div>
@@ -211,7 +213,7 @@
             <div><span class="info-label">Price:</span> ${{ number_format($property->property_price, 2) }}</div>
             <div><span class="info-label">Status:</span> {{ $property->status?->status_name }}</div>
             <div><span class="info-label">Location:</span> {{ $property->location?->full_path  }}</div>
-            <div><span class="info-label">HOA Fee:</span> {{ $property->property_hoa_fee  }}</div>
+            <div><span class="info-label">Monthly HOA Fee: $</span> {{ $property->property_hoa_fee  }}</div>
         </div>
 
         {{-- Sold References --}}
@@ -297,8 +299,23 @@
         @if ($property->property_geolocation_lat && $property->property_geolocation_lng)
             <div>
                 <h2 class="text-xl font-semibold border-b pb-1">Map</h2>
-                <div id="map" class="w-full h-60 rounded-md"></div>
+                <!-- <div id="map" class="w-full h-60 rounded-md"></div> -->
+                <div style="aspect-ratio: 16/9;" class="rounded overflow-hidden mt-4">
+                    <iframe
+                        width="100%"
+                        height="100%"
+                        frameborder="0"
+                        style="border:0"
+                        src="https://www.google.com/maps?q={{ $property->property_geolocation_lat }},{{ $property->property_geolocation_lng }}&hl=es&z=15&output=embed"
+                        allowfullscreen>
+                    </iframe>
+                </div>
             </div>
+
+
+
+
+
         @endif
     </div>
 </div>
@@ -339,17 +356,17 @@
 </script>
 
 {{-- Leaflet Map --}}
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
+<!-- <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script> -->
+<!-- <script> -->
     @if ($property->property_geolocation_lat && $property->property_geolocation_lng)
-    var map = L.map('map').setView([{{ $property->property_geolocation_lat }}, {{ $property->property_geolocation_lng }}], 16);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-    L.marker([{{ $property->property_geolocation_lat }}, {{ $property->property_geolocation_lng }}]).addTo(map)
-        .bindPopup("{{ $property->property_title }}").openPopup();
+    <!--     var map = L.map('map').setView([{{ $property->property_geolocation_lat }}, {{ $property->property_geolocation_lng }}], 16); -->
+    <!-- L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { -->
+    <!--     attribution: '&copy; OpenStreetMap contributors' -->
+    <!-- }).addTo(map); -->
+    <!-- L.marker([{{ $property->property_geolocation_lat }}, {{ $property->property_geolocation_lng }}]).addTo(map) -->
+    <!--     .bindPopup("{{ $property->property_title }}").openPopup(); -->
     @endif
-</script>
+<!-- </script> -->
 
 <script>
     function toggleLink() {
