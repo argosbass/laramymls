@@ -70,13 +70,13 @@ class PropertyResource extends Resource
                                         ->nullable(),
 
                                     Forms\Components\TextInput::make('property_bedrooms')->numeric(),
-                                    Forms\Components\TextInput::make('property_bathrooms_inner')->numeric(),
+                                    Forms\Components\TextInput::make('property_bathrooms_inner')->hidden(),
                                     Forms\Components\TextInput::make('property_bathrooms')->numeric(),
                                     Forms\Components\TextInput::make('property_price')->numeric(),
                                     Forms\Components\TextInput::make('property_hoa_fee')->numeric(),
 
                                     Forms\Components\TextInput::make('property_building_size_m2')->numeric(),
-                                    Forms\Components\TextInput::make('property_building_size_area_quantity')->numeric(),
+                                    Forms\Components\TextInput::make('property_building_size_area_quantity')->numeric()->hidden(),
                                     Forms\Components\Select::make('property_building_size_area_unit')
                                         ->options([
                                             'sqm' => 'sqm',
@@ -84,7 +84,7 @@ class PropertyResource extends Resource
                                         ]),
 
                                     Forms\Components\TextInput::make('property_lot_size_m2')->numeric(),
-                                    Forms\Components\TextInput::make('property_lot_size_area_quantity')->numeric(),
+                                    Forms\Components\TextInput::make('property_lot_size_area_quantity')->numeric()->hidden(),
                                     Forms\Components\Select::make('property_lot_size_area_unit')
                                         ->options([
                                             'sqm' => 'sqm',

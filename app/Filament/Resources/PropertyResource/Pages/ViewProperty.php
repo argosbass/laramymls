@@ -88,7 +88,7 @@ class ViewProperty extends ViewRecord
                                 Grid::make(3)->schema([
                                     TextEntry::make('property_bedrooms')->label('Bedrooms'),
                                     TextEntry::make('property_bathrooms')->label('Bathrooms'),
-                                    TextEntry::make('property_bathrooms_inner')->label('Internal Bathrooms'),
+                                   // TextEntry::make('property_bathrooms_inner')->label('Internal Bathrooms'),
                                     TextEntry::make('property_no_of_floors')->label('Floors'),
                                     TextEntry::make('property_on_floor_no')->label('Floor No.'),
                                 ]),
