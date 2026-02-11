@@ -300,7 +300,7 @@ class PropertyResource extends Resource
                         Tab::make('General')->schema([
 
                             Forms\Components\TextInput::make('nid')->hidden(),
-                            Forms\Components\Toggle::make('published'),
+                            Forms\Components\Toggle::make('published')->default(true),
 
                             Forms\Components\Select::make('user_id')
                                 ->label('Author')
