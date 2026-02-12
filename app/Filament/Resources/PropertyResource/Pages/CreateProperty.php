@@ -33,4 +33,20 @@ class CreateProperty extends CreateRecord
             $this->getCancelFormAction(),
         ];
     }
+
+    protected function getRedirectUrl(): string
+    {
+        if( isset( $this->record->slug ) && !empty( $this->record->slug ) )
+        {
+            return url('/property-listing/' . $this->record->slug);
+
+        }
+
+        return url('/property-listing-id/' . $this->record->id);
+    }
+
+    protected function getSavedNotification(): ?\Filament\Notifications\Notification
+    {
+        return null;
+    }
 }
