@@ -98,7 +98,16 @@ class PropertySearchForm extends Component
 
 
         $results = Property::query()
-            ->when($this->title, fn($q) => $q->where('property_title', 'like', '%' . $this->title . '%'))
+            // ->when($this->title, fn($q) => $q->where('property_title', 'like', '%' . $this->title . '%'))
+
+            ->when($this->title, function ($q) {
+                $q->where(function ($sub) {
+                    $sub->where('property_title', 'like', '%' . $this->title . '%')
+                        ->orWhere('property_body', 'like', '%' . $this->title . '%');
+                });
+            })
+
+
             ->when($this->propertyId, fn($q) => $q->where('id', $this->propertyId))
 
             ->when(

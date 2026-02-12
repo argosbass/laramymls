@@ -39,7 +39,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1" for="title">Title</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1" for="title">Search Title and Description</label>
                 <input id="title" type="text" wire:model.defer="title"
                        class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
             </div>
