@@ -258,16 +258,35 @@ class PropertyResource extends Resource
                                     Forms\Components\Hidden::make('nid')
                                         ->default(fn ($state) => $state ?? 0),
 
+                                   // Forms\Components\Select::make('real_estate_company_id')
+                                   //     ->label('Company Name')
+                                   //     ->options(function () {
+                                   //         return \App\Models\RealEstateCompany::query()
+                                   //             ->orderBy('company_name')
+                                   //             ->pluck('company_name', 'id');
+                                   //     })
+
+                                   //     ->preload()
+                                   //     ->required(),
+
                                     Forms\Components\Select::make('real_estate_company_id')
                                         ->label('Company Name')
-                                        ->options(function () {
-                                            return \App\Models\RealEstateCompany::query()
-                                                ->orderBy('company_name')
-                                                ->pluck('company_name', 'id');
-                                        })
-
+                                        ->options(fn () =>
+                                        \App\Models\RealEstateCompany::query()
+                                            ->orderBy('company_name')
+                                            ->pluck('company_name', 'id')
+                                        )
                                         ->preload()
+                                        ->reactive()
+                                        ->afterStateUpdated(function ($state, callable $set) {
+
+                                            $company = \App\Models\RealEstateCompany::find($state);
+
+                                            $set('competitor_company_name', $company?->company_name);
+                                        })
                                         ->required(),
+
+                                    Forms\Components\TextInput::make('competitor_company_name'),
 
                                     Forms\Components\TextInput::make('competitor_listing_agent')
                                         ->label('Listing Agent'),
