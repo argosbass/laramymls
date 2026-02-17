@@ -63,7 +63,7 @@
                         position: google.maps.ControlPosition.TOP_RIGHT,
                     },
                     streetViewControl: false,
-                    fullscreenControl: falseq,
+                    fullscreenControl: false,
                 });
 
                 this.marker = new google.maps.Marker({

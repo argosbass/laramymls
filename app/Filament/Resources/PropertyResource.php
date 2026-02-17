@@ -22,6 +22,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
 use Filament\Notifications\Notification;
 
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+
 class PropertyResource extends Resource
 {
     protected static ?string $model = Property::class;
@@ -75,21 +78,138 @@ class PropertyResource extends Resource
                                     Forms\Components\TextInput::make('property_price')->numeric(),
                                     Forms\Components\TextInput::make('property_hoa_fee')->numeric(),
 
-                                    Forms\Components\TextInput::make('property_building_size_m2')->numeric(),
-                                    Forms\Components\TextInput::make('property_building_size_area_quantity')->numeric()->hidden(),
+                                  //  Forms\Components\TextInput::make('property_building_size_m2')->numeric(),
+                                  //  Forms\Components\TextInput::make('property_building_size_area_quantity')->numeric(),
+                                  //  Forms\Components\Select::make('property_building_size_area_unit')
+                                  //      ->options([
+                                  //          'sqm' => 'sqm',
+                                  //          'sqft' => 'sqft',
+                                  //      ]),
+
+
+                                    Forms\Components\TextInput::make('property_building_size_area_quantity')
+                                        ->numeric()
+                                        ->live() // importante
+                                        ->afterStateUpdated(function ($state, Get $get, Set $set) {
+
+                                            $unit = $get('property_building_size_area_unit');
+
+                                            if (!is_numeric($state)) {
+                                                $set('property_building_size_m2', null);
+                                                return;
+                                            }
+
+                                            if ($unit === 'sqft') {
+                                                // convertir sqft a m2
+                                                $m2 = $state * 10.7639;
+                                            } else {
+                                                // ya está en m2
+                                                $m2 = $state;
+                                            }
+
+                                            $set('property_building_size_m2', round($m2, 4));
+                                        }),
+
                                     Forms\Components\Select::make('property_building_size_area_unit')
                                         ->options([
                                             'sqm' => 'sqm',
                                             'sqft' => 'sqft',
-                                        ]),
+                                        ])
+                                        ->live()
+                                        ->afterStateUpdated(function ($state, Get $get, Set $set) {
 
-                                    Forms\Components\TextInput::make('property_lot_size_m2')->numeric(),
-                                    Forms\Components\TextInput::make('property_lot_size_area_quantity')->numeric()->hidden(),
+                                            $quantity = $get('property_building_size_area_quantity');
+
+                                            if (!is_numeric($quantity)) {
+                                                return;
+                                            }
+
+                                            if ($state === 'sqft') {
+                                                $m2 = $quantity * 10.7639;
+                                            } else {
+                                                $m2 = $quantity;
+                                            }
+
+                                            $set('property_building_size_m2', round($m2, 4));
+                                        }),
+
+                                    Forms\Components\TextInput::make('property_building_size_m2')
+                                        ->numeric()
+                                        ->hidden()
+                                        ->afterStateHydrated(function (Get $get, Set $set) {
+
+                                            $quantity = $get('property_building_size_area_quantity');
+                                            $unit = $get('property_building_size_area_unit');
+
+                                            if (!is_numeric($quantity)) return;
+
+                                            $m2 = $unit === 'sqft'
+                                                ? $quantity * 10.7639
+                                                : $quantity;
+
+                                            $set('property_building_size_m2', round($m2, 4));
+                                        }),
+
+                                    Forms\Components\TextInput::make('property_lot_size_area_quantity')
+                                        ->numeric()
+                                        ->live()
+                                        ->afterStateUpdated(function ($state, Get $get, Set $set) {
+
+                                            $unit = $get('property_lot_size_area_unit');
+
+                                            if (!is_numeric($state)) {
+                                                $set('property_lot_size_m2', null);
+                                                return;
+                                            }
+
+                                            if ($unit === 'sqft') {
+                                                $m2 = $state * 10.7639;
+                                            } else {
+                                                $m2 = $state;
+                                            }
+
+                                            $set('property_lot_size_m2', round($m2, 4));
+                                        }),
+
                                     Forms\Components\Select::make('property_lot_size_area_unit')
                                         ->options([
                                             'sqm' => 'sqm',
                                             'sqft' => 'sqft',
-                                        ]),
+                                        ])
+                                        ->live()
+                                        ->afterStateUpdated(function ($state, Get $get, Set $set) {
+
+                                            $quantity = $get('property_lot_size_area_quantity');
+
+                                            if (!is_numeric($quantity)) {
+                                                return;
+                                            }
+
+                                            if ($state === 'sqft') {
+                                                $m2 = $quantity * 10.7639;
+                                            } else {
+                                                $m2 = $quantity;
+                                            }
+
+                                            $set('property_lot_size_m2', round($m2, 4));
+                                        }),
+
+                                    Forms\Components\TextInput::make('property_lot_size_m2')
+                                        ->numeric()
+                                        ->hidden()
+                                        ->afterStateHydrated(function (Get $get, Set $set) {
+
+                                            $quantity = $get('property_lot_size_area_quantity');
+                                            $unit = $get('property_lot_size_area_unit');
+
+                                            if (!is_numeric($quantity)) return;
+
+                                            $m2 = $unit === 'sqft'
+                                                ? $quantity * 10.7639
+                                                : $quantity;
+
+                                            $set('property_lot_size_m2', round($m2, 4));
+                                        }),
 
                                     Forms\Components\TextInput::make('property_no_of_floors')->numeric(),
                                     Forms\Components\TextInput::make('property_on_floor_no')->numeric(),
