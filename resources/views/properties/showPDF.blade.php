@@ -230,17 +230,28 @@
 
     {{-- Photos as thumbnails at the end --}}
 @php
-    $photos = $property->getMedia('gallery');
+    // carga media de una sola vez (evita N+1)
+       $property->load('media');
+
+       $photos = $property->getMedia('gallery');
+
 @endphp
 
 @if ($photos->count())
     <div class="section photos">
         <h3>Photos</h3>
         @foreach($photos as $media)
-            <img src="{{ $media->getPath() }}" alt="Photo">
+            <img src="{{ $media->getPath() }}"
+
+                 loading="lazy"
+                 width="250"
+
+                 alt="Photo">
         @endforeach
     </div>
 @endif
+
+
 
 </body>
 </html>

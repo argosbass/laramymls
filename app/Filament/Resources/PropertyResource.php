@@ -51,6 +51,7 @@ class PropertyResource extends Resource
                 Tabs::make('Property Tabs')
                     ->columnSpanFull() // Ocupa todo el ancho del formulario
                     ->tabs([
+
                         Tab::make('Basic Property Details')->schema([
                             Forms\Components\Section::make()
                                 ->schema([
@@ -228,7 +229,7 @@ class PropertyResource extends Resource
                                     Forms\Components\TextInput::make('property_video')->url(),
                                     Forms\Components\Hidden::make('property_osnid'),
                                 ])->columns(2),
-                        ])->columns(3),
+                        ])->columns(3)->lazy(),
 
                         Tab::make('Standard Features')->schema([
 
@@ -249,7 +250,7 @@ class PropertyResource extends Resource
                                         });
                                 })
 
-                        ])->columns(3),
+                        ])->columns(3)->lazy(),
 
                         Tab::make('Property Location')->schema([
                            // Forms\Components\Select::make('property_location_id')
@@ -283,7 +284,7 @@ class PropertyResource extends Resource
                             Forms\Components\Hidden::make('property_geolocation_lat_cos'),
                             Forms\Components\Hidden::make('property_geolocation_lng_rad'),
                             Forms\Components\View::make('filament.components.google-map-edit-GM'),
-                        ]),
+                        ])->lazy(),
 
                         Tab::make('Property Photos')->schema([
                            /*
@@ -307,13 +308,13 @@ class PropertyResource extends Resource
                                 ->image()
                                 ->reorderable()
                                 ->panelLayout('grid')
-                                ->imagePreviewHeight('200q')   // previews más livianos
-                                ->openable(false)            // evita carga extra al abrir
-                                ->previewable(true)          // o false si quieres ultra rápido
-                                // ->responsiveImages()         // mantenlo solo si lo ocupas
+                                ->imagePreviewHeight('250')
+                                ->openable(false)
+                                ->previewable(true)
                                 ->columnSpanFull()
-                        ])
-                        ->columns(3),
+                                ->maxFiles(20)
+
+                        ])->columns(3)->lazy(),
 
                         Tab::make('Sold References')->schema([
                             Repeater::make('soldReferences')
@@ -349,10 +350,7 @@ class PropertyResource extends Resource
                                 ->addActionLabel('+ Add Sold Reference')
                                 ->collapsible()
                                 ->columnSpanFull(), // para que ocupe todo el ancho dentro del tab
-                        ])->columns(3),
-
-
-
+                        ])->columns(3)->lazy(),
 
                         Tab::make('Notes to Agent')->schema([
                             Forms\Components\RichEditor::make('property_notes_to_agents')
@@ -366,8 +364,7 @@ class PropertyResource extends Resource
                                     'blockquote',
                                     'codeBlock',
                                 ])->columnSpanFull(),
-                        ])->columns(3),
-
+                        ])->columns(3)->lazy(),
 
                         Tab::make('Where Listed')->schema([
 
@@ -434,7 +431,7 @@ class PropertyResource extends Resource
 
 
 
-                        ])->columns(3),
+                        ])->columns(3)->lazy(),
 
                         Tab::make('General')->schema([
 
@@ -456,7 +453,7 @@ class PropertyResource extends Resource
 
 
 
-                        ]),
+                        ])->lazy(),
 
 
 

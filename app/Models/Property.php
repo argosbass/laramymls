@@ -54,6 +54,8 @@ class Property extends Model implements HasMedia
         $this->addMediaConversion('thumb')
             ->width(368)
             ->height(232)
+            ->format('webp')
+            ->quality(80)
             ->nonQueued(); // opcional
     }
 

@@ -12,13 +12,14 @@ use Filament\Infolists\Components\View;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Actions;
 
+use App\Jobs\EnsureResponsiveImages;
+
 use Illuminate\Support\HtmlString;
 use Filament\Support\Facades\FilamentView;
 
 class ViewProperty extends ViewRecord
 {
     protected static string $resource = PropertyResource::class;
-
 
     protected function getHeaderActions(): array
     {
@@ -46,7 +47,6 @@ class ViewProperty extends ViewRecord
 
 
     }
-
 
     public function infolist(Infolist $infolist): Infolist
     {
@@ -214,10 +214,11 @@ class ViewProperty extends ViewRecord
             ]);
     }
 
-
     public function mount(int | string $record): void
     {
         parent::mount($record);
+
+        $this->dispatchResponsiveJobs();
 
         FilamentView::registerRenderHook(
             'panels::head.end',
@@ -256,4 +257,18 @@ class ViewProperty extends ViewRecord
             ')
         );
     }
+
+    protected function dispatchResponsiveJobs(): void
+    {
+        // gallery = nombre de colección
+        $mediaItems = $this->record->getMedia('gallery');
+
+        foreach ($mediaItems as $media) {
+            $responsive = $media->responsive_images ?? [];
+            if (empty($responsive)) {
+                EnsureResponsiveImages::dispatch($media->id);
+            }
+        }
+    }
+
 }

@@ -6,6 +6,8 @@ use App\Filament\Resources\PropertyResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
+use App\Jobs\EnsureResponsiveImages;
+
 class EditProperty extends EditRecord
 {
     protected static string $resource = PropertyResource::class;
@@ -15,18 +17,18 @@ class EditProperty extends EditRecord
         return [
 
             Actions\Action::make('public_view')
-                ->label('Public View')
-                ->icon('heroicon-o-globe-alt')
+                ->label('View Property')
+                ->icon('heroicon-o-eye')
                 ->url(fn () => url('/property-listing-id/' . $this->record->id))
                 ->color('gray'),
             //         ->openUrlInNewTab(),
 
-            Actions\Action::make('view')
-                ->label('View Property')
-                ->icon('heroicon-o-eye')
-                ->url(fn () => PropertyResource::getUrl('view', ['record' => $this->record]))
-                ->color('gray'),
-             //   ->openUrlInNewTab(),
+           // Actions\Action::make('view')
+           //     ->label('View Property')
+           //     ->icon('heroicon-o-eye')
+           //     ->url(fn () => PropertyResource::getUrl('view', ['record' => $this->record]))
+           //     ->color('gray'),
+           //   ->openUrlInNewTab(),
 
             Actions\DeleteAction::make()
 
@@ -52,9 +54,13 @@ class EditProperty extends EditRecord
 
         $state = $this->form->getState();
 
+        $this->dispatchResponsiveJobs();
+
         $state['temp_images'] = $this->record->getImagePaths();
 
         $this->form->fill($state);
+
+
     }
 
     protected function afterSave(): void
@@ -106,5 +112,17 @@ class EditProperty extends EditRecord
     protected function getSavedNotification(): ?\Filament\Notifications\Notification
     {
         return null;
+    }
+
+    protected function dispatchResponsiveJobs(): void
+    {
+        $mediaItems = $this->record->getMedia('gallery');
+
+        foreach ($mediaItems as $media) {
+            $responsive = $media->responsive_images ?? [];
+            if (empty($responsive)) {
+                EnsureResponsiveImages::dispatch($media->id);
+            }
+        }
     }
 }
