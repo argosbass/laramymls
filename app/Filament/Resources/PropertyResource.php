@@ -8,7 +8,8 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\Action;
+use Filament\Forms\Components\Actions\Action;
+
 use Filament\Tables\Table;
 use App\Filament\Resources\PropertyResource\Pages;
 use App\Models\PropertyLocations;
@@ -21,6 +22,10 @@ use App\Console\Commands\ImportPropertyPhotosBatch;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
 use Filament\Notifications\Notification;
+
+
+
+
 
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -215,16 +220,64 @@ class PropertyResource extends Resource
                                     Forms\Components\TextInput::make('property_no_of_floors')->numeric(),
                                     Forms\Components\TextInput::make('property_on_floor_no')->numeric(),
 
-                                    Forms\Components\RichEditor::make('property_body')->toolbarButtons([
-                                        'bold',
-                                        'italic',
-                                        'strike',
-                                        'link',
-                                        'bulletList',
-                                        'orderedList',
-                                        'blockquote',
-                                        'codeBlock',
-                                    ])->columnSpan('full'),
+
+
+
+                                    Forms\Components\Hidden::make('property_body_html_mode')
+                                        ->default(false)
+                                        ->dehydrated(false)
+                                        ->reactive(),
+
+                                    Forms\Components\Placeholder::make('property_body_source_toggle')
+                                        ->key('property-body-source-toggle')
+                                        ->label('Property Body')
+                                        ->content('') // requerido
+                                        ->dehydrated(false)
+                                        ->hintAction(
+                                            Action::make('togglePropertyBodySource')
+                                                ->label(fn (Get $get) => $get('property_body_html_mode') ? 'Visual' : 'Source')
+                                                ->icon(fn (Get $get) => $get('property_body_html_mode')
+                                                    ? 'heroicon-m-pencil'
+                                                    : 'heroicon-m-code-bracket'
+                                                )
+                                                ->color('gray')
+                                                ->action(fn (Get $get, Set $set) =>
+                                                $set('property_body_html_mode', ! (bool) $get('property_body_html_mode'))
+                                                )
+                                        )
+                                        ->columnSpanFull(),
+
+                                    Forms\Components\RichEditor::make('property_body')
+                                        ->label(false) // ya lo pone el Placeholder
+                                        ->toolbarButtons([
+                                            'bold','italic','strike','link',
+                                            'bulletList','orderedList','blockquote','codeBlock',
+                                        ])
+                                        ->columnSpanFull()
+                                        ->hidden(fn (Get $get) => (bool) $get('property_body_html_mode')),
+
+                                    Forms\Components\Textarea::make('property_body')
+                                        ->label(false) // ya lo pone el Placeholder
+                                        ->rows(12)
+                                        ->columnSpanFull()
+                                        ->hidden(fn (Get $get) => ! (bool) $get('property_body_html_mode')),
+
+                                  //  Forms\Components\RichEditor::make('property_body')->toolbarButtons([
+                                  //      'bold',
+                                  //      'italic',
+                                  //      'strike',
+                                  //      'link',
+                                  //      'bulletList',
+                                  //      'orderedList',
+                                  //      'blockquote',
+                                  //      'codeBlock',
+                                  //  ])->columnSpan('full'),
+
+
+
+
+
+
 
                                     Forms\Components\TextInput::make('property_video')->url(),
                                     Forms\Components\Hidden::make('property_osnid'),

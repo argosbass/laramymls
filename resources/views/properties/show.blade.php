@@ -70,6 +70,96 @@
         margin-bottom: 1rem !important;
     }
 
+    .mls-custom-rich-content h1 {
+        font-size: 1.875rem;
+        font-weight: 700;
+        margin: 1rem 0 .5rem;
+    }
+
+    .mls-custom-rich-content h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 1rem 0 .5rem;
+    }
+
+    .mls-custom-rich-content h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: .75rem 0 .25rem;
+    }
+
+    .mls-custom-rich-content h4 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin: .5rem 0 .25rem;
+    }
+
+    .mls-custom-rich-content p {
+        margin: .4rem 0;
+    }
+
+    .mls-custom-rich-content ul {
+        list-style: disc;
+        padding-left: 1.5rem;
+        margin: .75rem 0;
+    }
+
+    .mls-custom-rich-content ol {
+        list-style: decimal;
+        padding-left: 1.5rem;
+        margin: .75rem 0;
+    }
+
+    .mls-custom-rich-content li {
+        margin: .25rem 0;
+    }
+
+    .mls-custom-rich-content strong {
+        font-weight: 700;
+    }
+
+    .mls-custom-rich-content em {
+        font-style: italic;
+    }
+
+    .mls-custom-rich-content blockquote {
+        border-left: 4px solid #e5e7eb;
+        padding-left: 1rem;
+        margin: .75rem 0;
+        color: #6b7280;
+    }
+
+    .mls-custom-rich-content pre {
+        background: #111827;
+        color: #e5e7eb;
+        padding: .75rem;
+        border-radius: .375rem;
+        overflow-x: auto;
+        font-size: .875rem;
+    }
+
+    .mls-custom-rich-content code {
+        background: #f3f4f6;
+        padding: .1rem .3rem;
+        border-radius: .25rem;
+        font-size: .875rem;
+    }
+
+    .mls-custom-rich-content a {
+        color: #2563eb;
+        text-decoration: underline;
+    }
+
+    .mls-custom-rich-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: .375rem;
+        margin: .5rem 0;
+    }
+
+
+
+
 </style>
 
 <div class="section" style="background-color: #ccc; text-align: center">
@@ -144,7 +234,7 @@
                 {{-- Description --}}
                 <div>
 
-                    <div class="mls-custom-rich-content prose max-w-none prose-ul:list-disc prose-ol:list-decimal prose-ul:pl-6 prose-ol:pl-6">
+                    <div class="mls-custom-rich-content  max-w-none prose-ul:list-disc prose-ol:list-decimal prose-ul:pl-6 prose-ol:pl-6">
                         {!! $property->property_body !!}
                     </div>
 

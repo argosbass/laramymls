@@ -334,7 +334,7 @@
     <button
         type="button"
         class="trix-button trix-button--icon"
-        title="Limpiar formato"
+        title="Clean format"
         data-testid="clear-formatting"
         x-on:click.prevent="
              const editor = $refs.trix?.editor
