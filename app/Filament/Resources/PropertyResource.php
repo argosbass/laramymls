@@ -8,7 +8,9 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Forms\Components\Actions\Action;
+
+use Filament\Forms\Components\Actions\Action as FormAction;
+use Filament\Tables\Actions\Action as TableAction;
 
 use Filament\Tables\Table;
 use App\Filament\Resources\PropertyResource\Pages;
@@ -234,7 +236,7 @@ class PropertyResource extends Resource
                                         ->content('') // requerido
                                         ->dehydrated(false)
                                         ->hintAction(
-                                            Action::make('togglePropertyBodySource')
+                                            FormAction::make('togglePropertyBodySource')
                                                 ->label(fn (Get $get) => $get('property_body_html_mode') ? 'Visual' : 'Source')
                                                 ->icon(fn (Get $get) => $get('property_body_html_mode')
                                                     ? 'heroicon-m-pencil'
@@ -536,7 +538,7 @@ class PropertyResource extends Resource
                 Tables\Filters\SelectFilter::make('author.name')->relationship('author', 'name'),
             ])
             ->actions([
-                Action::make('migratePhotos')
+                TableAction::make('migratePhotos')
                     ->label('Migrate Photos')
                     ->icon('heroicon-o-photo')
                     ->visible(fn($record) => DB::table('property_photos')
@@ -557,10 +559,12 @@ class PropertyResource extends Resource
                             ->send();
                     }),
 
-                Action::make('view')
+                TableAction::make('view')
                     ->label('View')
                     ->icon('heroicon-o-eye')
-                    ->url(fn ($record) => PropertyResource::getUrl('view', ['record' => $record])),
+                    ->url(fn ($record) => url('/property-listing-id/' . $record->id))
+                    ->openUrlInNewTab(),
+
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
