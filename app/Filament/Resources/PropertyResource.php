@@ -365,7 +365,7 @@ class PropertyResource extends Resource
                                 ->openable(false)
                                 ->previewable(true)
                                 ->columnSpanFull()
-                                ->maxFiles(20)
+                                ->maxFiles(75)
 
                         ])->columns(3)->lazy(),
 
