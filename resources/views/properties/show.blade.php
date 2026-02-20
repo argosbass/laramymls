@@ -271,14 +271,14 @@
 
 
 
-            <h2 class="text-xl font-semibold border-b pb-1">Options</h2>
+        <h2 class="text-xl font-semibold border-b pb-1">Options</h2>
 
-            {{-- Export to PDF --}}
-            <a target="_blank" href="{{ route('property.export', $property) }}"
-            class="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                <x-heroicon-o-printer class="w-5 h-5" />
-                Print to PDF
-            </a>
+        {{-- Export to PDF --}}
+        <a target="_blank" href="{{ route('property.export', $property) }}"
+           class="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+            <x-heroicon-o-printer class="w-5 h-5" />
+            Print to PDF
+        </a>
         @if (auth()->check())
             {{-- Edit in Filament --}}
             <a href="{{ route('filament.admin.resources.properties.edit', ['record' => $property->id]) }}"
@@ -367,65 +367,65 @@
         @endif
 
         @if (auth()->check())
-        <div class="mt-6">
-            <button
-                onclick="toggleCollapse('extraDetailsCollapse')"
-                class="w-full text-left bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded flex justify-between items-center">
-                <span class="font-semibold text-gray-800">Agent Access</span>
-                <svg id="icon-extraDetailsCollapse" class="w-5 h-5 transition-transform transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
-            </button>
+            <div class="mt-6">
+                <button
+                    onclick="toggleCollapse('extraDetailsCollapse')"
+                    class="w-full text-left bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded flex justify-between items-center">
+                    <span class="font-semibold text-gray-800">Agent Access</span>
+                    <svg id="icon-extraDetailsCollapse" class="w-5 h-5 transition-transform transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
 
-            <div id="extraDetailsCollapse" class="mt-3 hidden">
-                <div class="bg-white border rounded p-4 text-sm text-gray-700 space-y-4">
+                <div id="extraDetailsCollapse" class="mt-3 hidden">
+                    <div class="bg-white border rounded p-4 text-sm text-gray-700 space-y-4">
 
-                    {{-- Added Date --}}
-                    <div>
-                        <strong>Added Date:</strong>
-                        {{ $property->created_at ? \Carbon\Carbon::parse($property->created_at)->format('M d, Y') : '—' }}
+                        {{-- Added Date --}}
+                        <div>
+                            <strong>Added Date:</strong>
+                            {{ $property->created_at ? \Carbon\Carbon::parse($property->created_at)->format('M d, Y') : '—' }}
+                        </div>
+
+                        {{-- Added Date --}}
+                        <div>
+                            <strong>Notes To Agents:</strong>
+                            {!! $property->property_notes_to_agents !!}
+                        </div>
+
+                        {{-- Listing Competitors --}}
+                        <div>
+                            <h3 class="text-base font-semibold mb-2">Listing Competitors</h3>
+
+                            @if ($property->listingCompetitors->count())
+                                <ul class="space-y-3">
+                                    @foreach($property->listingCompetitors as $comp)
+                                        <li class="border-b pb-2">
+                                            @if ($comp->added_date)
+                                                <div><strong>Added:</strong> {{ \Carbon\Carbon::parse($comp->added_date)->format('M d, Y') }}</div>
+                                            @endif
+
+
+                                            <div><strong>Company:</strong> {{ $comp->competitor_company_name ?? '—' }}</div>
+                                            <div class="flex items-center gap-2">
+                                                <strong>Link:</strong>
+                                                <a href="{{ $comp->competitor_property_link }}"
+                                                   class="text-blue-600 underline whitespace-nowrap overflow-hidden text-ellipsis max-w-[300px]"
+                                                   target="_blank"
+                                                   title="{{ $comp->competitor_property_link }}">
+                                                    {{ $comp->competitor_property_link }}
+                                                </a>
+                                            </div>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @else
+                                <p class="text-gray-500 text-sm italic">No competitor listings available.</p>
+                            @endif
+                        </div>
+
                     </div>
-
-                    {{-- Added Date --}}
-                    <div>
-                        <strong>Notes To Agents:</strong>
-                        {!! $property->property_notes_to_agents !!}
-                    </div>
-
-                    {{-- Listing Competitors --}}
-                    <div>
-                        <h3 class="text-base font-semibold mb-2">Listing Competitors</h3>
-
-                        @if ($property->listingCompetitors->count())
-                            <ul class="space-y-3">
-                                @foreach($property->listingCompetitors as $comp)
-                                    <li class="border-b pb-2">
-                                        @if ($comp->added_date)
-                                            <div><strong>Added:</strong> {{ \Carbon\Carbon::parse($comp->added_date)->format('M d, Y') }}</div>
-                                        @endif
-
-
-                                        <div><strong>Company:</strong> {{ $comp->competitor_company_name ?? '—' }}</div>
-                                        <div class="flex items-center gap-2">
-                                            <strong>Link:</strong>
-                                            <a href="{{ $comp->competitor_property_link }}"
-                                               class="text-blue-600 underline whitespace-nowrap overflow-hidden text-ellipsis max-w-[300px]"
-                                               target="_blank"
-                                               title="{{ $comp->competitor_property_link }}">
-                                                {{ $comp->competitor_property_link }}
-                                            </a>
-                                        </div>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        @else
-                            <p class="text-gray-500 text-sm italic">No competitor listings available.</p>
-                        @endif
-                    </div>
-
                 </div>
             </div>
-        </div>
         @endif
 
         {{-- Map --}}
@@ -433,17 +433,47 @@
             <div>
                 <h2 class="text-xl font-semibold border-b pb-1">Map</h2>
                 <!-- <div id="map" class="w-full h-60 rounded-md"></div> -->
-                <div style="aspect-ratio: 16/9;" class="rounded overflow-hidden mt-4">
+
+                <div style="position: relative; height: 5px;">
+
+                    <button onclick="openFullscreen()"
+                            style="
+        position:absolute;
+        top:30px;
+        right:10px;
+        z-index:10;
+        padding:8px 12px;
+        background: rgba(255,255,255,.7);
+        border:none;
+        cursor:pointer;
+        border-radius:6px;
+        backdrop-filter: blur(4px);
+    ">
+                        Full Screen
+                    </button>
+
+
+
+                </div>
+                <div style="aspect-ratio: 9/9;" class="rounded overflow-hidden mt-4">
+
                     <iframe
+                        id="mapFrame"
                         width="100%"
                         height="100%"
                         frameborder="0"
                         style="border:0"
-                        src="https://www.google.com/maps?q={{ $property->property_geolocation_lat }},{{ $property->property_geolocation_lng }}&hl=es&z=15&output=embed"
-                        allowfullscreen>
+                        src="https://www.google.com/maps?q={{ $property->property_geolocation_lat }},{{ $property->property_geolocation_lng }}&hl=en&z=15&output=embed"
+                        allowfullscreen
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                    >
                     </iframe>
                 </div>
             </div>
+
+
+
 
 
 
@@ -457,6 +487,20 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/magnific-popup@1.1.0/dist/jquery.magnific-popup.min.js"></script>
+
+<script>
+    function openFullscreen() {
+        const elem = document.getElementById("mapFrame");
+
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) {
+            elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) {
+            elem.msRequestFullscreen();
+        }
+    }
+</script>
 
 <script>
     $(document).ready(function(){
@@ -510,14 +554,14 @@
 {{-- Leaflet Map --}}
 <!-- <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script> -->
 <!-- <script> -->
-    @if ($property->property_geolocation_lat && $property->property_geolocation_lng)
+@if ($property->property_geolocation_lat && $property->property_geolocation_lng)
     <!--     var map = L.map('map').setView([{{ $property->property_geolocation_lat }}, {{ $property->property_geolocation_lng }}], 16); -->
     <!-- L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { -->
     <!--     attribution: '&copy; OpenStreetMap contributors' -->
     <!-- }).addTo(map); -->
     <!-- L.marker([{{ $property->property_geolocation_lat }}, {{ $property->property_geolocation_lng }}]).addTo(map) -->
     <!--     .bindPopup("{{ $property->property_title }}").openPopup(); -->
-    @endif
+@endif
 <!-- </script> -->
 
 <script>
