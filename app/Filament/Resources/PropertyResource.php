@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
 use Filament\Notifications\Notification;
 
+use Filament\Forms\Components\TextInput;
 
 
 
@@ -520,6 +521,7 @@ class PropertyResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('property_price', 'desc') // 👈 orden inicial
             ->columns([
                 Tables\Columns\TextColumn::make('property_title')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('status.status_name')->label('Status')->sortable(),
@@ -533,9 +535,32 @@ class PropertyResource extends Resource
                 Tables\Columns\BooleanColumn::make('published'),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('property_status_id')->relationship('status', 'status_name'),
-                Tables\Filters\SelectFilter::make('property_type_id')->relationship('type', 'type_name'),
-                Tables\Filters\SelectFilter::make('author.name')->relationship('author', 'name'),
+
+                Tables\Filters\Filter::make('property_title')
+                    ->form([
+                        TextInput::make('value')
+                            ->label('Property Title'),
+                    ])
+                    ->query(fn ($query, array $data) =>
+                    $query->when($data['value'] ?? null, fn ($q, $value) =>
+                    $q->where('property_title', 'like', "%{$value}%")
+                    )
+                    ),
+
+                Tables\Filters\Filter::make('property_body')
+                    ->form([
+                        TextInput::make('value')
+                            ->label('Property Description'),
+                    ])
+                    ->query(fn ($query, array $data) =>
+                    $query->when($data['value'] ?? null, fn ($q, $value) =>
+                    $q->where('property_body', 'like', "%{$value}%")
+                    )
+                    ),
+
+                Tables\Filters\SelectFilter::make('property_status_id')->label('Property Status')->relationship('status', 'status_name'),
+                Tables\Filters\SelectFilter::make('property_type_id')->label('Property Type')->relationship('type', 'type_name'),
+                Tables\Filters\SelectFilter::make('author.name')->label('Author')->relationship('author', 'name'),
             ])
             ->actions([
                 TableAction::make('migratePhotos')

@@ -338,9 +338,15 @@
             <div><span class="info-label">On Floor No.:</span> {{ $property->property_on_floor_no }}</div>
             <div><span class="info-label">No. of Floors:</span> {{ $property->property_no_of_floors }}</div>
             <div><span class="info-label">Price:</span> ${{ number_format($property->property_price, 2) }}</div>
+
+            <div>
+                <span class="info-label">Monthly HOA Fee: $</span>
+                {{ number_format($property->property_hoa_fee ?: 0, 2) }}
+            </div>
+
             <div><span class="info-label">Status:</span> {{ $property->status?->status_name }}</div>
             <div><span class="info-label">Location:</span> {{ $property->location?->full_path  }}</div>
-            <div><span class="info-label">Monthly HOA Fee: $</span> {{ $property->property_hoa_fee  }}</div>
+
         </div>
 
         {{-- Sold References --}}
