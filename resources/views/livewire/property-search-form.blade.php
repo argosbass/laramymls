@@ -250,17 +250,37 @@
             <table class="w-full table-auto text-sm text-left border border-gray-300">
                 <thead>
                 <tr class="bg-gray-100 text-xs uppercase">
-                    <th class="px-2 py-1">   <button type="button"
-                                                     wire:click="sortByColumn('id')"
-                                                     class="flex items-center gap-1 uppercase text-xs hover:underline">
+                    <th class="px-2 py-1">
+
+                        <button type="button"
+                             wire:click="sortByColumn('id')"
+                             class="flex items-center gap-1 uppercase text-xs hover:underline">
                             ID
                             @if($sortBy === 'id')
                                 <span class="text-[10px]">{{ $sortDir === 'asc' ? '▲' : '▼' }}</span>
                             @else
                                 <span class="text-[10px]">{{  '▲▼'  }}</span>
                             @endif
-                        </button></th>
-                    <th class="px-2 py-1">Date Added</th>
+                        </button>
+                    </th>
+                    <th class="px-2 py-1">
+
+
+                        <button type="button"
+                                wire:click="sortByColumn('created_at')"
+                                class="flex items-center gap-1 uppercase text-xs hover:underline">
+                            Date Added
+                            @if($sortBy === 'created_at')
+                                <span class="text-[10px]">{{ $sortDir === 'asc' ? '▲' : '▼' }}</span>
+                            @else
+                                <span class="text-[10px]">{{  '▲▼'  }}</span>
+                            @endif
+                        </button>
+
+
+
+
+                    </th>
                     <th class="px-2 py-1">Date Sold</th>
                     <th class="px-2 py-1">Type</th>
                     <th class="px-2 py-1">Status</th>
@@ -296,12 +316,85 @@
                         </button>
 
                     </th>
-                    <th class="px-2 py-1">Beds</th>
-                    <th class="px-2 py-1">Baths</th>
+                    <th class="px-2 py-1">
+
+
+                        <button type="button"
+                                wire:click="sortByColumn('property_bedrooms')"
+                                class="flex items-center gap-1 uppercase text-xs hover:underline">
+                            Beds
+                            @if($sortBy === 'property_bedrooms')
+                                <span class="text-[10px]">{{ $sortDir === 'asc' ? '▲' : '▼' }}</span>
+                            @else
+                                <span class="text-[10px]">{{  '▲▼'  }}</span>
+                            @endif
+                        </button>
+
+
+                    </th>
+                    <th class="px-2 py-1">
+
+                        <button type="button"
+                                wire:click="sortByColumn('property_bathrooms')"
+                                class="flex items-center gap-1 uppercase text-xs hover:underline">
+                            Baths
+                            @if($sortBy === 'property_bathrooms')
+                                <span class="text-[10px]">{{ $sortDir === 'asc' ? '▲' : '▼' }}</span>
+                            @else
+                                <span class="text-[10px]">{{  '▲▼'  }}</span>
+                            @endif
+                        </button>
+
+                    </th>
                     <th class="px-2 py-1">HOA</th>
-                    <th class="px-2 py-1">Building (m²)</th>
-                    <th class="px-2 py-1">Lot (m²)</th>
-                    <th class="px-2 py-1">Floors</th>
+                    <th class="px-2 py-1">
+
+
+                        <button type="button"
+                                wire:click="sortByColumn('property_building_size_m2')"
+                                class="flex items-center gap-1 uppercase text-xs hover:underline">
+                            Building (m²)
+                            @if($sortBy === 'property_building_size_m2')
+                                <span class="text-[10px]">{{ $sortDir === 'asc' ? '▲' : '▼' }}</span>
+                            @else
+                                <span class="text-[10px]">{{  '▲▼'  }}</span>
+                            @endif
+                        </button>
+
+
+                    </th>
+                    <th class="px-2 py-1">
+
+                        <button type="button"
+                                wire:click="sortByColumn('property_lot_size_m2')"
+                                class="flex items-center gap-1 uppercase text-xs hover:underline">
+                            Lot (m²)
+                            @if($sortBy === 'property_lot_size_m2')
+                                <span class="text-[10px]">{{ $sortDir === 'asc' ? '▲' : '▼' }}</span>
+                            @else
+                                <span class="text-[10px]">{{  '▲▼'  }}</span>
+                            @endif
+                        </button>
+
+
+
+                    </th>
+                    <th class="px-2 py-1">
+
+                        <button type="button"
+                                wire:click="sortByColumn('property_no_of_floors')"
+                                class="flex items-center gap-1 uppercase text-xs hover:underline">
+                            Floors
+                            @if($sortBy === 'property_no_of_floors')
+                                <span class="text-[10px]">{{ $sortDir === 'asc' ? '▲' : '▼' }}</span>
+                            @else
+                                <span class="text-[10px]">{{  '▲▼'  }}</span>
+                            @endif
+                        </button>
+
+
+
+                    </th>
                     @foreach ($featuresList as $feature)
                         <th class="px-2 py-1 text-center"> {{$features_label[ $feature->feature_name ]  }}</th>
                     @endforeach
