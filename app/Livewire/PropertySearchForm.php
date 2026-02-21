@@ -35,7 +35,7 @@ class PropertySearchForm extends Component
     public int $page = 1;
 
     public string $sortBy = 'property_price';
-    public string $sortDir = 'desc';
+    public string $sortDir = 'asc';
 
     protected $queryString = ['page'];
 
@@ -66,7 +66,7 @@ class PropertySearchForm extends Component
             $this->sortDir = $this->sortDir === 'asc' ? 'desc' : 'asc';
         } else {
             $this->sortBy = $column;
-            $this->sortDir = 'desc';
+            $this->sortDir = 'asc';
         }
 
         $this->resetPage();
