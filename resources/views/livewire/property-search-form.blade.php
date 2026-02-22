@@ -281,9 +281,40 @@
 
 
                     </th>
-                    <th class="px-2 py-1">Date Sold</th>
+                    <th class="px-2 py-1">
+
+                        <button type="button"
+                                wire:click="sortByColumn('property_date_sold')"
+                                class="flex items-center gap-1 uppercase text-xs hover:underline">
+                            Date Sold
+                            @if($sortBy === 'property_date_sold')
+                                <span class="text-[10px]">{{ $sortDir === 'asc' ? '▲' : '▼' }}</span>
+                            @else
+                                <span class="text-[10px]">{{  '▲▼'  }}</span>
+                            @endif
+                        </button>
+
+                    </th>
                     <th class="px-2 py-1">Type</th>
-                    <th class="px-2 py-1">Status</th>
+                    <th class="px-2 py-1">
+
+                        <button type="button"
+                                wire:click="sortByColumn('property_status_name')"
+                                class="flex items-center gap-1 uppercase text-xs hover:underline">
+                            Status
+
+                            @if($sortBy === 'property_status_name')
+                                <span class="text-[10px]">
+                                    {{ $sortDir === 'asc' ? '▲' : '▼' }}
+                                </span>
+                            @else
+                                <span class="text-[10px]">{{  '▲▼'  }}</span>
+                            @endif
+                        </button>
+
+
+
+                    </th>
                     <th class="px-2 py-1">
 
                         <button type="button"
@@ -346,7 +377,25 @@
                         </button>
 
                     </th>
-                    <th class="px-2 py-1">HOA</th>
+                    <th class="px-2 py-1">
+
+
+                        <button type="button"
+                                wire:click="sortByColumn('property_hoa_fee')"
+                                class="flex items-center gap-1 uppercase text-xs hover:underline">
+                            HOA
+                            @if($sortBy === 'property_hoa_fee')
+                                <span class="text-[10px]">
+                                    {{ $sortDir === 'asc' ? '▲' : '▼' }}
+                                </span>
+                            @else
+                                <span class="text-[10px]">{{  '▲▼'  }}</span>
+                            @endif
+                        </button>
+
+
+
+                    </th>
                     <th class="px-2 py-1">
 
 
@@ -433,7 +482,7 @@
                         <td class="px-2 py-1">${{ number_format($property->property_price) }}</td>
                         <td class="px-2 py-1">{{ $property->property_bedrooms }}</td>
                         <td class="px-2 py-1">{{ $property->property_bathrooms }}</td>
-                        <td class="px-2 py-1">{{ $property->property_hoa ?? '-' }}</td>
+                        <td class="px-2 py-1">${{ number_format($property->property_hoa_fee ?: 0, 2) }}</td>
                         <td class="px-2 py-1">{{ $property->property_building_size_m2 }}</td>
                         <td class="px-2 py-1">{{ $property->property_lot_size_m2 }} </td>
                         <td class="px-2 py-1">{{ $property->property_no_of_floors }}</td>
