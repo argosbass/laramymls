@@ -98,7 +98,7 @@ class PropertyResource extends Resource
 
                                     Forms\Components\TextInput::make('property_building_size_area_quantity')
                                         ->numeric()
-                                        ->live() // importante
+                                        ->lazy() // importante
                                         ->afterStateUpdated(function ($state, Get $get, Set $set) {
 
                                             $unit = $get('property_building_size_area_unit');
@@ -124,7 +124,7 @@ class PropertyResource extends Resource
                                             'sqm' => 'sqm',
                                             'sqft' => 'sqft',
                                         ])
-                                        ->live()
+                                        ->lazy()
                                         ->afterStateUpdated(function ($state, Get $get, Set $set) {
 
                                             $quantity = $get('property_building_size_area_quantity');
@@ -161,7 +161,7 @@ class PropertyResource extends Resource
 
                                     Forms\Components\TextInput::make('property_lot_size_area_quantity')
                                         ->numeric()
-                                        ->live()
+                                        ->lazy()
                                         ->afterStateUpdated(function ($state, Get $get, Set $set) {
 
                                             $unit = $get('property_lot_size_area_unit');
@@ -185,7 +185,7 @@ class PropertyResource extends Resource
                                             'sqm' => 'sqm',
                                             'sqft' => 'sqft',
                                         ])
-                                        ->live()
+                                        ->lazy()
                                         ->afterStateUpdated(function ($state, Get $get, Set $set) {
 
                                             $quantity = $get('property_lot_size_area_quantity');
