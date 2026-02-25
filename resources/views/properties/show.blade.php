@@ -165,7 +165,7 @@
 <div class="section" style="background-color: #ccc; text-align: center">
     <div class="max-w-7xl mx-auto p-6 lg:p-8">
         <div class="flex justify-center">
-            <img src="https://franravi.mymls-cr.com/images/remax-header-pdf.png" style="width: 50%;">
+            <img src="https://mymls-cr.com/images/remax-header-pdf.png" style="width: 50%;">
         </div>
     </div>
 </div>
