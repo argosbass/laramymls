@@ -7,6 +7,7 @@ use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
 use App\Jobs\EnsureResponsiveImages;
+use App\Jobs\EnsureThumbConversion;
 
 class EditProperty extends EditRecord
 {
@@ -54,7 +55,7 @@ class EditProperty extends EditRecord
 
         $state = $this->form->getState();
 
-        $this->dispatchResponsiveJobs();
+        $this->dispatchThumbJobs();
 
         $state['temp_images'] = $this->record->getImagePaths();
 
@@ -63,40 +64,6 @@ class EditProperty extends EditRecord
 
     }
 
-    protected function afterSave(): void
-    {
-        $tempImages = $this->form->getState()['temp_images'] ?? [];
-
-        // Obtener los media actuales
-        $currentMedia = $this->record->getMedia('gallery');
-
-        // Mapear paths actuales
-        $currentPaths = $currentMedia->map(fn ($media) => str_replace('public/', '', $media->getPathRelativeToRoot()))->toArray();
-
-        // Detectar qué archivos eliminar (están en current pero no en tempImages)
-        $toDelete = array_diff($currentPaths, $tempImages);
-
-        // Eliminar media correspondientes
-        foreach ($currentMedia as $media) {
-            $mediaPath = str_replace('public/', '', $media->getPathRelativeToRoot());
-            if (in_array($mediaPath, $toDelete)) {
-                $media->delete();
-            }
-        }
-
-        // Agregar nuevas imágenes que no estén ya en la colección
-        foreach ($tempImages as $path) {
-            if (!in_array($path, $currentPaths)) {
-                $fullPath = storage_path("app/public/{$path}");
-                if (file_exists($fullPath)) {
-                    $this->record
-                        ->addMedia($fullPath)
-                        ->preservingOriginal()
-                        ->toMediaCollection('gallery');
-                }
-            }
-        }
-    }
 
     protected function getRedirectUrl(): string
     {
@@ -122,6 +89,19 @@ class EditProperty extends EditRecord
             $responsive = $media->responsive_images ?? [];
             if (empty($responsive)) {
                 EnsureResponsiveImages::dispatch($media->id);
+            }
+        }
+    }
+
+    protected function dispatchThumbJobs(): void
+    {
+        $mediaItems = $this->record->getMedia('gallery');
+
+        foreach ($mediaItems as $media) {
+            $generated = $media->generated_conversions ?? [];
+
+            if (empty($generated['thumb'])) {
+                EnsureThumbConversion::dispatch($media->id);
             }
         }
     }

@@ -13,6 +13,8 @@ use Filament\Infolists\Components\ImageEntry;
 use Filament\Actions;
 
 use App\Jobs\EnsureResponsiveImages;
+use App\Jobs\EnsureThumbConversion;
+
 
 use Illuminate\Support\HtmlString;
 use Filament\Support\Facades\FilamentView;
@@ -218,7 +220,7 @@ class ViewProperty extends ViewRecord
     {
         parent::mount($record);
 
-        $this->dispatchResponsiveJobs();
+        $this->dispatchThumbJobs();
 
         FilamentView::registerRenderHook(
             'panels::head.end',
@@ -267,6 +269,18 @@ class ViewProperty extends ViewRecord
             $responsive = $media->responsive_images ?? [];
             if (empty($responsive)) {
                 EnsureResponsiveImages::dispatch($media->id);
+            }
+        }
+    }
+    protected function dispatchThumbJobs(): void
+    {
+        $mediaItems = $this->record->getMedia('gallery');
+
+        foreach ($mediaItems as $media) {
+            $generated = $media->generated_conversions ?? [];
+
+            if (empty($generated['thumb'])) {
+                EnsureThumbConversion::dispatch($media->id);
             }
         }
     }
