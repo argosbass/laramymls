@@ -180,7 +180,7 @@
 
             $photos = $property
                     ->getMedia('gallery')
-                    ->sortBy('order_column'); // ASC
+                    ->sortByDesc('order_column'); // DESC
 
         @endphp
 
