@@ -454,7 +454,7 @@
                 @foreach ($results as $property)
                     <tr class="border-t">
                         <td class="px-2 py-1">{{ $property->id }}</td>
-                        <td class="px-2 py-1">{{ $property->created_at->format('Y-m-d') }}</td>
+                        <td class="px-2 py-1">{{ $property->property_added_date->format('Y-m-d') }}</td>
 
                         @php
                             $sold = $property->sold_at;
