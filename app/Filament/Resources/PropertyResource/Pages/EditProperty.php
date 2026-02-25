@@ -68,7 +68,7 @@ class EditProperty extends EditRecord
         $tempImages = $this->form->getState()['temp_images'] ?? [];
 
         // Obtener los media actuales
-        $currentMedia = $this->record->getMedia('images');
+        $currentMedia = $this->record->getMedia('gallery');
 
         // Mapear paths actuales
         $currentPaths = $currentMedia->map(fn ($media) => str_replace('public/', '', $media->getPathRelativeToRoot()))->toArray();
@@ -92,7 +92,7 @@ class EditProperty extends EditRecord
                     $this->record
                         ->addMedia($fullPath)
                         ->preservingOriginal()
-                        ->toMediaCollection('images');
+                        ->toMediaCollection('gallery');
                 }
             }
         }

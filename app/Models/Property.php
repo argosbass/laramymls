@@ -46,7 +46,7 @@ class Property extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('images')->useFallbackUrl('/default.jpg');
+        $this->addMediaCollection('gallery')->useFallbackUrl('/default.jpg');
     }
 
     public function registerMediaConversions(?Media $media = null): void
@@ -61,7 +61,7 @@ class Property extends Model implements HasMedia
 
     public function getImagePaths(): array
     {
-        return $this->getMedia('images')
+        return $this->getMedia('gallery')
             ->map(fn ($media) => str_replace('storage/', '', $media->getPathRelativeToRoot()))
             ->toArray();
     }

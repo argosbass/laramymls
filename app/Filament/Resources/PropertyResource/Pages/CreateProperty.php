@@ -19,7 +19,7 @@ class CreateProperty extends CreateRecord
                 $this->record
                     ->addMedia(storage_path("app/public/{$path}"))
                     ->preservingOriginal()
-                    ->toMediaCollection('images');
+                    ->toMediaCollection('gallery');
             }
         }
     }
