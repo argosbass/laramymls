@@ -496,9 +496,10 @@ class PropertyResource extends Resource
 
                             Forms\Components\Select::make('user_id')
                                 ->label('Author')
-                                ->relationship('author', 'name') // usa la relación que creaste en el modelo Property
+                                ->relationship('author', 'name')
                                 ->searchable()
-                                ->preload(),
+                                ->preload()
+                                ->default(fn () => auth()->id()),
 
                             Forms\Components\TextInput::make('slug')
                                 ->label('URL')
