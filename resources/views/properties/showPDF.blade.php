@@ -236,8 +236,9 @@
     // carga media de una sola vez (evita N+1)
        $property->load('media');
 
-       $photos = $property->getMedia('gallery');
-
+       $photos = $property
+        ->getMedia('gallery')
+        ->sortBy('order_column'); // ASC
 @endphp
 
 @if ($photos->count())

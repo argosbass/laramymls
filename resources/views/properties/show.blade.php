@@ -178,7 +178,9 @@
         @php
 
 
-            $photos = $property->getMedia('gallery');
+            $photos = $property
+                    ->getMedia('gallery')
+                    ->sortBy('order_column'); // ASC
 
         @endphp
 
@@ -383,7 +385,7 @@
                         {{-- Added Date --}}
                         <div>
                             <strong>Added Date:</strong>
-                            {{ $property->created_at ? \Carbon\Carbon::parse($property->created_at)->format('M d, Y') : '—' }}
+                            {{ $property->property_added_date ? \Carbon\Carbon::parse($property->property_added_date)->format('M d, Y') : '—' }}
                         </div>
 
                         {{-- Added Date --}}
