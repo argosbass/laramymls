@@ -140,7 +140,7 @@ class ImportPropertyPhotosBatch extends Command
             $property
                 ->addMedia($tempFile)
                 ->usingFileName($fileName)
-                ->withResponsiveImages()
+                //->withResponsiveImages()
                 ->toMediaCollection('gallery');
 
             // Limpiar archivo temporal
