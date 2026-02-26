@@ -22,6 +22,9 @@ class PropertySearchForm extends Component
     public $locationId;
     public $priceFrom;
     public $priceTo;
+
+    public $priceRange;
+
     public $bedroomsFrom;
     public $bedroomsTo;
     public $bathroomsFrom;
@@ -32,6 +35,7 @@ class PropertySearchForm extends Component
     public $lotTo;
     public $year;
     public $features = [];
+
 
     public int $page = 1;
 
@@ -44,6 +48,7 @@ class PropertySearchForm extends Component
     {
         $this->resetPage(); // Cuando cambia cualquier filtro, vuelve a la página 1
     }
+
 
     public function sortByColumn(string $column): void
     {

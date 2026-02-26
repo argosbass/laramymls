@@ -97,7 +97,7 @@
             </div>
 
             <div>
-                <div class="flex gap-4 w-full">
+                <div class="flex gap-4 w-full hidden">
                     <div class="flex flex-col flex-1 min-w-0">
                         <label for="priceFrom" class="block text-sm font-medium text-gray-700 mb-1">Price From</label>
                         <input id="priceFrom" type="number" wire:model.defer="priceFrom"
@@ -109,6 +109,25 @@
                         <input id="priceTo" type="number" wire:model.defer="priceTo"
                                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
                     </div>
+                </div>
+
+                <div wire:ignore class="flex flex-col w-full">
+                    <label for="priceRange" class="block text-sm font-medium text-gray-700 mb-1">
+                        Price From/To
+                    </label>
+
+
+                        <select id="priceRange" class="block w-full rounded-md border-gray-300 shadow-sm">
+                            <option value="">Price From/To</option>
+                            <option value="0-100000">Less than $100,000</option>
+                            <option value="100000-200000">$100,000 to $200,000</option>
+                            <option value="200000-300000">$200,000 to $300,000</option>
+                            <option value="300000-400000">$300,000 to $400,000</option>
+                            <option value="400000-500000">$400,000 to $500,000</option>
+                            <option value="500000-750000">$500,000 to $750,000</option>
+                            <option value="750000-9999999999">More than $750,000</option>
+                        </select>
+
                 </div>
             </div>
 
@@ -517,7 +536,7 @@
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/scripts/choices.min.js"></script>
     <script>
-        let typeChoices, statusChoices, locationChoices, yearChoices;
+        let typeChoices, statusChoices, locationChoices, yearChoices, priceChoises;
 
         document.addEventListener('DOMContentLoaded', function() {
             initializeChoices();
@@ -529,6 +548,8 @@
             if (statusChoices) statusChoices.destroy();
             if (locationChoices) locationChoices.destroy();
             if (yearChoices) yearChoices.destroy();
+            if (priceChoises) priceChoises.destroy();
+
 
             // Inicializar Choices para Type
             typeChoices = new Choices('#typeId', {
@@ -563,6 +584,39 @@
                 placeholderValue: '',
                 allowHTML: false
             });
+
+            priceChoices = new Choices('#priceRange', {
+                searchEnabled: false,
+                placeholder: false,
+                placeholderValue: '',
+                allowHTML: false,
+                shouldSort: false,
+                shouldSortItems: false,
+            });
+
+
+
+            const priceEl = document.getElementById('priceRange');
+
+            priceEl.onchange = (e) => {
+                const value = e.target.value || '';
+
+                const fromInput = document.getElementById('priceFrom');
+                const toInput   = document.getElementById('priceTo');
+
+                if (!value) {
+                    fromInput.value = '';
+                    toInput.value = '';
+                } else {
+                    const parts = value.split('-', 2);
+                    fromInput.value = parts[0] ?? '';
+                    toInput.value   = parts[1] ?? '';
+                }
+
+                // ✅ IMPORTANTÍSIMO: avisarle a Livewire (sin request)
+                fromInput.dispatchEvent(new Event('input', { bubbles: true }));
+                toInput.dispatchEvent(new Event('input', { bubbles: true }));
+            };
 
             // Manejar cambios para Livewire
             //document.getElementById('typeId').addEventListener('change', function(e) {
@@ -625,6 +679,7 @@
             statusChoices.setChoiceByValue('');
             locationChoices.setChoiceByValue('');
             yearChoices.setChoiceByValue('');
+            priceChoices.setChoiceByValue('');
 
             // Resetear en Livewire (IMPORTANTE)
         @this.set('title', '');
@@ -645,6 +700,7 @@
         @this.set('statusId', '');
         @this.set('locationId', '');
         @this.set('year', '');
+        @this.set('priceRange', '');
 
         @this.call('resetFilters');
 
