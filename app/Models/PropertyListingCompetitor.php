@@ -13,6 +13,7 @@ class PropertyListingCompetitor extends Model {
         'competitor_list_price',
         'competitor_notes',
         'real_estate_company_id',
+        'sort_order'
     ];
 
     public function property() {

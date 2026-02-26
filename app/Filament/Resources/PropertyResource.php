@@ -479,10 +479,17 @@ class PropertyResource extends Resource
                                         ->columnSpanFull(),
                                 ])
                                 ->columns(2)
-                                ->defaultItems(0)
-                                ->itemLabel(fn ($state) => $state['competitor_real_estate_company_id'] ?? 'New Listing Competitor')
+                                ->defaultItems(1)
+                                ->itemLabel(fn ($state) => $state['competitor_company_name'] ?? 'New Listing Competitor')
                                 ->addActionLabel('+ Add Listing Competitor')
                                 ->collapsible()
+
+                                ->collapsed(fn ($state) => ! blank(data_get($state, 'id')))
+                                // 👆 colapsa los existentes (edit), deja abierto el nuevo vacío
+                                ->reorderable()
+                                ->orderColumn('sort_order') // ✅ guarda el orden aquí
+
+
                                 ->columnSpanFull()
 
 

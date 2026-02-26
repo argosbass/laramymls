@@ -108,9 +108,10 @@ class Property extends Model implements HasMedia
     }
     public function soldReferences() {
         return $this->hasMany(PropertySoldReferences::class);
+        return $this->hasMany(PropertySoldReferences::class);
     }
     public function listingCompetitors() {
-        return $this->hasMany(PropertyListingCompetitor::class);
+        return $this->hasMany(PropertyListingCompetitor::class)->orderBy('sort_order');
     }
 
     public function sold_at()
