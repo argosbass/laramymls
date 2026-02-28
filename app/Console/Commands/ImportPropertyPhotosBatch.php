@@ -279,9 +279,10 @@ class ImportPropertyPhotosBatch extends Command
 
         // Limpia algunos escapes típicos
         $fileName = str_replace(
-            ['%20','%21','%22','%23','%24','%25','%26','%27','%28','%29',' '],
+            ['%20','%21','%22','%23','%24','%25','%26','%27','%28','%29','%3F',' '],
             '',
             $fileName
+
         );
 
         // Si no tiene extensión, añade .jpg por defecto
@@ -317,21 +318,48 @@ class ImportPropertyPhotosBatch extends Command
 
     protected function cleanUrl(string $url): ?string
     {
-        $parts = parse_url(trim($url));
+        $url = trim($url);
 
-        if (!isset($parts['scheme'], $parts['host'])) {
+        // Separa base y resto
+        if (!preg_match('#^(https?://[^/]+)(/.*)$#i', $url, $m)) {
             return null;
         }
 
-        $scheme = $parts['scheme'] . '://';
-        $host = $parts['host'];
+        $base = $m[1];
+        $rest = $m[2];
 
-        $path = isset($parts['path'])
-            ? implode('/', array_map('rawurlencode', explode('/', $parts['path'])))
-            : '';
+        // 1) Si hay "#", SIEMPRE es fragment: debe ser parte del filename => encodearlo
+        // (porque si no, parse_url lo corta)
+        $rest = str_replace('#', '%23', $rest);
 
-        $query = isset($parts['query']) ? '?' . $parts['query'] : '';
+        // 2) Caso especial: "?" dentro del filename (sin query real)
+        // Si después de "?" no hay "=" ni "&", casi seguro no es query string
+        if (str_contains($rest, '?')) {
+            $pos = strpos($rest, '?');
+            $after = substr($rest, $pos + 1);
 
-        return $scheme . $host . $path . $query;
+            // Heurística: no parece query (no tiene = ni &)
+            if (!str_contains($after, '=') && !str_contains($after, '&')) {
+                // Encode solo el primer "?" que está rompiendo el path
+                $rest = substr($rest, 0, $pos) . '%3F' . $after;
+            }
+        }
+
+        // 3) Ahora sí: separar query REAL (si existiera)
+        $path = $rest;
+        $query = '';
+
+        if (str_contains($rest, '?')) {
+            [$path, $q] = explode('?', $rest, 2);
+            $query = '?' . $q;
+        }
+
+        // 4) Encodear cada segmento del path (maneja espacios, (), etc.)
+        $segments = explode('/', $path);
+        $segments = array_map(function ($seg) {
+            return rawurlencode(rawurldecode($seg));
+        }, $segments);
+
+        return $base . implode('/', $segments) . $query;
     }
 }
