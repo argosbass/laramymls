@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use App\Models\Property;
-use Illuminate\Support\Str;
 
 class ImportPropertyPhotosBatch extends Command
 {
@@ -88,7 +87,7 @@ class ImportPropertyPhotosBatch extends Command
 
             if (!$property) {
                 $this->warn("❌ Propiedad {$photo->property_id} no encontrada.");
-                $this->markAsProcessed($photo->id);
+                $this->markAsErrorAndProcessed($photo->id, "Propiedad {$photo->property_id} no encontrada");
                 continue;
             }
 
@@ -101,20 +100,22 @@ class ImportPropertyPhotosBatch extends Command
     /**
      * Procesa una foto individual con descarga manual
      */
-    protected function processPhoto($photo, $property)
+    protected function processPhoto($photo, $property): bool
     {
         $cleanUrl = $this->cleanUrl($photo->photo_url);
 
         if (!$cleanUrl) {
-            $this->warn("⚠️ URL inválido: {$photo->photo_url}");
-            $this->markAsProcessed($photo->id);
+            $msg = "URL inválida";
+            $this->warn("⚠️ {$msg}: {$photo->photo_url}");
+            $this->markAsErrorAndProcessed($photo->id, $msg);
             return false;
         }
 
-        // Validar que sea una imagen
+        // Validar que sea una imagen por extensión (filtro rápido)
         if (!$this->isValidImageUrl($cleanUrl)) {
-            $this->warn("⚠️ No es una imagen válida: {$cleanUrl}");
-            $this->markAsProcessed($photo->id);
+            $msg = "No es una imagen válida (extensión)";
+            $this->warn("⚠️ {$msg}: {$cleanUrl}");
+            $this->markAsErrorAndProcessed($photo->id, $msg);
             return false;
         }
 
@@ -128,11 +129,19 @@ class ImportPropertyPhotosBatch extends Command
         }
 
         // Descargar imagen manualmente
-        $tempFile = $this->downloadImage($cleanUrl);
+        try {
+            $tempFile = $this->downloadImage($cleanUrl);
+        } catch (\Throwable $e) {
+            $msg = $e->getMessage();
+            $this->warn("⚠️ No se pudo descargar: {$cleanUrl} | {$msg}");
+            $this->markAsErrorAndProcessed($photo->id, $msg);
+            return false;
+        }
 
         if (!$tempFile) {
-            $this->warn("⚠️ No se pudo descargar: {$cleanUrl}");
-            $this->markAsProcessed($photo->id);
+            $msg = "No se pudo descargar (sin detalle)";
+            $this->warn("⚠️ {$msg}: {$cleanUrl}");
+            $this->markAsErrorAndProcessed($photo->id, $msg);
             return false;
         }
 
@@ -145,27 +154,30 @@ class ImportPropertyPhotosBatch extends Command
 
             // Limpiar archivo temporal
             if (file_exists($tempFile)) {
-                unlink($tempFile);
+                @unlink($tempFile);
             }
 
             $this->info("✅ Foto importada: {$fileName} en propiedad {$property->id}");
             $this->markAsProcessed($photo->id);
             return true;
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             // Limpiar archivo temporal en caso de error
             if (file_exists($tempFile)) {
-                unlink($tempFile);
+                @unlink($tempFile);
             }
-            $this->error("❌ Error con {$photo->photo_url}: " . $e->getMessage());
+
+            $msg = "MediaLibrary: " . $e->getMessage();
+            $this->error("❌ Error con {$photo->photo_url}: {$msg}");
+            $this->markAsErrorAndProcessed($photo->id, $msg);
             return false;
         }
     }
 
     /**
-     * Descarga imagen usando cURL con configuración robusta
+     * Descarga imagen usando cURL con BASIC AUTH
      */
-    protected function downloadImage($url)
+    protected function downloadImage(string $url): string
     {
         $this->info("📥 Descargando: {$url}");
 
@@ -175,50 +187,70 @@ class ImportPropertyPhotosBatch extends Command
             CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_CONNECTTIMEOUT => 10,
-            CURLOPT_USERAGENT => 'Mozilla/5.0 (compatible; PropertyImporter/1.0)',
+            CURLOPT_TIMEOUT => 45,
+            CURLOPT_CONNECTTIMEOUT => 15,
+            CURLOPT_MAXREDIRS => 5,
+
+            // ✅ BASIC AUTH
+            CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
+            CURLOPT_USERPWD  => 'mls:mls',
+
+            // ✅ headers tipo navegador (evita bloqueos)
+            CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36',
+            CURLOPT_HTTPHEADER => [
+                'Accept: image/avif,image/webp,image/apng,image/*,*/*;q=0.8',
+                'Accept-Language: es-CR,es;q=0.9,en;q=0.8',
+                'Referer: https://franravi.mymls-cr.com/',
+                'Cache-Control: no-cache',
+                'Pragma: no-cache',
+            ],
+
+            CURLOPT_ENCODING => '',
+
+            // Nota: en prod idealmente true. Lo dejo como venías para evitar fallos por SSL.
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_SSL_VERIFYHOST => false,
-            CURLOPT_MAXREDIRS => 3,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         ]);
 
         $data = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $error = curl_error($ch);
+
+        $httpCode    = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+        $error       = curl_error($ch);
 
         curl_close($ch);
 
         if ($error) {
-            $this->error("❌ cURL Error: {$error}");
-            return false;
+            throw new \RuntimeException("cURL Error: {$error}");
         }
 
         if ($httpCode !== 200) {
-            $this->error("❌ HTTP Error: {$httpCode}");
-            return false;
+            throw new \RuntimeException("HTTP Error: {$httpCode}");
         }
 
         if (!$data) {
-            $this->error("❌ No se recibieron datos");
-            return false;
+            throw new \RuntimeException("No se recibieron datos");
         }
 
-        // Verificar que sea realmente una imagen
-        if (!str_contains($contentType, 'image/')) {
-            $this->error("❌ Tipo de contenido no válido: {$contentType}");
-            return false;
+        $contentTypeLower = strtolower((string) $contentType);
+        $isImageByHeader = $contentTypeLower !== '' && str_contains($contentTypeLower, 'image/');
+
+        // A veces el server manda mal el content-type (text/html) aunque devuelva imagen.
+        $isImageByBytes = @getimagesizefromstring($data) !== false;
+
+        if (!$isImageByHeader && !$isImageByBytes) {
+            throw new \RuntimeException("Tipo de contenido no válido: " . ($contentType ?: 'null'));
         }
 
         // Crear archivo temporal
         $tempFile = tempnam(sys_get_temp_dir(), 'photo_');
-        $written = file_put_contents($tempFile, $data);
+        if (!$tempFile) {
+            throw new \RuntimeException("No se pudo crear archivo temporal");
+        }
 
+        $written = file_put_contents($tempFile, $data);
         if ($written === false) {
-            $this->error("❌ No se pudo escribir archivo temporal");
-            return false;
+            throw new \RuntimeException("No se pudo escribir archivo temporal");
         }
 
         $this->info("✅ Descargado: " . number_format(strlen($data)) . " bytes");
@@ -226,39 +258,33 @@ class ImportPropertyPhotosBatch extends Command
     }
 
     /**
-     * Valida si la URL es de una imagen
+     * Valida si la URL es de una imagen por extensión
      */
-    protected function isValidImageUrl($url)
+    protected function isValidImageUrl(string $url): bool
     {
         $path = parse_url($url, PHP_URL_PATH);
-        $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        $extension = strtolower(pathinfo((string) $path, PATHINFO_EXTENSION));
 
         $validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
 
-        return in_array($extension, $validExtensions);
+        return in_array($extension, $validExtensions, true);
     }
 
     /**
      * Genera un nombre de archivo limpio
      */
-    protected function generateFileName($url)
+    protected function generateFileName(string $url): string
     {
-        $fileName = basename(parse_url($url, PHP_URL_PATH));
+        $fileName = basename((string) parse_url($url, PHP_URL_PATH));
 
-        // Limpiar caracteres especiales de URL
-        $fileName = str_replace('%20', '', $fileName);
-        $fileName = str_replace('%21', '', $fileName);
-        $fileName = str_replace('%22', '', $fileName);
-        $fileName = str_replace('%23', '', $fileName);
-        $fileName = str_replace('%24', '', $fileName);
-        $fileName = str_replace('%25', '', $fileName);
-        $fileName = str_replace('%26', '', $fileName);
-        $fileName = str_replace('%27', '', $fileName);
-        $fileName = str_replace('%28', '', $fileName);
-        $fileName = str_replace('%29', '', $fileName);
-        $fileName = str_replace(' ', '', $fileName);
+        // Limpia algunos escapes típicos
+        $fileName = str_replace(
+            ['%20','%21','%22','%23','%24','%25','%26','%27','%28','%29',' '],
+            '',
+            $fileName
+        );
 
-        // Si no tiene extensión, añadir .jpg por defecto
+        // Si no tiene extensión, añade .jpg por defecto
         if (!pathinfo($fileName, PATHINFO_EXTENSION)) {
             $fileName .= '.jpg';
         }
@@ -266,12 +292,30 @@ class ImportPropertyPhotosBatch extends Command
         return $fileName;
     }
 
-    protected function markAsProcessed($id)
+    protected function markAsProcessed($id): void
     {
-        DB::table('property_photos')->where('id', $id)->update(['photo_alt' => true]);
+        DB::table('property_photos')
+            ->where('id', $id)
+            ->update(['photo_alt' => true]);
     }
 
-    protected function cleanUrl($url)
+    /**
+     * Guarda error en photo_title y marca como procesado (photo_alt=true)
+     */
+    protected function markAsErrorAndProcessed($id, string $message): void
+    {
+        $message = trim(preg_replace('/\s+/', ' ', $message));
+        $message = mb_substr($message, 0, 240);
+
+        DB::table('property_photos')
+            ->where('id', $id)
+            ->update([
+                'photo_title' => 'error: ' . $message,
+                'photo_alt'   => true, // ✅ igual lo marca como procesado
+            ]);
+    }
+
+    protected function cleanUrl(string $url): ?string
     {
         $parts = parse_url(trim($url));
 
@@ -281,9 +325,11 @@ class ImportPropertyPhotosBatch extends Command
 
         $scheme = $parts['scheme'] . '://';
         $host = $parts['host'];
+
         $path = isset($parts['path'])
             ? implode('/', array_map('rawurlencode', explode('/', $parts['path'])))
             : '';
+
         $query = isset($parts['query']) ? '?' . $parts['query'] : '';
 
         return $scheme . $host . $path . $query;
