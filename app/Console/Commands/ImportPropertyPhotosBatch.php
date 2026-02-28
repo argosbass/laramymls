@@ -279,11 +279,17 @@ class ImportPropertyPhotosBatch extends Command
 
         // Limpia algunos escapes típicos
         $fileName = str_replace(
-            ['%20','%21','%22','%23','%24','%25','%26','%27','%28','%29','%3F',' '],
+            [
+                '%20','%21','%22','%23','%24','%25','%26','%27',
+                '%28','%29','%2B','%2C','%3A','%3B','%3D',
+                '%3F','%40','%5B','%5D',
+                '%E2%80%8B','%E2%80%AF','%C2%A0',
+                ' '
+            ],
             '',
             $fileName
-
         );
+
 
         // Si no tiene extensión, añade .jpg por defecto
         if (!pathinfo($fileName, PATHINFO_EXTENSION)) {
