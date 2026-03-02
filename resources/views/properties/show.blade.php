@@ -191,6 +191,10 @@
                         <a href="{{ $media->getFullUrl() }}">
                             <img src="{{ $media->getFullUrl() }}"
                                  alt="Foto"
+
+                                 loading="lazy"
+                                 decoding="async"
+
                                  class="rounded-md w-full object-cover max-h-[450px] mx-auto" />
                         </a>
                     </div>
@@ -201,6 +205,11 @@
                 @foreach($photos as $media)
                     <div class="px-1">
                         <img src="{{ $media->getFullUrl('thumb') ?? $media->getFullUrl() }}"
+
+                             loading="lazy"
+                             decoding="async"
+
+
                              alt="Miniatura"
                              class="h-20 w-28 object-cover rounded border" />
                     </div>

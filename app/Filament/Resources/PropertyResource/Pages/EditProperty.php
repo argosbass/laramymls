@@ -6,6 +6,10 @@ use App\Filament\Resources\PropertyResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
+use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Artisan;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+
 use App\Jobs\EnsureResponsiveImages;
 use App\Jobs\EnsureThumbConversion;
 
@@ -24,12 +28,7 @@ class EditProperty extends EditRecord
                 ->color('gray'),
             //         ->openUrlInNewTab(),
 
-           // Actions\Action::make('view')
-           //     ->label('View Property')
-           //     ->icon('heroicon-o-eye')
-           //     ->url(fn () => PropertyResource::getUrl('view', ['record' => $this->record]))
-           //     ->color('gray'),
-           //   ->openUrlInNewTab(),
+         
 
             Actions\DeleteAction::make()
 
@@ -62,6 +61,11 @@ class EditProperty extends EditRecord
         $this->form->fill($state);
 
 
+    }
+
+    protected function afterFill(): void
+    {
+            $this->dispatchThumbJobs();
     }
 
 

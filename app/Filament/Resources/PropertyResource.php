@@ -60,6 +60,37 @@ class PropertyResource extends Resource
                     ->columnSpanFull() // Ocupa todo el ancho del formulario
                     ->tabs([
 
+                        Tab::make('Property Photos')->schema([
+                            /*
+                              Forms\Components\FileUpload::make('temp_images')
+                                 ->label('Upload Photos')
+                                 ->disk('public')
+                                 ->visibility('public')
+                                 ->multiple()
+                                 ->reorderable()
+                                 ->preserveFilenames()
+                                 ->directory('temp-property-photos')
+                                 ->previewable()
+                                 ->openable()
+                                 ->downloadable()
+                                 ->columnSpanFull(),
+                             */
+
+                            SpatieMediaLibraryFileUpload::make('gallery')
+                                ->collection('gallery')
+                                ->multiple()
+                                ->image()
+                                ->reorderable()
+                                ->panelLayout('grid')
+                                ->imagePreviewHeight('125')
+                                ->conversion('thumb')
+                                ->openable(false)
+                                ->previewable(true)
+                                ->columnSpanFull()
+                                ->maxFiles(75)
+
+                        ])->columns(3),
+
                         Tab::make('Basic Property Details')->schema([
                             Forms\Components\Section::make()
                                 ->schema([
@@ -341,36 +372,6 @@ class PropertyResource extends Resource
                             Forms\Components\Hidden::make('property_geolocation_lng_rad'),
                             Forms\Components\View::make('filament.components.google-map-edit-GM'),
                         ])->lazy(),
-
-                        Tab::make('Property Photos')->schema([
-                           /*
-                             Forms\Components\FileUpload::make('temp_images')
-                                ->label('Upload Photos')
-                                ->disk('public')
-                                ->visibility('public')
-                                ->multiple()
-                                ->reorderable()
-                                ->preserveFilenames()
-                                ->directory('temp-property-photos')
-                                ->previewable()
-                                ->openable()
-                                ->downloadable()
-                                ->columnSpanFull(),
-                            */
-
-                            SpatieMediaLibraryFileUpload::make('gallery')
-                                ->collection('gallery')
-                                ->multiple()
-                                ->image()
-                                ->reorderable()
-                                ->panelLayout('grid')
-                                ->imagePreviewHeight('250')
-                                ->openable(false)
-                                ->previewable(true)
-                                ->columnSpanFull()
-                                ->maxFiles(75)
-
-                        ])->columns(3)->lazy(),
 
                         Tab::make('Sold References')->schema([
                             Repeater::make('soldReferences')

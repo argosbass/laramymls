@@ -51,12 +51,22 @@ class Property extends Model implements HasMedia
 
     public function registerMediaConversions(?Media $media = null): void
     {
+      //  $this->addMediaConversion('thumb')
+      //      ->width(368)
+      //      ->height(232)
+      //      ->format('webp')
+      //      ->quality(80)
+      //      ->nonQueued(); // opcional
+
+        // Thumb ultraligero para grids (90–140px)
         $this->addMediaConversion('thumb')
             ->width(368)
             ->height(232)
             ->format('webp')
-            ->quality(80)
-            ->nonQueued(); // opcional
+            ->quality(75)
+            ->sharpen(10)
+            ->performOnCollections('gallery')
+            ->nonQueued(); // ← IMPORTANTE: thumbs siempre inmediatos
     }
 
     public function getImagePaths(): array
