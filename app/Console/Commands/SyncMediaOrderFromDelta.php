@@ -9,51 +9,47 @@ use App\Models\Property;
 
 class SyncMediaOrderFromDelta extends Command
 {
-    // php artisan media:sync-order-from-delta --limit=500
-    protected $signature = 'media:sync-order-from-delta {--limit=0} {--property-id=0}';
-    protected $description = 'Sincroniza media.order_column usando property_photos.delta (orden de Drupal).';
+    // Ejemplos:
+    // php artisan media:sync-order-from-delta
+    // php artisan media:sync-order-from-delta --property-id=11512
+    // php artisan media:sync-order-from-delta --limit=100
+
+    protected $signature = 'media:sync-order-from-delta {--limit=100} {--property-id=0}';
+    protected $description = 'Sincroniza media.order_column usando property_photos.delta. Procesa solo photo_alt=1 y marca photo_alt=2 al finalizar OK.';
 
     public function handle(): int
     {
-        $limit = (int) $this->option('limit');
+        $limit = (int) $this->option('limit') ?: 100;
         $propertyIdFilter = (int) $this->option('property-id');
 
         $q = DB::table('property_photos')
-            ->select(['id','property_id','photo_url','delta'])
+            ->select(['id','property_id','photo_url','delta','photo_alt'])
             ->whereNotNull('delta')
+            ->where('photo_alt', 1)              // ✅ solo pendientes
             ->orderBy('property_id')
-            ->orderBy('delta');
+            ->orderBy('delta')
+            ->limit($limit);                     // ✅ lote de 100
 
         if ($propertyIdFilter > 0) {
             $q->where('property_id', $propertyIdFilter);
         }
 
-        if ($limit > 0) {
-            $q->limit($limit);
-        }
-
         $rows = $q->get();
 
         if ($rows->isEmpty()) {
-            $this->info('No hay rows con delta para procesar.');
+            $this->info('✔️ No hay rows (photo_alt=1) pendientes.');
             return self::SUCCESS;
         }
 
         $updated = 0;
+        $markedOk = 0;
         $notFound = 0;
 
         foreach ($rows as $r) {
 
-            // orden en Spatie usualmente es 1-based
             $targetOrder = ((int) $r->delta) + 1;
+            $expectedFileName = $this->generateFileName($r->photo_url);
 
-            // Genera el file_name esperado con TU misma lógica
-            $expectedFileName = $this->generateFileName( $r->photo_url);
-
-            $this->info($r->photo_url );
-            $this->info($expectedFileName );
-
-            // Busca media por modelo + (match por filename exacto) o (URL termina en filename)
             $media = Media::query()
                 ->where('model_type', Property::class)
                 ->where('model_id', $r->property_id)
@@ -65,18 +61,29 @@ class SyncMediaOrderFromDelta extends Command
 
             if (!$media) {
                 $notFound++;
+                // ✅ lo dejamos en 1 para reintentar luego
+                // (si quieres marcar “no encontrado”, abajo te dejo la opción)
                 continue;
             }
 
+            // Actualiza orden si hace falta
             if ((int) $media->order_column !== $targetOrder) {
-                $media->order_column = $targetOrder;
-                $media->save();
+                Media::query()->whereKey($media->id)->update(['order_column' => $targetOrder]);
                 $updated++;
             }
+
+            // ✅ Marcar como procesado OK
+            DB::table('property_photos')
+                ->where('id', $r->id)
+                ->update(['photo_alt' => 2]);
+
+            $markedOk++;
         }
 
-        $this->info("✅ Actualizados: {$updated}");
-        $this->warn("⚠️ No encontrados: {$notFound}");
+        $this->info("✅ Lote procesado: " . $rows->count());
+        $this->info("✅ order_column actualizados: {$updated}");
+        $this->info("✅ marcados photo_alt=2: {$markedOk}");
+        $this->warn("⚠️ no encontrados (se quedan en photo_alt=1): {$notFound}");
 
         return self::SUCCESS;
     }
@@ -85,7 +92,6 @@ class SyncMediaOrderFromDelta extends Command
     {
         $fileName = basename((string) parse_url($url, PHP_URL_PATH));
 
-        // misma limpieza que ya usas
         $fileName = str_replace(
             [
                 '%20','%21','%22','%23','%24','%25','%26','%27',
