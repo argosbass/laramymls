@@ -21,7 +21,10 @@ class PropertyLocationsResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-map-pin';
     protected static ?string $navigationLabel = 'Property Locations';
     protected static ?string $modelLabel = 'Location';
-    protected static ?string $pluralModelLabel = 'Locations';
+    protected static ?string $navigationGroup = 'Configuration';
+    protected static ?string $label = 'Property Location';
+    protected static ?string $pluralLabel = 'Property Locations';
+
 
     /**
      * ✅ Fuerza el orden del nested set (Kalnoy) en TODO el Resource (List, relations, etc.)
