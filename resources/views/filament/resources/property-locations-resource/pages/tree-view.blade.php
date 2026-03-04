@@ -1,87 +1,88 @@
 <x-filament::page>
     <div wire:ignore>
-        <div id="location-tree" style="min-height: 300px;"></div>
+        <div id="location-tree" style="min-height: 400px;"></div>
     </div>
 </x-filament::page>
 
 @push('styles')
-    <!-- jsTree -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" rel="stylesheet" />
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-
-    <style>
-        .jstree-anchor > .jstree-icon.fas {
-            background: none !important;
-        }
-
-        .jstree-anchor > .fa-map-marker-alt::before {
-            content: "\f3c5";
-        }
-
-        .jstree-anchor > .fa-folder-open::before {
-            content: "\f07c";
-        }
-
-        .jstree-anchor > .fa-folder::before {
-            content: "\f07b";
-        }
-    </style>
 @endpush
+
 @push('scripts')
-
-    <!-- ✅ jQuery primero -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- Luego jsTree y tu script personalizado -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
 
-
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Espera un poco a que Livewire esté disponible
-            setTimeout(() => {
-                if (typeof Livewire === 'undefined') {
-                    console.error('Livewire no está definido');
-                    return;
-                }
+        document.addEventListener('DOMContentLoaded', () => {
+            // render inicial
+            initTree(@json($treeData));
 
-                function buildTree(data) {
-                    $('#location-tree').jstree({
+            // cuando backend confirme y mande data fresca
+            Livewire.on('tree-synced', (payload) => {
+                const fresh = payload?.treeData ?? [];
+                const inst = $('#location-tree').jstree(true);
+                inst?.destroy();
+                initTree(fresh);
+            });
+
+            function initTree(data) {
+
+
+                    $('#location-tree').jstree(
+
+                        {
                         core: {
                             check_callback: true,
                             data: data
                         },
-                        plugins: ["dnd", "state", "types"],
-                        types: {
-                            "default": {
-                                "icon": "fas fa-map-marker-alt"
-                            },
-                            "folder": {
-                                "icon": "fas fa-folder-open"
+                        plugins: ['dnd','types'],
+                            types: {
+                                root: {
+                                    icon: "fas fa-globe"
+                                },
+                                default: {
+                                    icon: "fas fa-map-marker-alt"
+                                }
                             }
+                    })
+                        .on('ready.jstree', function () {
+                            $(this).jstree('open_all'); // ✅ abre todo el árbol
+                        });
+
+
+
+                // ✅ move_node cubre reorder dentro del mismo parent y mover entre parents
+                $('#location-tree').off('move_node.jstree').on('move_node.jstree', function (e, data) {
+                    const inst = data.instance;
+
+                    const newParentId = data.parent === '#' ? null : data.parent;
+                    const oldParentId = data.old_parent === '#' ? null : data.old_parent;
+
+                    // Orden final del NUEVO parent
+                    const newChildren = inst.get_node(data.parent).children;
+
+                    Livewire.dispatch('persistOrder', {
+                        payload: {
+                            parent_id: newParentId,
+                            children: newChildren,
                         }
                     });
-                }
 
-                let data = @json($treeData);
+                    // Si cambió de parent, también actualiza el ORDEN del parent anterior
+                    if (data.parent !== data.old_parent) {
+                        const oldChildren = inst.get_node(data.old_parent).children;
 
-                buildTree(data);
+                        Livewire.dispatch('persistOrder', {
+                            payload: {
+                                parent_id: newParentId,
+                                children: newChildren,
+                            }
+                        });
 
-                $('#location-tree').on("move_node.jstree", function (e, data) {
-                    let moved = [{
-                        id: data.node.id,
-                        parent_id: data.parent === '#' ? null : data.parent
-                    }];
-                    Livewire.dispatch('updateTreeOrder', moved);
+                    }
                 });
-
-                Livewire.hook('message.processed', (message, component) => {
-                    let data = @json($treeData);
-                    $('#location-tree').jstree(true)?.destroy();
-                    buildTree(data);
-                });
-            }, 300); // espera 300ms para asegurarse de que Livewire cargó
+            }
         });
     </script>
 @endpush
