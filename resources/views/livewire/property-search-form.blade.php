@@ -40,13 +40,13 @@
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1" for="title">Search Title and Description</label>
-                <input id="title" type="text" wire:model.defer="title"
+                <input id="title" type="text" wire:model.defer="title"  wire:keydown.enter="search"
                        class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1" for="propertyId">Property ID</label>
-                <input id="propertyId" type="number" wire:model.defer="propertyId"
+                <input id="propertyId" type="number" wire:model.defer="propertyId"  wire:keydown.enter="search"
                        class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
             </div>
 
@@ -100,13 +100,13 @@
                 <div class="flex gap-4 w-full hidden">
                     <div class="flex flex-col flex-1 min-w-0">
                         <label for="priceFrom" class="block text-sm font-medium text-gray-700 mb-1">Price From</label>
-                        <input id="priceFrom" type="number" wire:model.defer="priceFrom"
+                        <input id="priceFrom" type="number" wire:model.defer="priceFrom"  wire:keydown.enter="search"
                                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
                     </div>
 
                     <div class="flex flex-col flex-1 min-w-0">
                         <label for="priceTo" class="block text-sm font-medium text-gray-700 mb-1">Price To</label>
-                        <input id="priceTo" type="number" wire:model.defer="priceTo"
+                        <input id="priceTo" type="number" wire:model.defer="priceTo"  wire:keydown.enter="search"
                                class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
                     </div>
                 </div>
@@ -137,13 +137,13 @@
                     <div class="flex flex-col flex-1 min-w-0">
                         <label class="block text-sm font-medium text-gray-700 mb-1" for="bedroomsFrom">Bedrooms
                             From</label>
-                        <input id="bedroomsFrom" type="number" wire:model.defer="bedroomsFrom"
+                        <input id="bedroomsFrom" type="number" wire:model.defer="bedroomsFrom"  wire:keydown.enter="search"
                                class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
                     </div>
 
                     <div class="flex flex-col flex-1 min-w-0">
                         <label class="block text-sm font-medium text-gray-700 mb-1" for="bedroomsTo">Bedrooms To</label>
-                        <input id="bedroomsTo" type="number" wire:model.defer="bedroomsTo"
+                        <input id="bedroomsTo" type="number" wire:model.defer="bedroomsTo"  wire:keydown.enter="search"
                                class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
 
                     </div>
@@ -155,7 +155,7 @@
                     <div class="flex flex-col flex-1 min-w-0">
                         <label class="block text-sm font-medium text-gray-700 mb-1" for="bathroomsFrom">Bathrooms
                             From</label>
-                        <input id="bathroomsFrom" type="number" wire:model.defer="bathroomsFrom"
+                        <input id="bathroomsFrom" type="number" wire:model.defer="bathroomsFrom"  wire:keydown.enter="search"
                                class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
 
                     </div>
@@ -163,7 +163,7 @@
                     <div class="flex flex-col flex-1 min-w-0">
                         <label class="block text-sm font-medium text-gray-700 mb-1" for="bathroomsTo">Bathrooms
                             To</label>
-                        <input id="bathroomsTo" type="number" wire:model.defer="bathroomsTo"
+                        <input id="bathroomsTo" type="number" wire:model.defer="bathroomsTo"  wire:keydown.enter="search"
                                class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
 
                     </div>
@@ -175,7 +175,7 @@
                     <div class="flex flex-col flex-1 min-w-0">
                         <label class="block text-sm font-medium text-gray-700 mb-1" for="buildingFrom">Building Size
                             From (m²)</label>
-                        <input id="buildingFrom" type="number" wire:model.defer="buildingFrom"
+                        <input id="buildingFrom" type="number" wire:model.defer="buildingFrom"  wire:keydown.enter="search"
                                class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
 
                     </div>
@@ -183,7 +183,7 @@
                     <div class="flex flex-col flex-1 min-w-0">
                         <label class="block text-sm font-medium text-gray-700 mb-1" for="buildingTo">Building Size To
                             (m²)</label>
-                        <input id="buildingTo" type="number" wire:model.defer="buildingTo"
+                        <input id="buildingTo" type="number" wire:model.defer="buildingTo"  wire:keydown.enter="search"
                                class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
 
                     </div>
@@ -195,14 +195,14 @@
                     <div class="flex flex-col flex-1 min-w-0">
                         <label class="block text-sm font-medium text-gray-700 mb-1" for="lotFrom">Lot Size From
                             (m²)</label>
-                        <input id="lotFrom" type="number" wire:model.defer="lotFrom"
+                        <input id="lotFrom" type="number" wire:model.defer="lotFrom"  wire:keydown.enter="search"
                                class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
 
                     </div>
 
                     <div class="flex flex-col flex-1 min-w-0">
                         <label class="block text-sm font-medium text-gray-700 mb-1" for="lotTo">Lot Size To (m²)</label>
-                        <input id="lotTo" type="number" wire:model.defer="lotTo"
+                        <input id="lotTo" type="number" wire:model.defer="lotTo"  wire:keydown.enter="search"
                                class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
 
                     </div>
