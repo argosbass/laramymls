@@ -61,20 +61,7 @@ class PropertyResource extends Resource
                     ->tabs([
 
                         Tab::make('Property Photos')->schema([
-                            /*
-                              Forms\Components\FileUpload::make('temp_images')
-                                 ->label('Upload Photos')
-                                 ->disk('public')
-                                 ->visibility('public')
-                                 ->multiple()
-                                 ->reorderable()
-                                 ->preserveFilenames()
-                                 ->directory('temp-property-photos')
-                                 ->previewable()
-                                 ->openable()
-                                 ->downloadable()
-                                 ->columnSpanFull(),
-                             */
+
 
                             SpatieMediaLibraryFileUpload::make('gallery')
                                 ->collection('gallery')
@@ -88,6 +75,7 @@ class PropertyResource extends Resource
                                 ->previewable(true)
                                 ->columnSpanFull()
                                 ->maxFiles(75)
+                               
 
                         ])->columns(3),
 

@@ -68,11 +68,43 @@ class ImportPropertyPhotosBatch extends Command
     /**
      * Procesa por lotes (para cron)
      */
+    //  protected function processBatch()
+    //  {
+    //      $photos = DB::table('property_photos')
+    //        ->whereNull('photo_alt')
+    //        ->limit(10)
+    //        ->get();
+    //
+    //      if ($photos->isEmpty()) {
+    //            $this->info("✔️ No hay más fotos por procesar.");
+    //          return 0;
+    //      }
+    //
+    //      $this->info("🔄 Procesando lote de " . $photos->count() . " fotos...");
+    //
+    //      foreach ($photos as $photo) {
+    //          $property = Property::find($photo->property_id);
+    //
+    //          if (!$property) {
+    //              $this->warn("❌ Propiedad {$photo->property_id} no encontrada.");
+    //              $this->markAsErrorAndProcessed($photo->id, "Propiedad {$photo->property_id} no encontrada");
+    //              continue;
+    //          }
+    //
+    //          $this->processPhoto($photo, $property);
+    //      }
+    //
+    //      return 0;
+    //  }
+
     protected function processBatch()
     {
-        $photos = DB::table('property_photos')
-            ->whereNull('photo_alt')
+        $photos = DB::table('property_photos as pp')
+            ->join('properties as p', 'p.id', '=', 'pp.property_id')
+            ->whereNull('pp.photo_alt')
+            ->orderBy('p.property_status_id', 'asc')
             ->limit(10)
+            ->select('pp.*') // importante
             ->get();
 
         if ($photos->isEmpty()) {
@@ -83,11 +115,15 @@ class ImportPropertyPhotosBatch extends Command
         $this->info("🔄 Procesando lote de " . $photos->count() . " fotos...");
 
         foreach ($photos as $photo) {
+
             $property = Property::find($photo->property_id);
 
             if (!$property) {
                 $this->warn("❌ Propiedad {$photo->property_id} no encontrada.");
-                $this->markAsErrorAndProcessed($photo->id, "Propiedad {$photo->property_id} no encontrada");
+                $this->markAsErrorAndProcessed(
+                    $photo->id,
+                    "Propiedad {$photo->property_id} no encontrada"
+                );
                 continue;
             }
 
