@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use App\Models\Property;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class ImportPropertyPhotosBatch extends Command
 {
@@ -182,11 +183,21 @@ class ImportPropertyPhotosBatch extends Command
         }
 
         try {
-            $property
+            $media = $property
                 ->addMedia($tempFile)
                 ->usingFileName($fileName)
-                //->withResponsiveImages()
                 ->toMediaCollection('gallery');
+
+            // ✅ setear orden desde delta (si existe)
+            if (isset($photo->delta) && $photo->delta !== null)
+            {
+                $order = ((int) $photo->delta) + 1;
+
+                // método rápido: update directo (evita eventos/overhead)
+                Media::query()
+                    ->whereKey($media->id)
+                    ->update(['order_column' => $order]);
+            }
 
             // Limpiar archivo temporal
             if (file_exists($tempFile)) {
