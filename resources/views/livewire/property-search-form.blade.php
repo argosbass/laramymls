@@ -34,7 +34,9 @@
     </style>
 @endpush
 
-<div class="space-y-6 w-full">
+<div class="space-y-6 w-full" wire:keydown.enter.prevent="search">
+
+
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
@@ -241,13 +243,28 @@
 
         <div class="mt-6">
 
+
             <button
                 type="button"
                 wire:click="search"
-                    class="bg-primary-600 text-white px-4 py-2 rounded shadow hover:bg-primary-700 transition">
-                Search
+                wire:loading.attr="disabled"
+                wire:target="search"
+                class="inline-flex items-center gap-2 bg-primary-600 text-white px-4 py-2 rounded shadow hover:bg-primary-700 transition disabled:opacity-60">
+
+                <svg
+                    wire:loading
+                    wire:target="search"
+                    class="animate-spin h-4 w-4"
+                    viewBox="0 0 24 24"
+                    fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"/>
+                    <path d="M4 12a8 8 0 018-8" stroke="currentColor" stroke-width="4" class="opacity-75"/>
+                </svg>
+
+                <span>Search</span>
             </button>
-            &nbsp;
+
+
             <button
                 type="button"
                 onclick="resetFilters()"
@@ -532,6 +549,8 @@
         <p class="text-sm text-gray-500 mt-4">No results.</p>
     @endif
 </div>
+
+
 
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/scripts/choices.min.js"></script>
