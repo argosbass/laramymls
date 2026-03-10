@@ -5,7 +5,10 @@ use Illuminate\Database\Eloquent\Model;
 
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+
+
 
 class Property extends Model implements HasMedia
 {
@@ -67,6 +70,13 @@ class Property extends Model implements HasMedia
             ->sharpen(10)
             ->performOnCollections('gallery')
             ->nonQueued(); // ← IMPORTANTE: thumbs siempre inmediatos
+    }
+
+
+    public function media(): MorphMany
+    {
+        return $this->morphMany(Media::class, 'model')
+            ->orderBy('order_column', 'asc');
     }
 
     public function getImagePaths(): array

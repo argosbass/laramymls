@@ -74,6 +74,7 @@ class PropertyResource extends Resource
                                 ->openable(false)
                                 ->previewable(true)
                                 ->columnSpanFull()
+                                ->appendFiles()
                                 ->maxFiles(75)
                                
 

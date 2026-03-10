@@ -14,7 +14,7 @@ class SyncMediaOrderFromDelta extends Command
 
     public function handle(): int
     {
-        $limit = (int) $this->option('limit') ?: 100;
+        $limit = (int) $this->option('limit') ?: 200;
         $propertyIdFilter = (int) $this->option('property-id');
 
         $q = DB::table('property_photos')
@@ -45,6 +45,8 @@ class SyncMediaOrderFromDelta extends Command
             try {
                 $targetOrder = ((int) $r->delta) + 1;
                 $expectedFileName = $this->generateFileName($r->photo_url);
+
+                $this->info("✅ expectedFileName: " . $expectedFileName );
 
                 $media = Media::query()
                     ->where('model_type', Property::class)
@@ -103,10 +105,61 @@ class SyncMediaOrderFromDelta extends Command
             ]);
     }
 
+
+    protected function cleanUrl(string $url): ?string
+    {
+        $url = trim($url);
+
+        // Separa base y resto
+        if (!preg_match('#^(https?://[^/]+)(/.*)$#i', $url, $m)) {
+            return null;
+        }
+
+        $base = $m[1];
+        $rest = $m[2];
+
+        // 1) Si hay "#", SIEMPRE es fragment: debe ser parte del filename => encodearlo
+        // (porque si no, parse_url lo corta)
+        $rest = str_replace('#', '%23', $rest);
+
+        // 2) Caso especial: "?" dentro del filename (sin query real)
+        // Si después de "?" no hay "=" ni "&", casi seguro no es query string
+        if (str_contains($rest, '?')) {
+            $pos = strpos($rest, '?');
+            $after = substr($rest, $pos + 1);
+
+            // Heurística: no parece query (no tiene = ni &)
+            if (!str_contains($after, '=') && !str_contains($after, '&')) {
+                // Encode solo el primer "?" que está rompiendo el path
+                $rest = substr($rest, 0, $pos) . '%3F' . $after;
+            }
+        }
+
+        // 3) Ahora sí: separar query REAL (si existiera)
+        $path = $rest;
+        $query = '';
+
+        if (str_contains($rest, '?')) {
+            [$path, $q] = explode('?', $rest, 2);
+            $query = '?' . $q;
+        }
+
+        // 4) Encodear cada segmento del path (maneja espacios, (), etc.)
+        $segments = explode('/', $path);
+        $segments = array_map(function ($seg) {
+            return rawurlencode(rawurldecode($seg));
+        }, $segments);
+
+        return $base . implode('/', $segments) . $query;
+    }
     protected function generateFileName(string $url): string
     {
+        $url = $this->cleanUrl($url);
+
+
         $fileName = basename((string) parse_url($url, PHP_URL_PATH));
 
+        // Limpia algunos escapes típicos
         $fileName = str_replace(
             [
                 '%20','%21','%22','%23','%24','%25','%26','%27',
@@ -119,10 +172,14 @@ class SyncMediaOrderFromDelta extends Command
             $fileName
         );
 
+
+        // Si no tiene extensión, añade .jpg por defecto
         if (!pathinfo($fileName, PATHINFO_EXTENSION)) {
             $fileName .= '.jpg';
         }
 
         return $fileName;
     }
+
+
 }

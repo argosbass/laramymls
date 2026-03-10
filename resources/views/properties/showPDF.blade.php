@@ -238,7 +238,7 @@
 
        $photos = $property
         ->getMedia('gallery')
-        ->sortByDesc('order_column'); // DESC
+        ->sortBy('order_column'); // DESC
 @endphp
 
 @if ($photos->count())
