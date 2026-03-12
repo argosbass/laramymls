@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
 
 class RoleResource extends Resource
 {
@@ -29,11 +30,26 @@ class RoleResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('guard_name')
-                    ->required()
-                    ->maxLength(255),
-                    Select::make('Permissions')
-                    ->multiple()->relationship('permissions','name'),
+
+                Forms\Components\Hidden::make('guard_name')
+                    ->default('web'),
+
+                Forms\Components\CheckboxList::make('permissions')
+                    ->relationship(
+                        name: 'permissions',
+                        titleAttribute: 'name',
+                        modifyQueryUsing: fn (Builder $query) => $query->where('guard_name', 'web')
+                    )
+                    ->getOptionLabelFromRecordUsing(fn ($record) =>
+                    Str::of($record->name)
+                        ->replace('.', ' ')
+                        ->replace('_', ' ')
+                        ->replace('-', ' ')
+                        ->title()
+                    )
+                    ->columns(6) // opcional, organiza en columnas
+                    ->searchable()->columnSpanFull(), // opcional si hay muchos permisos
+
             ]);
     }
 
