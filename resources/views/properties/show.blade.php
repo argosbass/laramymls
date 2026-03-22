@@ -588,7 +588,6 @@
 
         try {
             document.execCommand('copy');
-            alert('Link copied to clipboard!');
         } catch (err) {
             alert('Failed to copy the link.');
         }
