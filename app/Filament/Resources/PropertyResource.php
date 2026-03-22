@@ -288,6 +288,33 @@ class PropertyResource extends Resource
                                 ])->columns(2),
                         ])->columns(3),
 
+                        Tabs\Tab::make('Property Photos')
+                            ->schema([
+                                Forms\Components\Placeholder::make('photos_moved_notice')
+                                    ->hiddenLabel()
+                                    ->content(new \Illuminate\Support\HtmlString('
+                <div class="rounded-xl border border-warning-200 bg-warning-50 p-4">
+                    <div class="flex items-start gap-3">
+                        <div class="mt-0.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-warning-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 9.75h1.5v4.5h-1.5zm0 6h1.5v1.5h-1.5zm.75-13.5a9 9 0 100 18 9 9 0 000-18z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-warning-800">
+                                Photo section moved temporarily
+                            </h3>
+                            <p class="mt-1 text-sm text-warning-700">
+
+The photo management section has been temporarily moved below the tabs to improve performance while editing this property. It remains available below at all times during editing, and it can be collapsed to reduce scrolling when not needed.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            '))
+                                    ->columnSpanFull(),
+                            ]),
+
                         Tab::make('Standard Features')->schema([
 
                             Forms\Components\CheckboxList::make('features')
