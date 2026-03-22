@@ -60,25 +60,6 @@ class PropertyResource extends Resource
                     ->columnSpanFull() // Ocupa todo el ancho del formulario
                     ->tabs([
 
-                        Tab::make('Property Photos')->schema([
-
-
-                            SpatieMediaLibraryFileUpload::make('gallery')
-                                ->collection('gallery')
-                                ->multiple()
-                                ->image()
-                                ->reorderable()
-                                ->panelLayout('grid')
-                                ->imagePreviewHeight('125')
-                                ->conversion('thumb')
-                                ->openable(false)
-                                ->previewable(true)
-                                ->columnSpanFull()
-                                ->appendFiles()
-                                ->maxFiles(75)
-                               
-
-                        ])->columns(3),
 
                         Tab::make('Basic Property Details')->schema([
                             Forms\Components\Section::make()
@@ -107,18 +88,18 @@ class PropertyResource extends Resource
                                     Forms\Components\TextInput::make('property_price')->numeric(),
                                     Forms\Components\TextInput::make('property_hoa_fee')->numeric(),
 
-                                  //  Forms\Components\TextInput::make('property_building_size_m2')->numeric(),
-                                  //  Forms\Components\TextInput::make('property_building_size_area_quantity')->numeric(),
-                                  //  Forms\Components\Select::make('property_building_size_area_unit')
-                                  //      ->options([
-                                  //          'sqm' => 'sqm',
-                                  //          'sqft' => 'sqft',
-                                  //      ]),
+                                    //  Forms\Components\TextInput::make('property_building_size_m2')->numeric(),
+                                    //  Forms\Components\TextInput::make('property_building_size_area_quantity')->numeric(),
+                                    //  Forms\Components\Select::make('property_building_size_area_unit')
+                                    //      ->options([
+                                    //          'sqm' => 'sqm',
+                                    //          'sqft' => 'sqft',
+                                    //      ]),
 
 
                                     Forms\Components\TextInput::make('property_building_size_area_quantity')
                                         ->numeric()
-                                        ->lazy() // importante
+                                        // importante
                                         ->afterStateUpdated(function ($state, Get $get, Set $set) {
 
                                             $unit = $get('property_building_size_area_unit');
@@ -144,7 +125,7 @@ class PropertyResource extends Resource
                                             'sqm' => 'sqm',
                                             'sqft' => 'sqft',
                                         ])
-                                        ->lazy()
+
                                         ->afterStateUpdated(function ($state, Get $get, Set $set) {
 
                                             $quantity = $get('property_building_size_area_quantity');
@@ -181,7 +162,7 @@ class PropertyResource extends Resource
 
                                     Forms\Components\TextInput::make('property_lot_size_area_quantity')
                                         ->numeric()
-                                        ->lazy()
+
                                         ->afterStateUpdated(function ($state, Get $get, Set $set) {
 
                                             $unit = $get('property_lot_size_area_unit');
@@ -205,7 +186,7 @@ class PropertyResource extends Resource
                                             'sqm' => 'sqm',
                                             'sqft' => 'sqft',
                                         ])
-                                        ->lazy()
+
                                         ->afterStateUpdated(function ($state, Get $get, Set $set) {
 
                                             $quantity = $get('property_lot_size_area_quantity');
@@ -285,16 +266,16 @@ class PropertyResource extends Resource
                                         ->columnSpanFull()
                                         ->hidden(fn (Get $get) => ! (bool) $get('property_body_html_mode')),
 
-                                  //  Forms\Components\RichEditor::make('property_body')->toolbarButtons([
-                                  //      'bold',
-                                  //      'italic',
-                                  //      'strike',
-                                  //      'link',
-                                  //      'bulletList',
-                                  //      'orderedList',
-                                  //      'blockquote',
-                                  //      'codeBlock',
-                                  //  ])->columnSpan('full'),
+                                    //  Forms\Components\RichEditor::make('property_body')->toolbarButtons([
+                                    //      'bold',
+                                    //      'italic',
+                                    //      'strike',
+                                    //      'link',
+                                    //      'bulletList',
+                                    //      'orderedList',
+                                    //      'blockquote',
+                                    //      'codeBlock',
+                                    //  ])->columnSpan('full'),
 
 
 
@@ -305,7 +286,7 @@ class PropertyResource extends Resource
                                     Forms\Components\TextInput::make('property_video')->url(),
                                     Forms\Components\Hidden::make('property_osnid'),
                                 ])->columns(2),
-                        ])->columns(3)->lazy(),
+                        ])->columns(3),
 
                         Tab::make('Standard Features')->schema([
 
@@ -326,7 +307,7 @@ class PropertyResource extends Resource
                                         });
                                 })
 
-                        ])->columns(3)->lazy(),
+                        ])->columns(3),
 
                         Tab::make('Property Location')->schema([
                            // Forms\Components\Select::make('property_location_id')
@@ -360,7 +341,7 @@ class PropertyResource extends Resource
                             Forms\Components\Hidden::make('property_geolocation_lat_cos'),
                             Forms\Components\Hidden::make('property_geolocation_lng_rad'),
                             Forms\Components\View::make('filament.components.google-map-edit-GM'),
-                        ])->lazy(),
+                        ]),
 
                         Tab::make('Sold References')->schema([
                             Repeater::make('soldReferences')
@@ -396,7 +377,7 @@ class PropertyResource extends Resource
                                 ->addActionLabel('+ Add Sold Reference')
                                 ->collapsible()
                                 ->columnSpanFull(), // para que ocupe todo el ancho dentro del tab
-                        ])->columns(3)->lazy(),
+                        ])->columns(3),
 
                         Tab::make('Notes to Agent')->schema([
                             Forms\Components\RichEditor::make('property_notes_to_agents')
@@ -410,7 +391,7 @@ class PropertyResource extends Resource
                                     'blockquote',
                                     'codeBlock',
                                 ])->columnSpanFull(),
-                        ])->columns(3)->lazy(),
+                        ])->columns(3),
 
                         Tab::make('Where Listed')->schema([
 
@@ -484,7 +465,7 @@ class PropertyResource extends Resource
 
 
 
-                        ])->columns(3)->lazy(),
+                        ])->columns(3),
 
                         Tab::make('General')->schema([
 
@@ -507,12 +488,39 @@ class PropertyResource extends Resource
 
 
 
-                        ])->lazy(),
+                        ]),
 
 
 
 
                     ]),
+
+                    Forms\Components\Section::make('Property Photos')
+                    ->description('Manage property gallery')
+                    ->collapsible()
+                    ->collapsed(false) // expandido al cargar
+                    ->columnSpanFull()
+                    ->schema([
+
+
+                        SpatieMediaLibraryFileUpload::make('gallery')
+                            ->collection('gallery')
+                            ->multiple()
+                            ->image()
+                            ->reorderable()
+                            ->panelLayout('grid')
+                            ->imagePreviewHeight('125')
+                            ->conversion('thumb')
+                            ->openable(false)
+                            ->previewable(true)
+                            ->columnSpanFull()
+                            ->appendFiles()
+                            ->maxFiles(75)
+
+
+
+                    ]),
+
             ]);
     }
 

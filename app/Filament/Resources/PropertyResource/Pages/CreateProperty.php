@@ -24,6 +24,39 @@ class CreateProperty extends CreateRecord
         }
     }
 
+    protected function getHeaderActions(): array
+    {
+        return [
+
+            Actions\Action::make('saveTop')
+                ->label('Save')
+                ->color('primary')
+                ->action('create'),
+
+            Actions\Action::make('saveAndAddNew')
+                ->label('Save and add New')
+                ->color('gray')
+                ->action(function () {
+                    $this->save();
+
+                    $this->redirect(
+                        static::getResource()::getUrl('create')
+                    );
+                }),
+
+            Actions\Action::make('cancelTop')
+                ->label('Cancel')
+                ->color('gray')
+                ->url($this->getResource()::getUrl('index')),
+
+
+        ];
+
+
+
+    }
+
+
     protected function getFormActions(): array
     {
         return [

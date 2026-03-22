@@ -21,16 +21,31 @@ class EditProperty extends EditRecord
     {
         return [
 
+
+            Actions\Action::make('saveTop')
+                ->label('Save Changes')
+
+                ->color('primary')
+                ->action('save'),
+
+            Actions\Action::make('cancelTop')
+                ->label('Cancel')
+                ->color('gray')
+                ->url($this->getResource()::getUrl('index')),
+
+
             Actions\Action::make('public_view')
                 ->label('View Property')
                 ->icon('heroicon-o-eye')
                 ->url(fn () => url('/property-listing-id/' . $this->record->id))
-                ->color('gray'),
+                ->color('success'),
             //         ->openUrlInNewTab(),
 
-         
 
-            Actions\DeleteAction::make()
+
+
+            Actions\DeleteAction::make()->color('warning')
+
 
         ];
 
