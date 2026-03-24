@@ -359,6 +359,8 @@ The photo management section has been temporarily moved below the tabs to improv
                                 })
 
                                 ->preload()
+                                ->searchable()
+                                ->preload()
                                 ->nullable(),
 
 
