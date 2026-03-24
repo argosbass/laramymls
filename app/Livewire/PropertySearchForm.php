@@ -36,7 +36,6 @@ class PropertySearchForm extends Component
     public $year;
     public $features = [];
 
-
     public int $page = 1;
 
     public string $sortBy = 'property_price';
@@ -44,11 +43,50 @@ class PropertySearchForm extends Component
 
     protected $queryString = ['page'];
 
-    public function updated($property)
+    protected string $sessionKey = 'property_search_filters';
+
+    public function mount()
     {
-        $this->resetPage(); // Cuando cambia cualquier filtro, vuelve a la página 1
+        $filters = session()->get($this->sessionKey, []);
+
+        foreach ($filters as $key => $value) {
+            if (property_exists($this, $key)) {
+                $this->{$key} = $value;
+            }
+        }
     }
 
+    protected function saveFiltersToSession(): void
+    {
+        session()->put($this->sessionKey, [
+            'title' => $this->title,
+            'propertyId' => $this->propertyId,
+            'typeId' => $this->typeId,
+            'statusId' => $this->statusId,
+            'locationId' => $this->locationId,
+            'priceFrom' => $this->priceFrom,
+            'priceTo' => $this->priceTo,
+            'priceRange' => $this->priceRange,
+            'bedroomsFrom' => $this->bedroomsFrom,
+            'bedroomsTo' => $this->bedroomsTo,
+            'bathroomsFrom' => $this->bathroomsFrom,
+            'bathroomsTo' => $this->bathroomsTo,
+            'buildingFrom' => $this->buildingFrom,
+            'buildingTo' => $this->buildingTo,
+            'lotFrom' => $this->lotFrom,
+            'lotTo' => $this->lotTo,
+            'year' => $this->year,
+            'features' => $this->features,
+            'sortBy' => $this->sortBy,
+            'sortDir' => $this->sortDir,
+        ]);
+    }
+
+    public function updated($property)
+    {
+        $this->saveFiltersToSession();
+        $this->resetPage(); // Cuando cambia cualquier filtro, vuelve a la página 1
+    }
 
     public function sortByColumn(string $column): void
     {
@@ -63,8 +101,8 @@ class PropertySearchForm extends Component
             'property_lot_size_m2',
             'property_no_of_floors',
             'property_hoa_fee',
-            'property_status_name', // ✅ sort by status (relación)
-            'property_date_sold',            // ✅ sort by sold date (property_sold_references)
+            'property_status_name',
+            'property_date_sold',
         ];
 
         if (! in_array($column, $allowed, true)) {
@@ -78,6 +116,7 @@ class PropertySearchForm extends Component
             $this->sortDir = 'asc';
         }
 
+        $this->saveFiltersToSession();
         $this->resetPage();
     }
 
@@ -158,17 +197,13 @@ class PropertySearchForm extends Component
 
             ->with(['type', 'status', 'location', 'features'])
 
-            // ✅ SOLO para ordenar por status (relación)
             ->when($this->sortBy === 'property_status_name', function ($q) {
                 $q->leftJoin('property_status as ps', 'ps.id', '=', 'properties.property_status_id')
                     ->orderBy('ps.status_name', $this->sortDir)
                     ->select('properties.*');
             })
 
-            // ✅ SOLO para ordenar por date sold (tabla property_sold_references)
             ->when($this->sortBy === 'property_date_sold', function ($q) {
-                // Usa la fecha más reciente de venta por propiedad para ordenar
-                // OJO: si tu columna NO se llama "property_date_sold", cambia aquí ese nombre.
                 $soldSub = DB::table('property_sold_references')
                     ->selectRaw('property_id, MAX(sold_reference_date) as sold_reference_date')
                     ->groupBy('property_id');
@@ -180,7 +215,6 @@ class PropertySearchForm extends Component
                     ->select('properties.*');
             })
 
-            // ✅ default sort (cuando NO es relación)
             ->when(! in_array($this->sortBy, ['property_status_name', 'property_date_sold'], true), function ($q) {
                 $q->orderBy($this->sortBy, $this->sortDir);
             })
@@ -202,7 +236,7 @@ class PropertySearchForm extends Component
         $this->reset([
             'title', 'propertyId',
             'typeId', 'statusId', 'locationId', 'year',
-            'priceFrom', 'priceTo',
+            'priceFrom', 'priceTo', 'priceRange',
             'bedroomsFrom', 'bedroomsTo',
             'bathroomsFrom', 'bathroomsTo',
             'buildingFrom', 'buildingTo',
@@ -210,11 +244,17 @@ class PropertySearchForm extends Component
             'features',
         ]);
 
-        $this->search(); // para refrescar resultados vacíos
+        $this->sortBy = 'property_price';
+        $this->sortDir = 'asc';
+
+        session()->forget($this->sessionKey);
+
+        $this->search();
     }
 
     public function search()
     {
+        $this->saveFiltersToSession();
         $this->resetPage();
     }
 
@@ -234,12 +274,18 @@ class PropertySearchForm extends Component
             return null;
         }
 
-        $location = PropertyLocations::where('id', $this->locationId)->first();
+        $locationId = is_array($this->locationId) ? ($this->locationId['value'] ?? null) : $this->locationId;
+
+        if (! $locationId || $locationId === 'all') {
+            return null;
+        }
+
+        $location = PropertyLocations::where('id', $locationId)->first();
 
         if (! $location) {
             return null;
         }
 
-        return PropertyLocations::descendantsAndSelf($this->locationId)->pluck('id')->toArray();
+        return PropertyLocations::descendantsAndSelf($locationId)->pluck('id')->toArray();
     }
 }

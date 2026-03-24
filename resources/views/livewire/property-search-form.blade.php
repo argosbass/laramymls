@@ -36,242 +36,235 @@
 
 <div class="space-y-6 w-full" wire:keydown.enter.prevent="search">
 
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1" for="title">Search Title and Description</label>
-                <input id="title" type="text" wire:model.defer="title"  wire:keydown.enter="search"
-                       class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1" for="propertyId">Property ID</label>
-                <input id="propertyId" type="number" wire:model.defer="propertyId"  wire:keydown.enter="search"
-                       class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
-            </div>
-
-            <div wire:ignore>
-                <label class="block text-sm font-medium text-gray-700 mb-1" for="typeId">Type</label>
-                <select id="typeId" wire:model="typeId"
-                        class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300">
-                    <option value="">All</option>
-                    @foreach ($types as $type)
-                        <option value="{{ $type->id }}">{{ $type->type_name }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div wire:ignore>
-                <label class="block text-sm font-medium text-gray-700 mb-1" for="statusId">Status</label>
-                <select id="statusId" wire:model="statusId"
-                        class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300">
-                    <option value="">All</option>
-                    @foreach ($statuses as $status)
-                        <option value="{{ $status->id }}">{{ $status->status_name }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div wire:ignore>
-                <label class="block text-sm font-medium text-gray-700 mb-1" for="locationId">Location</label>
-                <select id="locationId" wire:model="locationId"
-                        class="block w-full rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300">
-                    <option value="">All</option>
-                    @foreach ($locations as $location)
-                        <option value="{{ $location->id }}" style="{{ $location->depth == 1 ? 'font-weight: 700;' : '' }}">
-                            {!! str_repeat(' - ', $location->depth) !!} {{ $location->location_name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div wire:ignore>
-                <label class="block text-sm font-medium text-gray-700 mb-1" for="year">Year</label>
-                <select id="year" wire:model="year"
-                        class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300">
-                    <option value="">All</option>
-                    @foreach ($years as $y)
-                        <option value="{{ $y }}">{{ $y }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div>
-                <div class="flex gap-4 w-full hidden">
-                    <div class="flex flex-col flex-1 min-w-0">
-                        <label for="priceFrom" class="block text-sm font-medium text-gray-700 mb-1">Price From</label>
-                        <input id="priceFrom" type="number" wire:model.defer="priceFrom"  wire:keydown.enter="search"
-                               class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
-                    </div>
-
-                    <div class="flex flex-col flex-1 min-w-0">
-                        <label for="priceTo" class="block text-sm font-medium text-gray-700 mb-1">Price To</label>
-                        <input id="priceTo" type="number" wire:model.defer="priceTo"  wire:keydown.enter="search"
-                               class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
-                    </div>
-                </div>
-
-                <div wire:ignore class="flex flex-col w-full">
-                    <label for="priceRange" class="block text-sm font-medium text-gray-700 mb-1">
-                        Price From/To
-                    </label>
-
-
-                        <select id="priceRange" class="block w-full rounded-md border-gray-300 shadow-sm">
-                            <option value="">Price From/To</option>
-                            <option value="0-100000">Less than $100,000</option>
-                            <option value="100000-200000">$100,000 to $200,000</option>
-                            <option value="200000-300000">$200,000 to $300,000</option>
-                            <option value="300000-400000">$300,000 to $400,000</option>
-                            <option value="400000-500000">$400,000 to $500,000</option>
-                            <option value="500000-750000">$500,000 to $750,000</option>
-                            <option value="750000-9999999999">More than $750,000</option>
-                        </select>
-
-                </div>
-            </div>
-
-
-            <div>
-                <div class="flex gap-4 w-full">
-                    <div class="flex flex-col flex-1 min-w-0">
-                        <label class="block text-sm font-medium text-gray-700 mb-1" for="bedroomsFrom">Bedrooms
-                            From</label>
-                        <input id="bedroomsFrom" type="number" wire:model.defer="bedroomsFrom"  wire:keydown.enter="search"
-                               class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
-                    </div>
-
-                    <div class="flex flex-col flex-1 min-w-0">
-                        <label class="block text-sm font-medium text-gray-700 mb-1" for="bedroomsTo">Bedrooms To</label>
-                        <input id="bedroomsTo" type="number" wire:model.defer="bedroomsTo"  wire:keydown.enter="search"
-                               class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
-
-                    </div>
-                </div>
-            </div>
-
-            <div>
-                <div class="flex gap-4 w-full">
-                    <div class="flex flex-col flex-1 min-w-0">
-                        <label class="block text-sm font-medium text-gray-700 mb-1" for="bathroomsFrom">Bathrooms
-                            From</label>
-                        <input id="bathroomsFrom" type="number" wire:model.defer="bathroomsFrom"  wire:keydown.enter="search"
-                               class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
-
-                    </div>
-
-                    <div class="flex flex-col flex-1 min-w-0">
-                        <label class="block text-sm font-medium text-gray-700 mb-1" for="bathroomsTo">Bathrooms
-                            To</label>
-                        <input id="bathroomsTo" type="number" wire:model.defer="bathroomsTo"  wire:keydown.enter="search"
-                               class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
-
-                    </div>
-                </div>
-            </div>
-
-            <div>
-                <div class="flex gap-4 w-full">
-                    <div class="flex flex-col flex-1 min-w-0">
-                        <label class="block text-sm font-medium text-gray-700 mb-1" for="buildingFrom">Building Size
-                            From (m²)</label>
-                        <input id="buildingFrom" type="number" wire:model.defer="buildingFrom"  wire:keydown.enter="search"
-                               class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
-
-                    </div>
-
-                    <div class="flex flex-col flex-1 min-w-0">
-                        <label class="block text-sm font-medium text-gray-700 mb-1" for="buildingTo">Building Size To
-                            (m²)</label>
-                        <input id="buildingTo" type="number" wire:model.defer="buildingTo"  wire:keydown.enter="search"
-                               class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
-
-                    </div>
-                </div>
-            </div>
-
-            <div>
-                <div class="flex gap-4 w-full">
-                    <div class="flex flex-col flex-1 min-w-0">
-                        <label class="block text-sm font-medium text-gray-700 mb-1" for="lotFrom">Lot Size From
-                            (m²)</label>
-                        <input id="lotFrom" type="number" wire:model.defer="lotFrom"  wire:keydown.enter="search"
-                               class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
-
-                    </div>
-
-                    <div class="flex flex-col flex-1 min-w-0">
-                        <label class="block text-sm font-medium text-gray-700 mb-1" for="lotTo">Lot Size To (m²)</label>
-                        <input id="lotTo" type="number" wire:model.defer="lotTo"  wire:keydown.enter="search"
-                               class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
-
-                    </div>
-                </div>
-            </div>
-
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1" for="title">Search Title and Description</label>
+            <input id="title" type="text" wire:model.defer="title"  wire:keydown.enter="search"
+                   class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
         </div>
 
-        @php
-            $features_label = [
-                        'Condominium Community' => 'CC',
-                        'Oceanfront'            => 'OF',
-                        'Elevator'              => 'EL',
-                        'Gated Community'       => 'GC',
-                        'Golf Front'            => 'GF',
-                        'Ocean Views'           => 'OV',
-                        'Swimming Pool'         => 'SP',
-                        'Owner Financing'       => 'OF',
-                        'Sold Furnished'        => 'SF',
-                        'Guest House'           => 'GH',
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1" for="propertyId">Property ID</label>
+            <input id="propertyId" type="number" wire:model.defer="propertyId"  wire:keydown.enter="search"
+                   class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
+        </div>
 
-                ];
-        @endphp
-
-        <div class="mt-4">
-            <label class="block font-medium text-sm text-gray-700">Features</label>
-            <div class="flex flex-wrap gap-4 mt-2">
-                @foreach ($featuresList as $feature)
-                    <label class="flex items-center space-x-2">
-                        <input type="checkbox" wire:model="features" value="{{ $feature->id }}"/>&nbsp;
-                        <span>{{ $feature->feature_name }} <b>({{$features_label[ $feature->feature_name ]}})</b></span>
-                    </label>
+        <div wire:ignore>
+            <label class="block text-sm font-medium text-gray-700 mb-1" for="typeId">Type</label>
+            <select id="typeId" wire:model="typeId"
+                    class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300">
+                <option value="">All</option>
+                @foreach ($types as $type)
+                    <option value="{{ $type->id }}">{{ $type->type_name }}</option>
                 @endforeach
+            </select>
+        </div>
+
+        <div wire:ignore>
+            <label class="block text-sm font-medium text-gray-700 mb-1" for="statusId">Status</label>
+            <select id="statusId" wire:model="statusId"
+                    class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300">
+                <option value="">All</option>
+                @foreach ($statuses as $status)
+                    <option value="{{ $status->id }}">{{ $status->status_name }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div wire:ignore>
+            <label class="block text-sm font-medium text-gray-700 mb-1" for="locationId">Location</label>
+            <select id="locationId" wire:model="locationId"
+                    class="block w-full rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300">
+                <option value="">All</option>
+                @foreach ($locations as $location)
+                    <option value="{{ $location->id }}" style="{{ $location->depth == 1 ? 'font-weight: 700;' : '' }}">
+                        {!! str_repeat(' - ', $location->depth) !!} {{ $location->location_name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+        <div wire:ignore>
+            <label class="block text-sm font-medium text-gray-700 mb-1" for="year">Year</label>
+            <select id="year" wire:model="year"
+                    class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300">
+                <option value="">All</option>
+                @foreach ($years as $y)
+                    <option value="{{ $y }}">{{ $y }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div>
+            <div class="flex gap-4 w-full hidden">
+                <div class="flex flex-col flex-1 min-w-0">
+                    <label for="priceFrom" class="block text-sm font-medium text-gray-700 mb-1">Price From</label>
+                    <input id="priceFrom" type="number" wire:model.defer="priceFrom"  wire:keydown.enter="search"
+                           class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
+                </div>
+
+                <div class="flex flex-col flex-1 min-w-0">
+                    <label for="priceTo" class="block text-sm font-medium text-gray-700 mb-1">Price To</label>
+                    <input id="priceTo" type="number" wire:model.defer="priceTo"  wire:keydown.enter="search"
+                           class="w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
+                </div>
+            </div>
+
+            <div wire:ignore class="flex flex-col w-full">
+                <label for="priceRange" class="block text-sm font-medium text-gray-700 mb-1">
+                    Price From/To
+                </label>
+
+                <select id="priceRange" class="block w-full rounded-md border-gray-300 shadow-sm">
+                    <option value="">Price From/To</option>
+                    <option value="0-100000">Less than $100,000</option>
+                    <option value="100000-200000">$100,000 to $200,000</option>
+                    <option value="200000-300000">$200,000 to $300,000</option>
+                    <option value="300000-400000">$300,000 to $400,000</option>
+                    <option value="400000-500000">$400,000 to $500,000</option>
+                    <option value="500000-750000">$500,000 to $750,000</option>
+                    <option value="750000-9999999999">More than $750,000</option>
+                </select>
+
             </div>
         </div>
 
-        <div class="mt-6">
+        <div>
+            <div class="flex gap-4 w-full">
+                <div class="flex flex-col flex-1 min-w-0">
+                    <label class="block text-sm font-medium text-gray-700 mb-1" for="bedroomsFrom">Bedrooms
+                        From</label>
+                    <input id="bedroomsFrom" type="number" wire:model.defer="bedroomsFrom"  wire:keydown.enter="search"
+                           class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
+                </div>
 
+                <div class="flex flex-col flex-1 min-w-0">
+                    <label class="block text-sm font-medium text-gray-700 mb-1" for="bedroomsTo">Bedrooms To</label>
+                    <input id="bedroomsTo" type="number" wire:model.defer="bedroomsTo"  wire:keydown.enter="search"
+                           class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
 
-            <button
-                type="button"
-                wire:click="search"
-                wire:loading.attr="disabled"
-                wire:target="search"
-                class="inline-flex items-center gap-2 bg-primary-600 text-white px-4 py-2 rounded shadow hover:bg-primary-700 transition disabled:opacity-60">
-
-                <svg
-                    wire:loading
-                    wire:target="search"
-                    class="animate-spin h-4 w-4"
-                    viewBox="0 0 24 24"
-                    fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"/>
-                    <path d="M4 12a8 8 0 018-8" stroke="currentColor" stroke-width="4" class="opacity-75"/>
-                </svg>
-
-                <span>Search</span>
-            </button>
-
-
-            <button
-                type="button"
-                onclick="resetFilters()"
-                class="bg-gray-400 text-white px-4 py-2 rounded-md shadow hover:bg-red-600 transition">
-                Reset
-            </button>
+                </div>
+            </div>
         </div>
+
+        <div>
+            <div class="flex gap-4 w-full">
+                <div class="flex flex-col flex-1 min-w-0">
+                    <label class="block text-sm font-medium text-gray-700 mb-1" for="bathroomsFrom">Bathrooms
+                        From</label>
+                    <input id="bathroomsFrom" type="number" wire:model.defer="bathroomsFrom"  wire:keydown.enter="search"
+                           class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
+
+                </div>
+
+                <div class="flex flex-col flex-1 min-w-0">
+                    <label class="block text-sm font-medium text-gray-700 mb-1" for="bathroomsTo">Bathrooms
+                        To</label>
+                    <input id="bathroomsTo" type="number" wire:model.defer="bathroomsTo"  wire:keydown.enter="search"
+                           class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
+
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="flex gap-4 w-full">
+                <div class="flex flex-col flex-1 min-w-0">
+                    <label class="block text-sm font-medium text-gray-700 mb-1" for="buildingFrom">Building Size
+                        From (m²)</label>
+                    <input id="buildingFrom" type="number" wire:model.defer="buildingFrom"  wire:keydown.enter="search"
+                           class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
+
+                </div>
+
+                <div class="flex flex-col flex-1 min-w-0">
+                    <label class="block text-sm font-medium text-gray-700 mb-1" for="buildingTo">Building Size To
+                        (m²)</label>
+                    <input id="buildingTo" type="number" wire:model.defer="buildingTo"  wire:keydown.enter="search"
+                           class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
+
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="flex gap-4 w-full">
+                <div class="flex flex-col flex-1 min-w-0">
+                    <label class="block text-sm font-medium text-gray-700 mb-1" for="lotFrom">Lot Size From
+                        (m²)</label>
+                    <input id="lotFrom" type="number" wire:model.defer="lotFrom"  wire:keydown.enter="search"
+                           class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
+
+                </div>
+
+                <div class="flex flex-col flex-1 min-w-0">
+                    <label class="block text-sm font-medium text-gray-700 mb-1" for="lotTo">Lot Size To (m²)</label>
+                    <input id="lotTo" type="number" wire:model.defer="lotTo"  wire:keydown.enter="search"
+                           class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300"/>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    @php
+        $features_label = [
+            'Condominium Community' => 'CC',
+            'Oceanfront'            => 'OF',
+            'Elevator'              => 'EL',
+            'Gated Community'       => 'GC',
+            'Golf Front'            => 'GF',
+            'Ocean Views'           => 'OV',
+            'Swimming Pool'         => 'SP',
+            'Owner Financing'       => 'OF',
+            'Sold Furnished'        => 'SF',
+            'Guest House'           => 'GH',
+        ];
+    @endphp
+
+    <div class="mt-4">
+        <label class="block font-medium text-sm text-gray-700">Features</label>
+        <div class="flex flex-wrap gap-4 mt-2">
+            @foreach ($featuresList as $feature)
+                <label class="flex items-center space-x-2">
+                    <input type="checkbox" wire:model="features" value="{{ $feature->id }}"/>&nbsp;
+                    <span>{{ $feature->feature_name }} <b>({{ $features_label[$feature->feature_name] }})</b></span>
+                </label>
+            @endforeach
+        </div>
+    </div>
+
+    <div class="mt-6">
+
+        <button
+            type="button"
+            wire:click="search"
+            wire:loading.attr="disabled"
+            wire:target="search"
+            class="inline-flex items-center gap-2 bg-primary-600 text-white px-4 py-2 rounded shadow hover:bg-primary-700 transition disabled:opacity-60">
+
+            <svg
+                wire:loading
+                wire:target="search"
+                class="animate-spin h-4 w-4"
+                viewBox="0 0 24 24"
+                fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"/>
+                <path d="M4 12a8 8 0 018-8" stroke="currentColor" stroke-width="4" class="opacity-75"/>
+            </svg>
+
+            <span>Search</span>
+        </button>
+
+        <button
+            type="button"
+            onclick="resetFilters()"
+            class="bg-gray-400 text-white px-4 py-2 rounded-md shadow hover:bg-red-600 transition">
+            Reset
+        </button>
+    </div>
 
     {{-- Tabla de resultados --}}
     @if ($results && $results->count())
@@ -281,27 +274,22 @@
                 {{ $results->links() }}
             </div>
 
-
-
             <table class="w-full table-auto text-sm text-left border border-gray-300">
                 <thead>
                 <tr class="bg-gray-100 text-xs uppercase">
                     <th class="px-2 py-1">
-
                         <button type="button"
-                             wire:click="sortByColumn('id')"
-                             class="flex items-center gap-1 uppercase text-xs hover:underline">
+                                wire:click="sortByColumn('id')"
+                                class="flex items-center gap-1 uppercase text-xs hover:underline">
                             ID
                             @if($sortBy === 'id')
                                 <span class="text-[10px]">{{ $sortDir === 'asc' ? '▲' : '▼' }}</span>
                             @else
-                                <span class="text-[10px]">{{  '▲▼'  }}</span>
+                                <span class="text-[10px]">{{ '▲▼' }}</span>
                             @endif
                         </button>
                     </th>
                     <th class="px-2 py-1">
-
-
                         <button type="button"
                                 wire:click="sortByColumn('created_at')"
                                 class="flex items-center gap-1 uppercase text-xs hover:underline">
@@ -309,16 +297,11 @@
                             @if($sortBy === 'created_at')
                                 <span class="text-[10px]">{{ $sortDir === 'asc' ? '▲' : '▼' }}</span>
                             @else
-                                <span class="text-[10px]">{{  '▲▼'  }}</span>
+                                <span class="text-[10px]">{{ '▲▼' }}</span>
                             @endif
                         </button>
-
-
-
-
                     </th>
                     <th class="px-2 py-1">
-
                         <button type="button"
                                 wire:click="sortByColumn('property_date_sold')"
                                 class="flex items-center gap-1 uppercase text-xs hover:underline">
@@ -326,66 +309,49 @@
                             @if($sortBy === 'property_date_sold')
                                 <span class="text-[10px]">{{ $sortDir === 'asc' ? '▲' : '▼' }}</span>
                             @else
-                                <span class="text-[10px]">{{  '▲▼'  }}</span>
+                                <span class="text-[10px]">{{ '▲▼' }}</span>
                             @endif
                         </button>
-
                     </th>
                     <th class="px-2 py-1">Type</th>
                     <th class="px-2 py-1">
-
                         <button type="button"
                                 wire:click="sortByColumn('property_status_name')"
                                 class="flex items-center gap-1 uppercase text-xs hover:underline">
                             Status
-
                             @if($sortBy === 'property_status_name')
-                                <span class="text-[10px]">
-                                    {{ $sortDir === 'asc' ? '▲' : '▼' }}
-                                </span>
+                                <span class="text-[10px]">{{ $sortDir === 'asc' ? '▲' : '▼' }}</span>
                             @else
-                                <span class="text-[10px]">{{  '▲▼'  }}</span>
+                                <span class="text-[10px]">{{ '▲▼' }}</span>
                             @endif
                         </button>
-
-
-
                     </th>
                     <th class="px-2 py-1">
-
                         <button type="button"
                                 wire:click="sortByColumn('property_title')"
                                 class="flex items-center gap-1 uppercase text-xs hover:underline">
                             Title
-
                             @if($sortBy === 'property_title')
-                                <span class="text-[10px]">
-                                    {{ $sortDir === 'asc' ? '▲' : '▼' }}
-                                </span>
+                                <span class="text-[10px]">{{ $sortDir === 'asc' ? '▲' : '▼' }}</span>
                             @else
-                                <span class="text-[10px]">{{  '▲▼'  }}</span>
+                                <span class="text-[10px]">{{ '▲▼' }}</span>
                             @endif
                         </button>
-
                     </th>
                     <th class="px-2 py-1">Location</th>
                     <th class="px-2 py-1">
-
                         <button type="button"
                                 wire:click="sortByColumn('property_price')"
                                 class="flex items-center gap-1 uppercase text-xs hover:underline">
-                                Price
+                            Price
                             @if($sortBy === 'property_price')
                                 <span class="text-[10px]">{{ $sortDir === 'asc' ? '▲' : '▼' }}</span>
                             @else
-                                <span class="text-[10px]">{{  '▲▼'  }}</span>
+                                <span class="text-[10px]">{{ '▲▼' }}</span>
                             @endif
                         </button>
-
                     </th>
                     <th class="px-2 py-1">
-
-
                         <button type="button"
                                 wire:click="sortByColumn('property_bedrooms')"
                                 class="flex items-center gap-1 uppercase text-xs hover:underline">
@@ -393,14 +359,11 @@
                             @if($sortBy === 'property_bedrooms')
                                 <span class="text-[10px]">{{ $sortDir === 'asc' ? '▲' : '▼' }}</span>
                             @else
-                                <span class="text-[10px]">{{  '▲▼'  }}</span>
+                                <span class="text-[10px]">{{ '▲▼' }}</span>
                             @endif
                         </button>
-
-
                     </th>
                     <th class="px-2 py-1">
-
                         <button type="button"
                                 wire:click="sortByColumn('property_bathrooms')"
                                 class="flex items-center gap-1 uppercase text-xs hover:underline">
@@ -408,33 +371,23 @@
                             @if($sortBy === 'property_bathrooms')
                                 <span class="text-[10px]">{{ $sortDir === 'asc' ? '▲' : '▼' }}</span>
                             @else
-                                <span class="text-[10px]">{{  '▲▼'  }}</span>
+                                <span class="text-[10px]">{{ '▲▼' }}</span>
                             @endif
                         </button>
-
                     </th>
                     <th class="px-2 py-1">
-
-
                         <button type="button"
                                 wire:click="sortByColumn('property_hoa_fee')"
                                 class="flex items-center gap-1 uppercase text-xs hover:underline">
                             HOA
                             @if($sortBy === 'property_hoa_fee')
-                                <span class="text-[10px]">
-                                    {{ $sortDir === 'asc' ? '▲' : '▼' }}
-                                </span>
+                                <span class="text-[10px]">{{ $sortDir === 'asc' ? '▲' : '▼' }}</span>
                             @else
-                                <span class="text-[10px]">{{  '▲▼'  }}</span>
+                                <span class="text-[10px]">{{ '▲▼' }}</span>
                             @endif
                         </button>
-
-
-
                     </th>
                     <th class="px-2 py-1">
-
-
                         <button type="button"
                                 wire:click="sortByColumn('property_building_size_m2')"
                                 class="flex items-center gap-1 uppercase text-xs hover:underline">
@@ -442,14 +395,11 @@
                             @if($sortBy === 'property_building_size_m2')
                                 <span class="text-[10px]">{{ $sortDir === 'asc' ? '▲' : '▼' }}</span>
                             @else
-                                <span class="text-[10px]">{{  '▲▼'  }}</span>
+                                <span class="text-[10px]">{{ '▲▼' }}</span>
                             @endif
                         </button>
-
-
                     </th>
                     <th class="px-2 py-1">
-
                         <button type="button"
                                 wire:click="sortByColumn('property_lot_size_m2')"
                                 class="flex items-center gap-1 uppercase text-xs hover:underline">
@@ -457,15 +407,11 @@
                             @if($sortBy === 'property_lot_size_m2')
                                 <span class="text-[10px]">{{ $sortDir === 'asc' ? '▲' : '▼' }}</span>
                             @else
-                                <span class="text-[10px]">{{  '▲▼'  }}</span>
+                                <span class="text-[10px]">{{ '▲▼' }}</span>
                             @endif
                         </button>
-
-
-
                     </th>
                     <th class="px-2 py-1">
-
                         <button type="button"
                                 wire:click="sortByColumn('property_no_of_floors')"
                                 class="flex items-center gap-1 uppercase text-xs hover:underline">
@@ -473,24 +419,22 @@
                             @if($sortBy === 'property_no_of_floors')
                                 <span class="text-[10px]">{{ $sortDir === 'asc' ? '▲' : '▼' }}</span>
                             @else
-                                <span class="text-[10px]">{{  '▲▼'  }}</span>
+                                <span class="text-[10px]">{{ '▲▼' }}</span>
                             @endif
                         </button>
-
-
-
                     </th>
                     @foreach ($featuresList as $feature)
-                        <th class="px-2 py-1 text-center"> {{$features_label[ $feature->feature_name ]  }}</th>
+                        <th class="px-2 py-1 text-center">{{ $features_label[$feature->feature_name] }}</th>
                     @endforeach
                     <th class="px-2 py-1">Print PDF</th>
+                    <th class="px-2 py-1">Edit</th>
                 </tr>
                 </thead>
                 <tbody>
                 @foreach ($results as $property)
                     <tr class="border-t">
                         <td class="px-2 py-1">{{ $property->id }}</td>
-                        <td class="px-2 py-1">{{ \Carbon\Carbon::parse( $property->property_added_date )->format('Y-m-d') }}</td>
+                        <td class="px-2 py-1">{{ \Carbon\Carbon::parse($property->property_added_date)->format('Y-m-d') }}</td>
 
                         @php
                             $sold = $property->sold_at;
@@ -503,15 +447,12 @@
                         <td class="px-2 py-1">{{ $property->status->status_name ?? '-' }}</td>
 
                         <td class="px-2 py-1">
-
                             <a target="_blank" href="{{ $property->slug
-            ? route('property.public.show',     ['slug' => $property->slug])
-            : route('property.public.showById', ['id' => $property->id]) }}"
+                                ? route('property.public.show', ['slug' => $property->slug])
+                                : route('property.public.showById', ['id' => $property->id]) }}"
                                class="text-primary-600 hover:underline font-semibold">
                                 {{ $property->property_title }}
                             </a>
-
-
                         </td>
 
                         <td class="px-2 py-1">{{ $property->location->location_name ?? '-' }}</td>
@@ -520,7 +461,7 @@
                         <td class="px-2 py-1">{{ $property->property_bathrooms }}</td>
                         <td class="px-2 py-1">${{ number_format($property->property_hoa_fee ?: 0, 2) }}</td>
                         <td class="px-2 py-1">{{ $property->property_building_size_m2 }}</td>
-                        <td class="px-2 py-1">{{ $property->property_lot_size_m2 }} </td>
+                        <td class="px-2 py-1">{{ $property->property_lot_size_m2 }}</td>
                         <td class="px-2 py-1">{{ $property->property_no_of_floors }}</td>
                         @foreach ($featuresList as $feature)
                             <td class="px-2 py-1 text-center">
@@ -528,12 +469,15 @@
                             </td>
                         @endforeach
                         <td class="px-2 py-1">
-                            <a target="_blank" href="{{ route('property.export', $property) }}"
-                               class="">
+                            <a target="_blank" href="{{ route('property.export', $property) }}" class="">
                                 <x-heroicon-o-printer class="w-5 h-5" />
                             </a>
                         </td>
-
+                        <td class="px-2 py-1">
+                            <a target="_blank" href="{{ url('/admin/properties/' . $property->id . '/edit') }}" class="text-primary-600 hover:text-primary-800">
+                                <x-heroicon-o-pencil-square class="w-5 h-5" />
+                            </a>
+                        </td>
                     </tr>
                 @endforeach
                 </tbody>
@@ -544,33 +488,38 @@
             </div>
 
         </div>
-
     @else
         <p class="text-sm text-gray-500 mt-4">No results.</p>
     @endif
 </div>
 
-
-
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/scripts/choices.min.js"></script>
-    <script>
-        let typeChoices, statusChoices, locationChoices, yearChoices, priceChoises;
 
-        document.addEventListener('DOMContentLoaded', function() {
+    <script>
+        window.propertySearchState = {
+            typeId: @js(is_array($typeId) ? ($typeId['value'] ?? '') : $typeId),
+            statusId: @js(is_array($statusId) ? ($statusId['value'] ?? '') : $statusId),
+            locationId: @js(is_array($locationId) ? ($locationId['value'] ?? '') : $locationId),
+            year: @js(is_array($year) ? ($year['value'] ?? '') : $year),
+            priceRange: @js($priceRange),
+        };
+    </script>
+
+    <script>
+        let typeChoices, statusChoices, locationChoices, yearChoices, priceChoices;
+
+        document.addEventListener('DOMContentLoaded', function () {
             initializeChoices();
         });
 
         function initializeChoices() {
-            // Destruir instancias previas si existen
             if (typeChoices) typeChoices.destroy();
             if (statusChoices) statusChoices.destroy();
             if (locationChoices) locationChoices.destroy();
             if (yearChoices) yearChoices.destroy();
-            if (priceChoises) priceChoises.destroy();
+            if (priceChoices) priceChoices.destroy();
 
-
-            // Inicializar Choices para Type
             typeChoices = new Choices('#typeId', {
                 searchEnabled: true,
                 placeholder: false,
@@ -578,7 +527,6 @@
                 allowHTML: true
             });
 
-            // Inicializar Choices para Status
             statusChoices = new Choices('#statusId', {
                 searchEnabled: true,
                 placeholder: false,
@@ -586,7 +534,6 @@
                 allowHTML: false
             });
 
-            // Inicializar Choices para Location
             locationChoices = new Choices('#locationId', {
                 searchEnabled: true,
                 placeholder: false,
@@ -596,7 +543,6 @@
                 shouldSortItems: false,
             });
 
-            // Inicializar Choices para Year
             yearChoices = new Choices('#year', {
                 searchEnabled: true,
                 placeholder: false,
@@ -613,7 +559,27 @@
                 shouldSortItems: false,
             });
 
+            const state = window.propertySearchState || {};
 
+            if (state.typeId !== null && state.typeId !== undefined && state.typeId !== '') {
+                typeChoices.setChoiceByValue(String(state.typeId));
+            }
+
+            if (state.statusId !== null && state.statusId !== undefined && state.statusId !== '') {
+                statusChoices.setChoiceByValue(String(state.statusId));
+            }
+
+            if (state.locationId !== null && state.locationId !== undefined && state.locationId !== '') {
+                locationChoices.setChoiceByValue(String(state.locationId));
+            }
+
+            if (state.year !== null && state.year !== undefined && state.year !== '') {
+                yearChoices.setChoiceByValue(String(state.year));
+            }
+
+            if (state.priceRange !== null && state.priceRange !== undefined && state.priceRange !== '') {
+                priceChoices.setChoiceByValue(String(state.priceRange));
+            }
 
             const priceEl = document.getElementById('priceRange');
 
@@ -632,75 +598,37 @@
                     toInput.value   = parts[1] ?? '';
                 }
 
-                // ✅ IMPORTANTÍSIMO: avisarle a Livewire (sin request)
                 fromInput.dispatchEvent(new Event('input', { bubbles: true }));
                 toInput.dispatchEvent(new Event('input', { bubbles: true }));
             };
-
-            // Manejar cambios para Livewire
-            //document.getElementById('typeId').addEventListener('change', function(e) {
-            //@this.set('typeId', e.target.value);
-            //});
-
-            //document.getElementById('statusId').addEventListener('change', function(e) {
-            //@this.set('statusId', e.target.value);
-            //});
-
-            //document.getElementById('locationId').addEventListener('change', function(e) {
-            //@this.set('locationId', e.target.value);
-            //});
-
-            //document.getElementById('year').addEventListener('change', function(e) {
-            //@this.set('year', e.target.value);
-            //});
-
-            // Establecer valores actuales si existen
-
-
-            //if (currentTypeId) {
-            //    typeChoices.setChoiceByValue(currentTypeId);
-            //}
-            //if (currentStatusId) {
-            //    statusChoices.setChoiceByValue(currentStatusId);
-            //}
-            //if (currentLocationId) {
-            //    locationChoices.setChoiceByValue(currentLocationId);
-            //}
-            //if (currentYear) {
-            //    yearChoices.setChoiceByValue(currentYear);
-            //}
         }
 
-        // Reinicializar cuando Livewire actualice el componente
-        //document.addEventListener('livewire:update', function () {
-        //    setTimeout(() => {
-        //        initializeChoices();
-        //    }, 100);
-        //});
+        document.addEventListener('livewire:init', () => {
+            Livewire.hook('morph.updated', ({ component }) => {
+                window.propertySearchState = {
+                    typeId: @this.get('typeId') && typeof @this.get('typeId') === 'object' ? (@this.get('typeId').value ?? '') : @this.get('typeId'),
+                    statusId: @this.get('statusId') && typeof @this.get('statusId') === 'object' ? (@this.get('statusId').value ?? '') : @this.get('statusId'),
+                    locationId: @this.get('locationId') && typeof @this.get('locationId') === 'object' ? (@this.get('locationId').value ?? '') : @this.get('locationId'),
+                    year: @this.get('year') && typeof @this.get('year') === 'object' ? (@this.get('year').value ?? '') : @this.get('year'),
+                    priceRange: @this.get('priceRange'),
+                };
 
-        // Para versiones más nuevas de Livewire
-        //if (typeof Livewire !== 'undefined') {
-        //    Livewire.hook('message.processed', (message, component) => {
-         //       setTimeout(() => {
-         //           initializeChoices();
-         //       }, 100);
-         //   });
-        //}
+                setTimeout(() => {
+                    initializeChoices();
+                }, 50);
+            });
+        });
+
         function resetFilters() {
-            // Resetear inputs de texto y número
             document.querySelectorAll('input[type="text"], input[type="number"]').forEach(el => el.value = '');
-
-            // Resetear checkboxes
             document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
 
-            // Resetear Choices.js
             typeChoices.setChoiceByValue('');
             statusChoices.setChoiceByValue('');
             locationChoices.setChoiceByValue('');
             yearChoices.setChoiceByValue('');
             priceChoices.setChoiceByValue('');
 
-            // Resetear en Livewire (IMPORTANTE)
         @this.set('title', '');
         @this.set('propertyId', '');
         @this.set('priceFrom', '');
@@ -713,7 +641,7 @@
         @this.set('buildingTo', '');
         @this.set('lotFrom', '');
         @this.set('lotTo', '');
-        @this.set('features', []); // checkboxes
+        @this.set('features', []);
 
         @this.set('typeId', '');
         @this.set('statusId', '');
@@ -721,10 +649,16 @@
         @this.set('year', '');
         @this.set('priceRange', '');
 
-        @this.call('resetFilters');
+            window.propertySearchState = {
+                typeId: '',
+                statusId: '',
+                locationId: '',
+                year: '',
+                priceRange: '',
+            };
 
+        @this.call('resetFilters');
         @this.call('search');
         }
-
     </script>
 @endpush
