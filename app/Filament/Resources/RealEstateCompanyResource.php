@@ -10,6 +10,8 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Filament\Resources\RealEstateCompanyResource\Pages;
 
+use AmidEsfahani\FilamentTinyEditor\TinyEditor;
+
 class RealEstateCompanyResource extends Resource
 {
     protected static ?string $model = RealEstateCompany::class;
@@ -26,7 +28,12 @@ class RealEstateCompanyResource extends Resource
             Forms\Components\TextInput::make('company_name')->label('Name')->maxLength(255),
             Forms\Components\TextInput::make('company_main_contact')->label('Main Contact')->maxLength(255),
             Forms\Components\TextInput::make('company_main_telephone')->label('Phone')->maxLength(100),
-            Forms\Components\RichEditor::make('company_notes_to_agents')->label('Notes to Agents'),
+
+            TinyEditor::make('company_notes_to_agents')
+                ->label('Notes to Agents')
+                ->profile('mymls_custom_profile')
+                ->columnSpanFull(),
+
             Forms\Components\TextInput::make('company_website_url')->label('Website URL')->url()->maxLength(255),
             Forms\Components\TextInput::make('company_website_text')->label('Website Text')->maxLength(255),
             Forms\Components\TextInput::make('company_city_town')->label('City / Town')->maxLength(100),

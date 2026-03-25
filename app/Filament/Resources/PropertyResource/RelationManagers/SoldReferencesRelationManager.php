@@ -8,6 +8,8 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+use AmidEsfahani\FilamentTinyEditor\TinyEditor;
+
 class SoldReferencesRelationManager extends RelationManager
 {
     protected static string $relationship = 'SoldReferences';
@@ -21,9 +23,12 @@ class SoldReferencesRelationManager extends RelationManager
                 Forms\Components\TextInput::make('sold_reference_price')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\RichEditor::make('sold_reference_notes')
-                    ->required()
-                    ->maxLength(255),
+                TinyEditor::make('sold_reference_notes')
+                    ->label('Notes')
+                    ->profile('mymls_custom_profile')
+                    ->columnSpanFull(),
+
+
             ]);
     }
 

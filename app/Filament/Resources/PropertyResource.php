@@ -27,8 +27,7 @@ use Filament\Notifications\Notification;
 
 use Filament\Forms\Components\TextInput;
 
-
-
+use AmidEsfahani\FilamentTinyEditor\TinyEditor;
 
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -226,60 +225,10 @@ class PropertyResource extends Resource
 
 
 
-
-                                    Forms\Components\Hidden::make('property_body_html_mode')
-                                        ->default(false)
-                                        ->dehydrated(false)
-                                        ->reactive(),
-
-                                    Forms\Components\Placeholder::make('property_body_source_toggle')
-                                        ->key('property-body-source-toggle')
-                                        ->label('Property Body')
-                                        ->content('') // requerido
-                                        ->dehydrated(false)
-                                        ->hintAction(
-                                            FormAction::make('togglePropertyBodySource')
-                                                ->label(fn (Get $get) => $get('property_body_html_mode') ? 'Visual' : 'Source')
-                                                ->icon(fn (Get $get) => $get('property_body_html_mode')
-                                                    ? 'heroicon-m-pencil'
-                                                    : 'heroicon-m-code-bracket'
-                                                )
-                                                ->color('gray')
-                                                ->action(fn (Get $get, Set $set) =>
-                                                $set('property_body_html_mode', ! (bool) $get('property_body_html_mode'))
-                                                )
-                                        )
+                                    TinyEditor::make('property_body')
+                                        ->label('Property Description')
+                                        ->profile('mymls_custom_profile')
                                         ->columnSpanFull(),
-
-                                    Forms\Components\RichEditor::make('property_body')
-                                        ->label(false) // ya lo pone el Placeholder
-                                        ->toolbarButtons([
-                                            'bold','italic','strike','link',
-                                            'bulletList','orderedList','blockquote','codeBlock',
-                                        ])
-                                        ->columnSpanFull()
-                                        ->hidden(fn (Get $get) => (bool) $get('property_body_html_mode')),
-
-                                    Forms\Components\Textarea::make('property_body')
-                                        ->label(false) // ya lo pone el Placeholder
-                                        ->rows(12)
-                                        ->columnSpanFull()
-                                        ->hidden(fn (Get $get) => ! (bool) $get('property_body_html_mode')),
-
-                                    //  Forms\Components\RichEditor::make('property_body')->toolbarButtons([
-                                    //      'bold',
-                                    //      'italic',
-                                    //      'strike',
-                                    //      'link',
-                                    //      'bulletList',
-                                    //      'orderedList',
-                                    //      'blockquote',
-                                    //      'codeBlock',
-                                    //  ])->columnSpan('full'),
-
-
-
-
 
 
 
@@ -388,17 +337,13 @@ The photo management section has been temporarily moved below the tabs to improv
                                     Forms\Components\TextInput::make('sold_reference_price')
                                         ->label('Price')->numeric(),
 
-                                    Forms\Components\RichEditor::make('sold_reference_notes')
-                                        ->label('Notes')->toolbarButtons([
-                                            'bold',
-                                            'italic',
-                                            'strike',
-                                            'link',
-                                            'bulletList',
-                                            'orderedList',
-                                            'blockquote',
-                                            'codeBlock',
-                                        ])->columnSpanFull(),
+
+                                    TinyEditor::make('sold_reference_notes')
+                                        ->label('Notes')
+                                        ->profile('mymls_custom_profile')
+                                        ->columnSpanFull(),
+
+
                                 ])
                                 ->columns(2) // columnas internas del repeater
                                 ->defaultItems(0)
@@ -409,17 +354,15 @@ The photo management section has been temporarily moved below the tabs to improv
                         ])->columns(3),
 
                         Tab::make('Notes to Agent')->schema([
-                            Forms\Components\RichEditor::make('property_notes_to_agents')
-                                ->label('Notes to Agents')->toolbarButtons([
-                                    'bold',
-                                    'italic',
-                                    'strike',
-                                    'link',
-                                    'bulletList',
-                                    'orderedList',
-                                    'blockquote',
-                                    'codeBlock',
-                                ])->columnSpanFull(),
+
+
+
+                            TinyEditor::make('property_notes_to_agents')
+                                ->label('Notes to Agents')
+                                ->profile('mymls_custom_profile')
+                                ->columnSpanFull(),
+
+
                         ])->columns(3),
 
                         Tab::make('Where Listed')->schema([
@@ -470,13 +413,11 @@ The photo management section has been temporarily moved below the tabs to improv
                                     Forms\Components\TextInput::make('competitor_list_price')
                                         ->label('List Price'),
 
-                                    Forms\Components\RichEditor::make('competitor_notes')
+                                    TinyEditor::make('competitor_notes')
                                         ->label('Notes')
-                                        ->toolbarButtons([
-                                            'bold', 'italic', 'strike', 'link',
-                                            'bulletList', 'orderedList', 'blockquote', 'codeBlock',
-                                        ])
+                                        ->profile('mymls_custom_profile')
                                         ->columnSpanFull(),
+
                                 ])
                                 ->columns(2)
                                 ->defaultItems(1)
