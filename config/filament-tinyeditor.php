@@ -53,9 +53,11 @@ return [
 
         'mymls_custom_profile' => [
             'plugins' => 'autoresize directionality advlist link lists wordcount code',
-            'toolbar' => 'undo redo removeformat | bold italic strikethrough | rtl ltr | numlist bullist | blockquote | link | code | wordcount',
+            // 'toolbar' => 'undo redo removeformat |  styles |bold italic strikethrough | rtl ltr | numlist bullist | blockquote | link | code | wordcount',
+            'toolbar' => 'undo redo removeformat | fontfamily fontsize fontsizeinput font_size_formats styles | bold italic underline  | alignjustify alignright aligncenter alignleft | numlist bullist outdent indent accordion | forecolor backcolor | blockquote table toc hr | link anchor codesample | visualblocks | code | wordcount',
             'upload_directory' => null,
-        ],
+         ],
+
     ],
 
     /**
