@@ -277,24 +277,8 @@
     @if ($results && $results->count())
         <div class="overflow-x-auto mt-6">
 
-            <div class="mt-4 p-4 relative">
-                <div
-                    wire:loading.flex
-                    wire:target="gotoPage,previousPage,nextPage"
-                    class="absolute inset-0 z-10 items-center justify-center bg-white/70 rounded">
-
-                    <div class="flex items-center gap-2 text-sm text-gray-700">
-                        <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
-                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"/>
-                            <path d="M4 12a8 8 0 0 1 8-8" stroke="currentColor" stroke-width="4" class="opacity-75"/>
-                        </svg>
-                        <span>Loading page...</span>
-                    </div>
-                </div>
-
-                <div wire:loading.class="opacity-40 pointer-events-none" wire:target="gotoPage,previousPage,nextPage">
-                    {{ $results->links() }}
-                </div>
+            <div class="mt-4 p-4">
+                {{ $results->links() }}
             </div>
 
 
@@ -548,24 +532,8 @@
                 </tbody>
             </table>
 
-            <div class="mt-4 p-4 relative">
-                <div
-                    wire:loading.flex
-                    wire:target="gotoPage,previousPage,nextPage"
-                    class="absolute inset-0 z-10 items-center justify-center bg-white/70 rounded">
-
-                    <div class="flex items-center gap-2 text-sm text-gray-700">
-                        <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
-                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"/>
-                            <path d="M4 12a8 8 0 0 1 8-8" stroke="currentColor" stroke-width="4" class="opacity-75"/>
-                        </svg>
-                        <span>Loading page...</span>
-                    </div>
-                </div>
-
-                <div wire:loading.class="opacity-40 pointer-events-none" wire:target="gotoPage,previousPage,nextPage">
-                    {{ $results->links() }}
-                </div>
+            <div class="mt-4 p-4">
+                {{ $results->links() }}
             </div>
 
         </div>
@@ -579,11 +547,8 @@
 
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/scripts/choices.min.js"></script>
-
-
-
     <script>
-        let typeChoices, statusChoices, locationChoices, yearChoices, priceChoices;
+        let typeChoices, statusChoices, locationChoices, yearChoices, priceChoises;
 
         document.addEventListener('DOMContentLoaded', function () {
             initializeChoices();
@@ -595,7 +560,7 @@
             if (statusChoices) statusChoices.destroy();
             if (locationChoices) locationChoices.destroy();
             if (yearChoices) yearChoices.destroy();
-            if (priceChoices) priceChoices.destroy();
+            if (priceChoises) priceChoises.destroy();
 
 
             // Inicializar Choices para Type
@@ -606,11 +571,6 @@
                 allowHTML: true
             });
 
-            const currentTypeId = @js(is_array($typeId) ? ($typeId['value'] ?? '') : $typeId);
-            if (currentTypeId !== null && currentTypeId !== undefined && currentTypeId !== '') {
-                typeChoices.setChoiceByValue(String(currentTypeId));
-            }
-
             // Inicializar Choices para Status
             statusChoices = new Choices('#statusId', {
                 searchEnabled: true,
@@ -618,11 +578,6 @@
                 placeholderValue: '',
                 allowHTML: false
             });
-
-            const currentStatusId = @js(is_array($statusId) ? ($statusId['value'] ?? '') : $statusId);
-            if (currentStatusId !== null && currentStatusId !== undefined && currentStatusId !== '') {
-                statusChoices.setChoiceByValue(String(currentStatusId));
-            }
 
             // Inicializar Choices para Location
             locationChoices = new Choices('#locationId', {
@@ -634,11 +589,6 @@
                 shouldSortItems: false,
             });
 
-            const currentLocationId = @js(is_array($locationId) ? ($locationId['value'] ?? '') : $locationId);
-            if (currentLocationId !== null && currentLocationId !== undefined && currentLocationId !== '') {
-                locationChoices.setChoiceByValue(String(currentLocationId));
-            }
-
             // Inicializar Choices para Year
             yearChoices = new Choices('#year', {
                 searchEnabled: true,
@@ -646,11 +596,6 @@
                 placeholderValue: '',
                 allowHTML: false
             });
-
-            const currentYear = @js(is_array($year) ? ($year['value'] ?? '') : $year);
-            if (currentYear !== null && currentYear !== undefined && currentYear !== '') {
-                yearChoices.setChoiceByValue(String(currentYear));
-            }
 
             priceChoices = new Choices('#priceRange', {
                 searchEnabled: false,
@@ -661,10 +606,6 @@
                 shouldSortItems: false,
             });
 
-            const currentPriceRange = @js($priceRange);
-            if (currentPriceRange !== null && currentPriceRange !== undefined && currentPriceRange !== '') {
-                priceChoices.setChoiceByValue(String(currentPriceRange));
-            }
 
             const priceEl = document.getElementById('priceRange');
 

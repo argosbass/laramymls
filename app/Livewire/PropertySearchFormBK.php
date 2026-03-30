@@ -44,48 +44,8 @@ class PropertySearchForm extends Component
 
     protected $queryString = ['page'];
 
-    protected string $sessionKey = 'property_search_filters';
-
-    public function mount()
-    {
-        $filters = session()->get($this->sessionKey, []);
-
-        foreach ($filters as $key => $value) {
-            if (property_exists($this, $key)) {
-                $this->{$key} = $value;
-            }
-        }
-    }
-
-    protected function saveFiltersToSession(): void
-    {
-        session()->put($this->sessionKey, [
-            'title' => $this->title,
-            'propertyId' => $this->propertyId,
-            'typeId' => $this->typeId,
-            'statusId' => $this->statusId,
-            'locationId' => $this->locationId,
-            'priceFrom' => $this->priceFrom,
-            'priceTo' => $this->priceTo,
-            'priceRange' => $this->priceRange,
-            'bedroomsFrom' => $this->bedroomsFrom,
-            'bedroomsTo' => $this->bedroomsTo,
-            'bathroomsFrom' => $this->bathroomsFrom,
-            'bathroomsTo' => $this->bathroomsTo,
-            'buildingFrom' => $this->buildingFrom,
-            'buildingTo' => $this->buildingTo,
-            'lotFrom' => $this->lotFrom,
-            'lotTo' => $this->lotTo,
-            'year' => $this->year,
-            'features' => $this->features,
-            'sortBy' => $this->sortBy,
-            'sortDir' => $this->sortDir,
-        ]);
-    }
-
     public function updated($property)
     {
-        $this->saveFiltersToSession();
         $this->resetPage(); // Cuando cambia cualquier filtro, vuelve a la página 1
     }
 
@@ -118,7 +78,6 @@ class PropertySearchForm extends Component
             $this->sortDir = 'asc';
         }
 
-        $this->saveFiltersToSession();
         $this->resetPage();
     }
 
@@ -251,17 +210,11 @@ class PropertySearchForm extends Component
             'features',
         ]);
 
-        $this->sortBy = 'property_price';
-        $this->sortDir = 'asc';
-
-        session()->forget($this->sessionKey);
-
-        $this->search();
+        $this->search(); // para refrescar resultados vacíos
     }
 
     public function search()
     {
-        $this->saveFiltersToSession();
         $this->resetPage();
     }
 
