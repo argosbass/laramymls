@@ -10,6 +10,11 @@ class PropertyType extends Model
 
     public function properties()
     {
-        return $this->hasMany(Property::class, 'property_type_id');
+        return $this->belongsToMany(
+            Property::class,
+            'property_type_property',
+            'property_type_id',
+            'property_id'
+        )->withTimestamps();
     }
 }

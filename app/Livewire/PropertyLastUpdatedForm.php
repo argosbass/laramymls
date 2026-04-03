@@ -46,7 +46,9 @@ class PropertyLastUpdatedForm extends Component
                 isset($this->typeId['value']) &&
                 $this->typeId['value'] !== '' &&
                 $this->typeId['value'] !== 'all',
-                fn($q) => $q->where('property_type_id', $this->typeId['value'])
+                fn ($q) => $q->whereHas('types', function ($q2) {
+                    $q2->where('property_types.id', $this->typeId['value']);
+                })
             )
 
             ->when(
@@ -69,7 +71,7 @@ class PropertyLastUpdatedForm extends Component
                 $q->whereIn('property_location_id', $ids);
             })
 
-            ->with(['type', 'status', 'location', 'author'])
+            ->with(['types', 'status', 'location', 'author'])
 
             ->orderBy('updated_at', 'desc') // ordena de la más reciente a la más antigua
             ->paginate(100, pageName: $this->getPageName());

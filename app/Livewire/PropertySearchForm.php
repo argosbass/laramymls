@@ -158,7 +158,9 @@ class PropertySearchForm extends Component
                 isset($this->typeId['value']) &&
                 $this->typeId['value'] !== '' &&
                 $this->typeId['value'] !== 'all',
-                fn ($q) => $q->where('property_type_id', $this->typeId['value'])
+                fn ($q) => $q->whereHas('types', function ($q2) {
+                    $q2->where('property_types.id', $this->typeId['value']);
+                })
             )
 
             ->when(
@@ -197,7 +199,7 @@ class PropertySearchForm extends Component
                 }
             })
 
-            ->with(['type', 'status', 'location', 'features'])
+            ->with(['types', 'status', 'location', 'features'])
 
             // ✅ SOLO para ordenar por status (relación)
             ->when($this->sortBy === 'property_status_name', function ($q) {

@@ -508,7 +508,7 @@
                         <td class="px-2 py-1">
                             {{ $sold ? \Carbon\Carbon::parse($sold->sold_reference_date)->format('Y-m-d') : '-' }}
                         </td>
-                        <td class="px-2 py-1">{{ $property->type->type_name ?? '-' }}</td>
+                        <td class="px-2 py-1">{{ $property->types->pluck('type_name')->implode(', ') ?? '-' }}</td>
                         <td class="px-2 py-1">{{ $property->status->status_name ?? '-' }}</td>
 
                         <td class="px-2 py-1">

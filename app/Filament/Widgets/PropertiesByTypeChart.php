@@ -14,14 +14,13 @@ class PropertiesByTypeChart extends ChartWidget
 
     protected function getData(): array
     {
-        $data = Property::with('type')
-            ->selectRaw('property_type_id, count(*) as count')
-            ->groupBy('property_type_id')
+        $data = \App\Models\PropertyType::query()
+            ->withCount('properties')
             ->get()
             ->map(function ($item) {
                 return [
-                    'type' => $item->type->type_name ?? 'Unknown',
-                    'count' => $item->count
+                    'type' => $item->type_name ?? 'Unknown',
+                    'count' => $item->properties_count,
                 ];
             });
 

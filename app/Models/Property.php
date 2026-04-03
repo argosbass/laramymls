@@ -43,7 +43,6 @@ class Property extends Model implements HasMedia
         'property_osnid',
         'property_price',
         'property_status_id',
-        'property_type_id',
         'property_video',
     ];
 
@@ -107,9 +106,17 @@ class Property extends Model implements HasMedia
     public function status() {
         return $this->belongsTo(PropertyStatus::class, 'property_status_id');
     }
-    public function type() {
-        return $this->belongsTo(PropertyType::class, 'property_type_id');
+
+    public function types()
+    {
+        return $this->belongsToMany(
+            PropertyType::class,
+            'property_type_property',
+            'property_id',
+            'property_type_id'
+        )->withTimestamps();
     }
+
     public function location() {
         return $this->belongsTo(PropertyLocations::class, 'property_location_id');
     }
@@ -127,7 +134,7 @@ class Property extends Model implements HasMedia
         return $this->hasMany(PropertyPhotos::class);
     }
     public function soldReferences() {
-        return $this->hasMany(PropertySoldReferences::class);
+
         return $this->hasMany(PropertySoldReferences::class);
     }
     public function listingCompetitors() {

@@ -341,7 +341,7 @@
         <div class="space-y-2">
             <h2 class="text-xl font-semibold border-b pb-1">Details</h2>
             <div><span class="info-label">Property ID:</span> {{ $property->id }}</div>
-            <div><span class="info-label">Property Type:</span> {{ $property->type?->type_name }}</div>
+            <div><span class="info-label">Property Type:</span> {{ $property->types->pluck('type_name')->implode(', ') ?? '-' }}</div>
             <div><span class="info-label">Bedrooms:</span> {{ $property->property_bedrooms }}</div>
             <div><span class="info-label">Bathrooms:</span> {{ $property->property_bathrooms }}</div>
             <div><span class="info-label">Building Size:</span> {{ $property->property_building_size_area_quantity }} {{ $property->property_building_size_area_unit }}</div>

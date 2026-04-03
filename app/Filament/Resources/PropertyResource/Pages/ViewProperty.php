@@ -72,7 +72,11 @@ class ViewProperty extends ViewRecord
                                     TextEntry::make('property_title')->label('Title'),
                                     TextEntry::make('property_price')->label('Price'),
                                     TextEntry::make('property_status_id')->label('Status ID'),
-                                    TextEntry::make('property_type_id')->label('Type ID'),
+                                    TextEntry::make('types')
+                                        ->label('Type')
+                                        ->formatStateUsing(fn ($record) =>
+                                        $record->types->pluck('type_name')->implode(', ')
+                                        ),
                                     TextEntry::make('published')->label('Published'),
                                     TextEntry::make('property_added_date')->label('Added Date'),
                                 ]),

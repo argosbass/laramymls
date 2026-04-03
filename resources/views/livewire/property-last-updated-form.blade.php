@@ -151,7 +151,7 @@
 
                         <td class="px-2 py-1">{{ $property->created_at->format('Y-m-d') }}</td>
 
-                        <td class="px-2 py-1">{{ $property->type->type_name ?? '-' }}</td>
+                        <td class="px-2 py-1">{{ $property->types->pluck('type_name')->implode(', ') ?? '-' }}</td>
                         <td class="px-2 py-1">{{ $property->status->status_name ?? '-' }}</td>
 
                         <td class="px-2 py-1">

@@ -67,12 +67,11 @@ class PropertyResource extends Resource
                                     Forms\Components\DatePicker::make('property_added_date'),
                                     Forms\Components\TextInput::make('property_title')->required()->maxLength(500),
 
-                                    Forms\Components\Select::make('property_type_id')
-                                        ->label('Type')
-                                        ->relationship('type', 'type_name')
-                                        //->searchable()
-                                        //->preload()
-                                        ->nullable(),
+                                    Forms\Components\Select::make('types')
+                                        ->multiple()
+                                        ->relationship('types', 'type_name')
+                                        ->preload()
+                                        ->searchable(),
 
                                     Forms\Components\Select::make('property_status_id')
                                         ->label('Status')
@@ -501,7 +500,11 @@ The photo management section has been temporarily moved below the tabs to improv
             ->columns([
                 Tables\Columns\TextColumn::make('property_title')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('status.status_name')->label('Status')->sortable(),
-                Tables\Columns\TextColumn::make('type.type_name')->label('Type')->sortable(),
+                Tables\Columns\TextColumn::make('types.type_name')
+                    ->label('Type')
+                    ->formatStateUsing(fn ($record) =>
+                    $record->types->pluck('type_name')->implode(', ')
+                    ),
                 Tables\Columns\TextColumn::make('property_price')->label('Price')->money('usd')->sortable(),
                 Tables\Columns\TextColumn::make('property_added_date')->date()->sortable(),
                 Tables\Columns\TextColumn::make('author.name')
@@ -535,7 +538,14 @@ The photo management section has been temporarily moved below the tabs to improv
                     ),
 
                 Tables\Filters\SelectFilter::make('property_status_id')->label('Property Status')->relationship('status', 'status_name'),
-                Tables\Filters\SelectFilter::make('property_type_id')->label('Property Type')->relationship('type', 'type_name'),
+
+                Tables\Filters\SelectFilter::make('types')
+                    ->label('Property Type')
+                    ->relationship('types', 'type_name')
+                    ->multiple()
+                    ->searchable()
+                    ->preload(),
+
                 Tables\Filters\SelectFilter::make('author.name')->label('Author')->relationship('author', 'name'),
             ])
             ->actions([

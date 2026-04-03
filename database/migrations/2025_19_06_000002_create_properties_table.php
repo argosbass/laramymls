@@ -39,7 +39,6 @@ return new class extends Migration {
 
 
             $table->foreignId('property_status_id')->nullable()->constrained('property_status')->nullOnDelete();
-            $table->foreignId('property_type_id')->nullable()->constrained('property_types')->nullOnDelete();
             $table->foreignId('property_location_id')->nullable()->constrained('property_locations')->nullOnDelete();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
 

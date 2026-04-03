@@ -109,7 +109,7 @@
             <tr>
                 <td width="33%">
                     <p><span class="info-label">Property ID:</span> {{ $property->id }}</p>
-                    <p><span class="info-label">Property Type:</span> {{ $property->type?->type_name }}</p>
+                    <p><span class="info-label">Property Type:</span> {{ $property->types->pluck('type_name')->implode(', ') ?? '-' }}</p>
                     <p><span class="info-label">Bedrooms:</span> {{ $property->property_bedrooms }}</p>
                     <p><span class="info-label">Bathrooms:</span> {{ $property->property_bathrooms }}</p>
 
