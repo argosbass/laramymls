@@ -30,11 +30,14 @@
         }
     </style>
 @endpush
+
+<div class="space-y-6 w-full" wire:keydown.enter.prevent="search">
+
 <div class="space-y-4">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div wire:ignore>
             <label class="block text-sm font-medium">Listing Company</label>
-            <select wire:model="companyId" id="company-select"
+            <select wire:model="companyId"  id="company-select"
                     class="select2 block w-full rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300">
                 <option value="">-- All --</option>
                 @foreach($companies as $company)
@@ -56,16 +59,34 @@
 
         <div>
             <label class="block text-sm font-medium">Reference URL</label>
-            <input type="text" wire:model.debounce.500ms="referenceLink"
+            <input type="text"
+                   wire:keydown.enter="search"
+                   wire:model.debounce.500ms="referenceLink"
                    class="block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-primary-300 focus:border-primary-300">
         </div>
 
         <div class="flex items-end">
-            <button wire:click="search"
-                    class="bg-primary-600 text-white px-4 py-2 rounded shadow hover:bg-primary-700 transition">
-                Search
+            <button
+                type="button"
+                wire:click="search"
+                wire:loading.attr="disabled"
+                wire:target="search"
+                class="inline-flex items-center gap-2 bg-primary-600 text-white px-4 py-2 rounded shadow hover:bg-primary-700 transition disabled:opacity-60">
+
+                <svg
+                    wire:loading
+                    wire:target="search"
+                    class="animate-spin h-4 w-4"
+                    viewBox="0 0 24 24"
+                    fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"/>
+                    <path d="M4 12a8 8 0 018-8" stroke="currentColor" stroke-width="4" class="opacity-75"/>
+                </svg>
+
+                <span>Search</span>
             </button>
-            &nbsp;
+
+
             <button
                 type="button"
                 onclick="resetFilters()"
@@ -144,6 +165,7 @@
     </div>
 </div>
 
+</div>
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/scripts/choices.min.js"></script>
     <script>
