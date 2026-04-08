@@ -6,6 +6,9 @@ use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\PublicPropertyController;
 use App\Models\Property;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Spatie\Sitemap\Sitemap;
+use Spatie\Sitemap\Tags\Url;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -50,4 +53,22 @@ Route::middleware(['auth'])->group(function ()
 
     Route::get('/property-listing-id/{id}', [PublicPropertyController::class, 'showById'])
         ->name('property.public.showById');
+});
+
+
+
+Route::get('/sitemap.xml', function () {
+
+    $sitemap = Sitemap::create();
+
+    foreach (Property::all() as $property)
+    {
+
+        if( isset( $property->slug ) && !empty( $property->slug ))
+        {
+            $sitemap->add(Url::create(route('property.public.show', $property->slug)));
+        }
+    }
+
+    return $sitemap->toResponse(request());
 });
