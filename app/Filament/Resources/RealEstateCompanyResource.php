@@ -49,13 +49,14 @@ class RealEstateCompanyResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('company_name', 'asc') // 👈 orden inicial
             ->columns([
-                Tables\Columns\TextColumn::make('company_title')->label('Title')->searchable(),
-                Tables\Columns\TextColumn::make('company_name')->label('Name')->searchable(),
+
+                Tables\Columns\TextColumn::make('company_name')->label('Name')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('company_main_contact')->label('Contact'),
                 Tables\Columns\TextColumn::make('company_main_telephone')->label('Phone'),
-                Tables\Columns\IconColumn::make('published')->label('Published')->boolean(),
-                Tables\Columns\TextColumn::make('created_at')->label('Created At')->dateTime(),
+                Tables\Columns\IconColumn::make('published')->label('Published')->boolean()->sortable(),
+                Tables\Columns\TextColumn::make('created_at')->label('Created At')->dateTime()->sortable(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
