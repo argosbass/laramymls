@@ -124,4 +124,46 @@ class EditProperty extends EditRecord
             }
         }
     }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $quantity = $data['property_lot_size_area_quantity'] ?? null;
+        $unit = $data['property_lot_size_area_unit'] ?? null;
+
+        if (is_numeric($quantity)) {
+            $data['property_lot_size_m2'] = $unit === 'sqft'
+                ? round($quantity / 10.7639, 4)
+                : round($quantity, 4);
+        }
+
+
+        return $data;
+    }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        return $this->mutateFormDataBeforeSave($data);
+    }
+
+    protected function afterSave(): void
+    {
+        $quantity = $this->data['property_lot_size_area_quantity'] ?? null;
+        $unit = $this->data['property_lot_size_area_unit'] ?? null;
+
+        if (! is_numeric($quantity)) {
+            $this->record->update([
+                'property_lot_size_m2' => null,
+            ]);
+
+            return;
+        }
+
+        $m2 = $unit === 'sqft'
+            ? round((float) $quantity / 10.7639, 4)
+            : round((float) $quantity, 4);
+
+        $this->record->update([
+            'property_lot_size_m2' => $m2,
+        ]);
+    }
 }
