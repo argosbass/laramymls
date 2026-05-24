@@ -24,6 +24,8 @@ class CreateProperty extends CreateRecord
         }
 
         $this->afterCreateLotM2();
+        $this->afterCreateBuildingM2();
+
     }
 
     protected function getHeaderActions(): array
@@ -77,6 +79,28 @@ class CreateProperty extends CreateRecord
 
         $this->record->update([
             'property_lot_size_m2' => $m2,
+        ]);
+    }
+
+    protected function afterCreateBuildingM2(): void
+    {
+        $quantity = $this->data['property_building_size_area_quantity'] ?? null;
+        $unit = $this->data['property_building_size_area_unit'] ?? null;
+
+        if (! is_numeric($quantity)) {
+            $this->record->update([
+                'property_building_size_m2' => null,
+            ]);
+
+            return;
+        }
+
+        $m2 = $unit === 'sqft'
+            ? round((float) $quantity / 10.7639, 4)
+            : round((float) $quantity, 4);
+
+        $this->record->update([
+            'property_building_size_m2' => $m2,
         ]);
     }
 

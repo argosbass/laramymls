@@ -137,6 +137,16 @@ class EditProperty extends EditRecord
         }
 
 
+        $quantity = $data['property_building_size_area_quantity'] ?? null;
+        $unit = $data['property_building_size_area_quantity_size_area_unit'] ?? null;
+
+        if (is_numeric($quantity)) {
+            $data['property_building_size_m2'] = $unit === 'sqft'
+                ? round($quantity / 10.7639, 4)
+                : round($quantity, 4);
+        }
+
+
         return $data;
     }
 
@@ -147,6 +157,13 @@ class EditProperty extends EditRecord
 
     protected function afterSave(): void
     {
+        $this->afterSaveLotM2();
+        $this->afterSaveBuildingM2();
+    }
+
+    protected function afterSaveLotM2(): void
+    {
+
         $quantity = $this->data['property_lot_size_area_quantity'] ?? null;
         $unit = $this->data['property_lot_size_area_unit'] ?? null;
 
@@ -156,14 +173,37 @@ class EditProperty extends EditRecord
             ]);
 
             return;
-        }
+        }else
 
-        $m2 = $unit === 'sqft'
-            ? round((float) $quantity / 10.7639, 4)
-            : round((float) $quantity, 4);
+            $m2 = $unit === 'sqft'
+                ? round((float) $quantity / 10.7639, 4)
+                : round((float) $quantity, 4);
 
         $this->record->update([
             'property_lot_size_m2' => $m2,
         ]);
     }
+    protected function afterSaveBuildingM2(): void
+    {
+
+        $quantity = $this->data['property_building_size_area_quantity'] ?? null;
+        $unit = $this->data['property_building_size_area_unit'] ?? null;
+
+        if (! is_numeric($quantity)) {
+            $this->record->update([
+                'property_building_size_m2' => null,
+            ]);
+
+            return;
+        }else
+
+            $m2 = $unit === 'sqft'
+                ? round((float) $quantity / 10.7639, 4)
+                : round((float) $quantity, 4);
+
+        $this->record->update([
+            'property_building_size_m2' => $m2,
+        ]);
+    }
+
 }
