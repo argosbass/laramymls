@@ -150,4 +150,15 @@ class RossExternalPriceReport extends Page
         }, $filename);
     }
 
+    public static function canViewAny(): bool
+    {
+        // return auth()->user()?->hasAnyRole(['Super Admin', 'Data Entry']);
+        return auth()->user()?->hasAnyRole(['Super Admin']);
+    }
+
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->hasRole('Super Admin');
+    }
+
 }
