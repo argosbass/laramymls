@@ -18,9 +18,12 @@ class RossExternalPriceReport extends Page
 
     protected static string $view = 'filament.pages.ross-external-price-report';
 
-    public array $rows = [];
+    public array    $rows = [];
 
-    public ?string $resultFilter = null;
+    public ?string  $resultFilter = null;
+
+    public ?string  $sortColumn = "title";
+    public string   $sortDirection = 'asc';
 
     public function mount(): void
     {
@@ -39,8 +42,8 @@ class RossExternalPriceReport extends Page
 
             // $url = "https://www.remax-oceansurf-cr.com/property/mar-y-posa-bb";
 
-
-            $externalPrice = (float) ($item['Price'] ?? 0);
+            $externalPrice          = (float) ($item['Price'] ?? 0);
+            $externalPropertyStatus = ($item['PropertyStatus'] ?? null);
 
             $property = Property::with([
                 'listingCompetitors' => function ($query) use ($url) {
@@ -53,8 +56,6 @@ class RossExternalPriceReport extends Page
             ->first();
 
 
-
-
             if (! $property) {
 
                 $this->rows[] = [
@@ -65,13 +66,18 @@ class RossExternalPriceReport extends Page
                     'external_price' => $externalPrice,
                     'reference_price' => null,
                     'status' => 'Missing',
+                    'rossPropertyStatus' => $externalPropertyStatus,
+                    'mlsPropertyStatus' => null
                 ];
+
 
                 continue;
             }
 
 
             $localPrice = (float) $property->property_price;
+            $localPropertyStatus = $property->status?->status_name ?? '';
+
 
             $ReferencePrice = (float) (
                 $property?->listingCompetitors?->first()?->competitor_list_price ?? 0
@@ -88,13 +94,17 @@ class RossExternalPriceReport extends Page
                 'status' => $localPrice != $externalPrice
                     ? 'Price Different'
                     : 'OK',
+
+                'rossPropertyStatus' => $externalPropertyStatus,
+                'mlsPropertyStatus' => $localPropertyStatus
+
             ];
         }
 
-       // dd( $this->rows );
+
     }
 
-    public function getFilteredRowsProperty(): array
+    public function _getFilteredRowsProperty(): array
     {
         return collect($this->rows)
             ->when($this->resultFilter, function ($rows) {
@@ -102,6 +112,36 @@ class RossExternalPriceReport extends Page
             })
             ->values()
             ->toArray();
+    }
+
+    public function getFilteredRowsProperty()
+    {
+        $rows = collect($this->rows);
+
+        if ($this->resultFilter) {
+            $rows = $rows->where('status', $this->resultFilter);
+        }
+
+        if ($this->sortColumn) {
+            $rows = $rows->sortBy(
+                fn ($row) => strtolower($row[$this->sortColumn] ?? ''),
+                SORT_REGULAR,
+                $this->sortDirection === 'desc'
+            );
+        }
+
+        return $rows->values();
+    }
+
+
+    public function sortBy(string $column): void
+    {
+        if ($this->sortColumn === $column) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortColumn = $column;
+            $this->sortDirection = 'asc';
+        }
     }
 
     public function getStatsProperty(): array
@@ -125,12 +165,15 @@ class RossExternalPriceReport extends Page
             fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
 
             fputcsv($handle, [
+
                 'Status',
                 'MLS Property',
                 'Reference Link',
-                'Reference Price',
+                'MLS Property Status',
+                'ROSS Property Status',
                 'MLS Price',
                 'ROSS Price',
+
             ]);
 
             foreach ($this->filteredRows as $row) {
@@ -139,7 +182,8 @@ class RossExternalPriceReport extends Page
                     $row['status'],
                     $row['title'],
                     $row['url'],
-                    $row['reference_price'],
+                    $row['mlsPropertyStatus'],
+                    $row['rossPropertyStatus'],
                     $row['local_price'],
                     $row['external_price'],
                 ]);
@@ -152,13 +196,12 @@ class RossExternalPriceReport extends Page
 
     public static function canViewAny(): bool
     {
-        // return auth()->user()?->hasAnyRole(['Super Admin', 'Data Entry']);
-        return auth()->user()?->hasAnyRole(['Super Admin']);
+        return auth()->user()?->hasAnyRole(['Super Admin', 'Data Entry']);
     }
 
     public static function canAccess(): bool
     {
-        return auth()->user()?->hasRole('Super Admin');
+        return auth()->user()?->hasAnyRole(['Super Admin', 'Data Entry']);
     }
 
 }

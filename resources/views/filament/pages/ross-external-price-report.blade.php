@@ -1,52 +1,40 @@
 <x-filament-panels::page>
 
+
+
+
     <div class="mb-6 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+
         <div class="mb-6 flex flex-wrap items-center gap-2 p-4">
 
-            <button
-                wire:click="$set('resultFilter', '')"
-                @class([
-                    'rounded-lg border px-3 py-2 text-sm transition',
-                    'bg-primary-600 text-white border-primary-600' => $resultFilter === null || $resultFilter === '',
-                    'bg-white hover:bg-gray-50' => $resultFilter !== null && $resultFilter !== '',
-                ])
-            >
-                All ({{ count($rows) }})
-            </button>
+    <span class="mr-2 text-sm font-semibold text-gray-700">
+        Show status:
+    </span>
 
-            <button
-                wire:click="$set('resultFilter', 'Missing')"
-                @class([
-                    'rounded-lg border px-3 py-2 text-sm transition',
-                    'bg-primary-600 text-white border-danger-600' => $resultFilter === 'Missing',
-                    'bg-danger-50 border-danger-200 hover:bg-danger-100' => $resultFilter !== 'Missing',
-                ])
-            >
-                Missing ({{ $this->stats['missing'] }})
-            </button>
+            @php
+                $filters = [
+                    '' => ['label' => 'All', 'count' => count($rows), 'active' => $resultFilter === null || $resultFilter === ''],
+                    'Missing' => ['label' => 'Missing', 'count' => $this->stats['missing'], 'active' => $resultFilter === 'Missing'],
+                    'Price Different' => ['label' => 'Price Different', 'count' => $this->stats['different'], 'active' => $resultFilter === 'Price Different'],
+                    'OK' => ['label' => 'OK', 'count' => $this->stats['ok'], 'active' => $resultFilter === 'OK'],
+                ];
+            @endphp
 
-            <button
-                wire:click="$set('resultFilter', 'Price Different')"
-                @class([
-                    'rounded-lg border px-3 py-2 text-sm transition',
-                    'bg-primary-600 text-white border-warning-600' => $resultFilter === 'Price Different',
-                    'bg-warning-50 border-warning-200 hover:bg-warning-100' => $resultFilter !== 'Price Different',
-                ])
-            >
-                Different ({{ $this->stats['different'] }})
-            </button>
-
-            <button
-                wire:click="$set('resultFilter', 'OK')"
-                @class([
-                    'rounded-lg border px-3 py-2 text-sm transition',
-                    'bg-primary-600 text-white border-success-600' => $resultFilter === 'OK',
-                    'bg-primary-50 border-success-200 hover:bg-success-100' => $resultFilter !== 'OK',
-                ])
-            >
-                OK ({{ $this->stats['ok'] }})
-            </button>
-
+            @foreach ($filters as $value => $filter)
+                <button
+                    wire:click="$set('resultFilter', '{{ $value }}')"
+                    @class([
+                        'rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200',
+                        'bg-primary-600 text-white border-primary-600 shadow-sm scale-105' => $filter['active'],
+                        'bg-white text-gray-700 border-gray-300 hover:bg-gray-100 hover:border-gray-400 hover:shadow-sm' => ! $filter['active'],
+                    ])
+                >
+                    {{ $filter['label'] }}
+                    <span class="ml-1 text-xs opacity-80">
+                ({{ $filter['count'] }})
+            </span>
+                </button>
+            @endforeach
 
             <div class="ml-auto">
                 <button
@@ -57,13 +45,13 @@
                 </button>
             </div>
 
-
         </div>
+
         <div class="mt-5 grid gap-4 md:grid-cols-3 p-4">
 
             <div class="rounded-xl border border-red-200 bg-red-50 p-4">
                 <div class="text-sm font-medium text-red-700">
-                    Missing
+                    Properties Missing
                 </div>
                 <div class="mt-2 text-3xl font-bold text-red-900">
                     {{ $this->stats['missing'] }}
@@ -72,7 +60,7 @@
 
             <div class="rounded-xl border border-yellow-200 bg-yellow-50 p-4">
                 <div class="text-sm font-medium text-yellow-700">
-                    Price Different
+                   Properties with Price Different
                 </div>
                 <div class="mt-2 text-3xl font-bold text-yellow-900">
                     {{ $this->stats['different'] }}
@@ -81,7 +69,7 @@
 
             <div class="rounded-xl border border-green-200 bg-green-50 p-4">
                 <div class="text-sm font-medium text-green-700">
-                    OK
+                    Properties OK
                 </div>
                 <div class="mt-2 text-3xl font-bold text-green-900">
                     {{ $this->stats['ok'] }}
@@ -94,10 +82,51 @@
         <table class="w-full text-sm">
             <thead class="bg-gray-50">
             <tr>
-                <th class="px-4 py-3 text-left font-semibold">Status</th>
-                <th class="px-4 py-3 text-left font-semibold">MLS Property</th>
+
+                <th class="px-4 py-3 text-left font-semibold">
+                    <button wire:click="sortBy('status')" class="hover:underline">
+                        Status
+                        @if($sortColumn === 'status') {{ $sortDirection === 'asc' ? '↑' : '↓' }}
+                        @else
+                            {{ '*' }}
+                        @endif
+                    </button>
+                </th>
+                <th class="px-4 py-3 text-left font-semibold">
+                    <button wire:click="sortBy('title')" class="hover:underline">
+                        MLS Property
+                        @if($sortColumn === 'title') {{ $sortDirection === 'asc' ? '↑' : '↓' }}
+                        @else
+                            {{ '*' }}
+                        @endif
+                    </button>
+                </th>
+
                 <th class="px-4 py-3 text-left font-semibold">Reference Link</th>
-                <th class="px-4 py-3 text-left font-semibold">Reference Price</th>
+
+
+
+                <th class="px-4 py-3 text-right font-semibold">
+                    <button wire:click="sortBy('mlsPropertyStatus')" class="hover:underline">
+                        MLS Property Status
+                        @if($sortColumn === 'mlsPropertyStatus') {{ $sortDirection === 'asc' ? '↑' : '↓' }}
+                        @else
+                            {{ '*' }}
+                        @endif
+                    </button>
+                </th>
+
+
+                <th class="px-4 py-3 text-right font-semibold">
+                    <button wire:click="sortBy('rossPropertyStatus')" class="hover:underline">
+                        ROSS Property Status
+                        @if($sortColumn === 'rossPropertyStatus') {{ $sortDirection === 'asc' ? '↑' : '↓' }}
+                        @else
+                            {{ '*' }}
+                        @endif
+                    </button>
+                </th>
+
                 <th class="px-4 py-3 text-right font-semibold">MLS Price</th>
                 <th class="px-4 py-3 text-right font-semibold">ROSS Price</th>
             </tr>
@@ -144,13 +173,19 @@
                     </td>
 
                     <td class="px-4 py-3 text-right">
-                        {{ $row['reference_price'] !== null ? '$' . number_format($row['reference_price'], 0) : '-' }}
+
+                        {{ $row['mlsPropertyStatus'] !== null ?  $row['mlsPropertyStatus'] : '-' }}
+
                     </td>
+                    <td class="px-4 py-3 text-right">
+                        {{ $row['rossPropertyStatus'] !== null ?  $row['rossPropertyStatus'] : '-' }}
+
+                    </td>
+
 
                     <td class="px-4 py-3 text-right">
                         {{ $row['local_price'] !== null ? '$' . number_format($row['local_price'], 0) : '-' }}
                     </td>
-
                     <td class="px-4 py-3 text-right">
                         {{ '$' . number_format($row['external_price'], 0) }}
                     </td>
