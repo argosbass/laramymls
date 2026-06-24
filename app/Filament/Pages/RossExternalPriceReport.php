@@ -29,9 +29,10 @@ class RossExternalPriceReport extends Page
     {
         $jsonUrl = 'https://www.remax-oceansurf-cr.com/json-properties';
 
-        $items = Http::get($jsonUrl)->json() ?? [];
-
-
+        $items = Http::withHeaders([
+                'Cache-Control' => 'no-cache',
+                'Pragma' => 'no-cache',
+            ])->get($jsonUrl . '?v=' . now()->timestamp)->json() ?? [];
 
         foreach ($items['nodes'] as $nodes) {
 
@@ -39,8 +40,6 @@ class RossExternalPriceReport extends Page
 
             $url = trim($item['Path'] ?? '');
             $url = "https://www.remax-oceansurf-cr.com".$url;
-
-            // $url = "https://www.remax-oceansurf-cr.com/property/mar-y-posa-bb";
 
             $externalPrice          = (float) ($item['Price'] ?? 0);
             $externalPropertyStatus = ($item['PropertyStatus'] ?? null);
@@ -56,6 +55,7 @@ class RossExternalPriceReport extends Page
             ->first();
 
 
+
             if (! $property) {
 
                 $this->rows[] = [
@@ -64,7 +64,6 @@ class RossExternalPriceReport extends Page
                     'url' => $url,
                     'local_price' => null,
                     'external_price' => $externalPrice,
-                    'reference_price' => null,
                     'status' => 'Missing',
                     'rossPropertyStatus' => $externalPropertyStatus,
                     'mlsPropertyStatus' => null
@@ -79,10 +78,6 @@ class RossExternalPriceReport extends Page
             $localPropertyStatus = $property->status?->status_name ?? '';
 
 
-            $ReferencePrice = (float) (
-                $property?->listingCompetitors?->first()?->competitor_list_price ?? 0
-            );
-
 
             $this->rows[] = [
                 'id' => $property->id,
@@ -90,7 +85,6 @@ class RossExternalPriceReport extends Page
                 'url' => $url,
                 'local_price' => $localPrice,
                 'external_price' => $externalPrice,
-                'reference_price' => $ReferencePrice,
                 'status' => $localPrice != $externalPrice
                     ? 'Price Different'
                     : 'OK',
