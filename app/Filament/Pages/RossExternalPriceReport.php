@@ -25,7 +25,9 @@ class RossExternalPriceReport extends Page
     public ?string  $sortColumn = "title";
     public string   $sortDirection = 'asc';
 
-    public function mount(): void
+    public bool $isLoaded = false;
+
+    public function loadRows(): void
     {
         $jsonUrl = 'https://www.remax-oceansurf-cr.com/json-properties';
 
@@ -95,6 +97,12 @@ class RossExternalPriceReport extends Page
             ];
         }
 
+        $this->isLoaded = true;
+
+    }
+
+    public function mount(): void
+    {
 
     }
 

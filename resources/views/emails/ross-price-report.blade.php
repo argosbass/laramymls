@@ -1,16 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>@yield('title', 'Mi App')</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+<h2>ROSS Price Report</h2>
 
-    @livewireScripts
-    @livewireStyles
+<p>Attached you will find the weekly ROSS price report.</p>
 
-</head>
-<body>
-<div class="container">
-    @yield('content')
-</div>
-</body>
-</html>
+<ul>
+    <li>Missing: {{ collect($rows)->where('status', 'Missing')->count() }}</li>
+    <li>Price Different: {{ collect($rows)->where('status', 'Price Different')->count() }}</li>
+    <li>OK: {{ collect($rows)->where('status', 'OK')->count() }}</li>
+</ul>

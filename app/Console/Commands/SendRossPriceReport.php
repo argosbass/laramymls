@@ -15,9 +15,10 @@ class SendRossPriceReport extends Command
     public function handle(): int
     {
         $report = new RossExternalPriceReport();
-        $report->mount();
+        $report->loadRows();
 
-        Mail::to('argosbass@gmail.com')
+       // Mail::to('oceansurfandsun2@gmail.com')
+         Mail::to('argosbass@gmail.com')
             ->send(new RossPriceReportMail($report->rows));
 
         $this->info('ROSS price report sent.');

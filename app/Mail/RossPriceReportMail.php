@@ -16,10 +16,9 @@ class RossPriceReportMail extends Mailable
 
         return $this
             ->subject('ROSS Price Report')
-            ->view('emails.ross-price-report')
-            ->with([
+            ->html(view('emails.ross-price-report', [
                 'rows' => $this->rows,
-            ])
+            ])->render())
             ->attachData($csv, 'ross-price-report-' . now()->format('Ymd_His') . '.csv', [
                 'mime' => 'text/csv',
             ]);
