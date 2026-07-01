@@ -17,8 +17,8 @@ class SendRossPriceReport extends Command
         $report = new RossExternalPriceReport();
         $report->loadRows();
 
-       // Mail::to('oceansurfandsun2@gmail.com')
-         Mail::to('argosbass@gmail.com')
+        Mail::to('oceansurfandsun2@gmail.com')
+       //  Mail::to('argosbass@gmail.com')
             ->send(new RossPriceReportMail($report->rows));
 
         $this->info('ROSS price report sent.');

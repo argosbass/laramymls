@@ -20,5 +20,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('ross:send-price-report')
-//    ->weeklyOn(5, '06:00');
-    ->weeklyOn(1, '08:00');
+->weeklyOn(5, '06:00');
