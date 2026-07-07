@@ -496,21 +496,43 @@ The photo management section has been temporarily moved below the tabs to improv
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('property_price', 'desc') // 👈 orden inicial
+            ->modifyQueryUsing(fn ($query) =>
+            $query->orderByRaw('GREATEST(created_at, updated_at) DESC')
+            )
             ->columns([
-                Tables\Columns\TextColumn::make('property_title')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('status.status_name')->label('Status')->sortable(),
+
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->sortable()
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('property_title')
+                    ->sortable()
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('status.status_name')
+                    ->label('Status')
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('types.type_name')
                     ->label('Type')
                     ->formatStateUsing(fn ($record) =>
                     $record->types->pluck('type_name')->implode(', ')
                     ),
-                Tables\Columns\TextColumn::make('property_price')->label('Price')->money('usd')->sortable(),
-                Tables\Columns\TextColumn::make('property_added_date')->date()->sortable(),
+
+                Tables\Columns\TextColumn::make('property_price')
+                    ->label('Price')
+                    ->money('usd')
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('property_added_date')
+                    ->date()
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('author.name')
                     ->label('Author')
                     ->sortable()
                     ->searchable(),
+
                 Tables\Columns\BooleanColumn::make('published'),
             ])
             ->filters([
@@ -537,7 +559,9 @@ The photo management section has been temporarily moved below the tabs to improv
                     )
                     ),
 
-                Tables\Filters\SelectFilter::make('property_status_id')->label('Property Status')->relationship('status', 'status_name'),
+                Tables\Filters\SelectFilter::make('property_status_id')
+                    ->label('Property Status')
+                    ->relationship('status', 'status_name'),
 
                 Tables\Filters\SelectFilter::make('types')
                     ->label('Property Type')
@@ -546,13 +570,15 @@ The photo management section has been temporarily moved below the tabs to improv
                     ->searchable()
                     ->preload(),
 
-                Tables\Filters\SelectFilter::make('author.name')->label('Author')->relationship('author', 'name'),
+                Tables\Filters\SelectFilter::make('author.name')
+                    ->label('Author')
+                    ->relationship('author', 'name'),
             ])
             ->actions([
                 TableAction::make('migratePhotos')
                     ->label('Migrate Photos')
                     ->icon('heroicon-o-photo')
-                    ->visible(fn($record) => DB::table('property_photos')
+                    ->visible(fn ($record) => DB::table('property_photos')
                         ->where('property_id', $record->id)
                         ->whereNull('photo_alt')
                         ->exists()
@@ -577,6 +603,7 @@ The photo management section has been temporarily moved below the tabs to improv
                     ->openUrlInNewTab(),
 
                 Tables\Actions\EditAction::make(),
+
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

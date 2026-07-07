@@ -15,11 +15,11 @@ class PropertyLastUpdatedDashboard extends Page
     public static function canViewAny(): bool
     {
        // return auth()->user()?->hasAnyRole(['Super Admin', 'Data Entry']);
-        return auth()->user()?->hasAnyRole(['Super Admin']);
+        return auth()->user()?->hasAnyRole(['Super Admin','Data Entry Reviewer']);
     }
 
     public static function canAccess(): bool
     {
-        return auth()->user()?->hasRole('Super Admin');
+        return auth()->user()?->hasRole(['Super Admin','Data Entry Reviewer'] );
     }
 }

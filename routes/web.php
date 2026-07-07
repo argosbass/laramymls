@@ -35,6 +35,10 @@ Route::get('/property-access/{property}', [PublicPropertyController::class, 'sho
     ->middleware('signed');
 
 Route::get('/property/{property}/export', function (Property $property) {
+
+    ini_set('max_execution_time', 240);
+    set_time_limit(240);
+
     $signedUrl = null; // O genera el que usas normalmente
 
     $pdf = Pdf::loadView('properties.showPDF', compact('property', 'signedUrl'));
