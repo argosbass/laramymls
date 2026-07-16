@@ -36,7 +36,6 @@ class PropertySearchForm extends Component
     public $year;
     public $features = [];
 
-
     public int $page = 1;
 
     public string $sortBy = 'property_price';
@@ -86,9 +85,8 @@ class PropertySearchForm extends Component
     public function updated($property)
     {
         $this->saveFiltersToSession();
-        $this->resetPage(); // Cuando cambia cualquier filtro, vuelve a la página 1
+        $this->resetPage();
     }
-
 
     public function sortByColumn(string $column): void
     {
@@ -96,6 +94,7 @@ class PropertySearchForm extends Component
             'id',
             'created_at',
             'property_title',
+            'property_location_name',
             'property_price',
             'property_bedrooms',
             'property_bathrooms',
@@ -103,8 +102,8 @@ class PropertySearchForm extends Component
             'property_lot_size_m2',
             'property_no_of_floors',
             'property_hoa_fee',
-            'property_status_name', // ✅ sort by status (relación)
-            'property_date_sold',            // ✅ sort by sold date (property_sold_references)
+            'property_status_name',
+            'property_date_sold',
         ];
 
         if (! in_array($column, $allowed, true)) {
@@ -125,33 +124,65 @@ class PropertySearchForm extends Component
     public function render()
     {
         $types = PropertyType::all();
+
         $statuses = PropertyStatus::all();
+
         $locations = PropertyLocations::orderBy('_lft')->get();
-        $years = Property::selectRaw('YEAR(property_added_date) as year')->distinct()->orderBy('year', 'desc')->pluck('year');
-        $featuresList = PropertyFeatures::whereIn('id', [18, 24, 28, 33, 34, 42, 50, 172, 174, 173])->get();
+
+        $years = Property::selectRaw(
+            'YEAR(property_added_date) as year'
+        )
+            ->distinct()
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+
+        $featuresList = PropertyFeatures::whereIn('id', [
+            18,
+            24,
+            28,
+            33,
+            34,
+            42,
+            50,
+            172,
+            174,
+            173,
+        ])->get();
 
         /*
-            18	Condominium Community
-            24	Oceanfront
-            28	Elevator
-            33	Gated Community
-            34	Golf Front
-            42	Ocean Views
-            50	Swimming Pool
-            172	Owner Financing
-            174	Guest House
-            173	Sold Furnished
-         */
+            18  Condominium Community
+            24  Oceanfront
+            28  Elevator
+            33  Gated Community
+            34  Golf Front
+            42  Ocean Views
+            50  Swimming Pool
+            172 Owner Financing
+            174 Guest House
+            173 Sold Furnished
+        */
 
         $results = Property::query()
+
             ->when($this->title, function ($q) {
                 $q->where(function ($sub) {
-                    $sub->where('property_title', 'like', '%' . $this->title . '%')
-                        ->orWhere('property_body', 'like', '%' . $this->title . '%');
+                    $sub->where(
+                        'property_title',
+                        'like',
+                        '%' . $this->title . '%'
+                    )
+                        ->orWhere(
+                            'property_body',
+                            'like',
+                            '%' . $this->title . '%'
+                        );
                 });
             })
 
-            ->when($this->propertyId, fn ($q) => $q->where('id', $this->propertyId))
+            ->when(
+                $this->propertyId,
+                fn ($q) => $q->where('id', $this->propertyId)
+            )
 
             ->when(
                 $this->typeId &&
@@ -159,7 +190,10 @@ class PropertySearchForm extends Component
                 $this->typeId['value'] !== '' &&
                 $this->typeId['value'] !== 'all',
                 fn ($q) => $q->whereHas('types', function ($q2) {
-                    $q2->where('property_types.id', $this->typeId['value']);
+                    $q2->where(
+                        'property_types.id',
+                        $this->typeId['value']
+                    );
                 })
             )
 
@@ -168,88 +202,261 @@ class PropertySearchForm extends Component
                 isset($this->statusId['value']) &&
                 $this->statusId['value'] !== '' &&
                 $this->statusId['value'] !== 'all',
-                fn ($q) => $q->where('property_status_id', $this->statusId['value'])
+                fn ($q) => $q->where(
+                    'property_status_id',
+                    $this->statusId['value']
+                )
             )
 
-            ->when($this->getLocationIdsToSearch(), function ($q, $ids) {
-                $q->whereIn('property_location_id', $ids);
-            })
-            ->when($this->priceFrom, fn ($q) => $q->where('property_price', '>=', $this->priceFrom))
-            ->when($this->priceTo, fn ($q) => $q->where('property_price', '<=', $this->priceTo))
-            ->when($this->bedroomsFrom, fn ($q) => $q->where('property_bedrooms', '>=', $this->bedroomsFrom))
-            ->when($this->bedroomsTo, fn ($q) => $q->where('property_bedrooms', '<=', $this->bedroomsTo))
-            ->when($this->bathroomsFrom, fn ($q) => $q->where('property_bathrooms', '>=', $this->bathroomsFrom))
-            ->when($this->bathroomsTo, fn ($q) => $q->where('property_bathrooms', '<=', $this->bathroomsTo))
-            ->when($this->buildingFrom, fn ($q) => $q->where('property_building_size_m2', '>=', $this->buildingFrom))
-            ->when($this->buildingTo, fn ($q) => $q->where('property_building_size_m2', '<=', $this->buildingTo))
-            ->when($this->lotFrom, fn ($q) => $q->where('property_lot_size_m2', '>=', $this->lotFrom))
-            ->when($this->lotTo, fn ($q) => $q->where('property_lot_size_m2', '<=', $this->lotTo))
+            ->when(
+                $this->getLocationIdsToSearch(),
+                function ($q, $ids) {
+                    $q->whereIn('property_location_id', $ids);
+                }
+            )
+
+            ->when(
+                $this->priceFrom,
+                fn ($q) => $q->where(
+                    'property_price',
+                    '>=',
+                    $this->priceFrom
+                )
+            )
+
+            ->when(
+                $this->priceTo,
+                fn ($q) => $q->where(
+                    'property_price',
+                    '<=',
+                    $this->priceTo
+                )
+            )
+
+            ->when(
+                $this->bedroomsFrom,
+                fn ($q) => $q->where(
+                    'property_bedrooms',
+                    '>=',
+                    $this->bedroomsFrom
+                )
+            )
+
+            ->when(
+                $this->bedroomsTo,
+                fn ($q) => $q->where(
+                    'property_bedrooms',
+                    '<=',
+                    $this->bedroomsTo
+                )
+            )
+
+            ->when(
+                $this->bathroomsFrom,
+                fn ($q) => $q->where(
+                    'property_bathrooms',
+                    '>=',
+                    $this->bathroomsFrom
+                )
+            )
+
+            ->when(
+                $this->bathroomsTo,
+                fn ($q) => $q->where(
+                    'property_bathrooms',
+                    '<=',
+                    $this->bathroomsTo
+                )
+            )
+
+            ->when(
+                $this->buildingFrom,
+                fn ($q) => $q->where(
+                    'property_building_size_m2',
+                    '>=',
+                    $this->buildingFrom
+                )
+            )
+
+            ->when(
+                $this->buildingTo,
+                fn ($q) => $q->where(
+                    'property_building_size_m2',
+                    '<=',
+                    $this->buildingTo
+                )
+            )
+            ->when(
+                $this->lotFrom,
+                fn ($q) => $q->where(
+                    'property_lot_size_m2',
+                    '>=',
+                    $this->lotFrom
+                )
+            )
+
+            ->when(
+                $this->lotTo,
+                fn ($q) => $q->where(
+                    'property_lot_size_m2',
+                    '<=',
+                    $this->lotTo
+                )
+            )
 
             ->when(
                 $this->year &&
                 isset($this->year['value']) &&
                 $this->year['value'] !== '' &&
                 $this->year['value'] !== 'all',
-                fn ($q) => $q->whereYear('property_added_date', $this->year['value'])
+                fn ($q) => $q->whereYear(
+                    'property_added_date',
+                    $this->year['value']
+                )
             )
 
             ->when(count($this->features), function ($q) {
                 foreach ($this->features as $fid) {
-                    $q->whereHas('features', fn ($q) => $q->where('property_features.id', $fid));
+                    $q->whereHas(
+                        'features',
+                        fn ($q) => $q->where(
+                            'property_features.id',
+                            $fid
+                        )
+                    );
                 }
             })
 
-            ->with(['types', 'status', 'location', 'features'])
+            ->with([
+                'types',
+                'status',
+                'location',
+                'features',
+            ])
 
-            // ✅ SOLO para ordenar por status (relación)
-            ->when($this->sortBy === 'property_status_name', function ($q) {
-                $q->leftJoin('property_status as ps', 'ps.id', '=', 'properties.property_status_id')
-                    ->orderBy('ps.status_name', $this->sortDir)
-                    ->select('properties.*');
-            })
+            // Ordenar por status usando el nombre de la relación
+            ->when(
+                $this->sortBy === 'property_status_name',
+                function ($q) {
+                    $q->leftJoin(
+                        'property_status as ps',
+                        'ps.id',
+                        '=',
+                        'properties.property_status_id'
+                    )
+                        ->orderBy(
+                            'ps.status_name',
+                            $this->sortDir
+                        )
+                        ->select('properties.*');
+                }
+            )
 
-            // ✅ SOLO para ordenar por date sold (tabla property_sold_references)
-            ->when($this->sortBy === 'property_date_sold', function ($q) {
-                // Usa la fecha más reciente de venta por propiedad para ordenar
-                // OJO: si tu columna NO se llama "property_date_sold", cambia aquí ese nombre.
-                $soldSub = DB::table('property_sold_references')
-                    ->selectRaw('property_id, MAX(sold_reference_date) as sold_reference_date')
-                    ->groupBy('property_id');
+            // Ordenar por location usando location_name
+            ->when(
+                $this->sortBy === 'property_location_name',
+                function ($q) {
+                    $q->leftJoin(
+                        'property_locations as pl',
+                        'pl.id',
+                        '=',
+                        'properties.property_location_id'
+                    )
+                        ->orderBy(
+                            'pl.location_name',
+                            $this->sortDir
+                        )
+                        ->select('properties.*');
+                }
+            )
 
-                $q->leftJoinSub($soldSub, 'psr', function ($join) {
-                    $join->on('psr.property_id', '=', 'properties.id');
-                })
-                    ->orderBy('psr.sold_reference_date', $this->sortDir)
-                    ->select('properties.*');
-            })
+            // Ordenar por fecha de venta
+            ->when(
+                $this->sortBy === 'property_date_sold',
+                function ($q) {
+                    $soldSub = DB::table(
+                        'property_sold_references'
+                    )
+                        ->selectRaw(
+                            'property_id, MAX(sold_reference_date) as sold_reference_date'
+                        )
+                        ->groupBy('property_id');
 
-            // ✅ default sort (cuando NO es relación)
-            ->when(! in_array($this->sortBy, ['property_status_name', 'property_date_sold'], true), function ($q) {
-                $q->orderBy($this->sortBy, $this->sortDir);
-            })
+                    $q->leftJoinSub(
+                        $soldSub,
+                        'psr',
+                        function ($join) {
+                            $join->on(
+                                'psr.property_id',
+                                '=',
+                                'properties.id'
+                            );
+                        }
+                    )
+                        ->orderBy(
+                            'psr.sold_reference_date',
+                            $this->sortDir
+                        )
+                        ->select('properties.*');
+                }
+            )
 
-            ->paginate(100, pageName: $this->getPageName());
+            // Ordenar columnas normales
+            ->when(
+                ! in_array(
+                    $this->sortBy,
+                    [
+                        'property_status_name',
+                        'property_location_name',
+                        'property_date_sold',
+                    ],
+                    true
+                ),
+                function ($q) {
+                    $q->orderBy(
+                        $this->sortBy,
+                        $this->sortDir
+                    );
+                }
+            )
 
-        return view('livewire.property-search-form', compact(
-            'types',
-            'statuses',
-            'locations',
-            'years',
-            'featuresList',
-            'results'
-        ));
+            ->paginate(
+                100,
+                pageName: $this->getPageName()
+            );
+
+        return view(
+            'livewire.property-search-form',
+            compact(
+                'types',
+                'statuses',
+                'locations',
+                'years',
+                'featuresList',
+                'results'
+            )
+        );
     }
 
     public function resetFilters()
     {
         $this->reset([
-            'title', 'propertyId',
-            'typeId', 'statusId', 'locationId', 'year',
-            'priceFrom', 'priceTo',
-            'bedroomsFrom', 'bedroomsTo',
-            'bathroomsFrom', 'bathroomsTo',
-            'buildingFrom', 'buildingTo',
-            'lotFrom', 'lotTo',
+            'title',
+            'propertyId',
+            'typeId',
+            'statusId',
+            'locationId',
+            'year',
+            'priceFrom',
+            'priceTo',
+            'bedroomsFrom',
+            'bedroomsTo',
+            'bathroomsFrom',
+            'bathroomsTo',
+            'buildingFrom',
+            'buildingTo',
+            'lotFrom',
+            'lotTo',
             'features',
         ]);
 
@@ -283,12 +490,19 @@ class PropertySearchForm extends Component
             return null;
         }
 
-        $location = PropertyLocations::where('id', $this->locationId)->first();
+        $location = PropertyLocations::where(
+            'id',
+            $this->locationId
+        )->first();
 
         if (! $location) {
             return null;
         }
 
-        return PropertyLocations::descendantsAndSelf($this->locationId)->pluck('id')->toArray();
+        return PropertyLocations::descendantsAndSelf(
+            $this->locationId
+        )
+            ->pluck('id')
+            ->toArray();
     }
 }

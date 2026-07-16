@@ -380,7 +380,24 @@
                         </button>
 
                     </th>
-                    <th class="px-2 py-1">Location</th>
+
+                    <th class="px-2 py-1">
+
+                        <button type="button"
+                                wire:click="sortByColumn('property_location_name')"
+                                class="flex items-center gap-1 uppercase text-xs hover:underline">
+                            Location
+
+                            @if($sortBy === 'property_location_name')
+                                <span class="text-[10px]">
+                                    {{ $sortDir === 'asc' ? '▲' : '▼' }}
+                                </span>
+                            @else
+                                <span class="text-[10px]">{{  '▲▼'  }}</span>
+                            @endif
+                        </button>
+
+                    </th>
                     <th class="px-2 py-1">
 
                         <button type="button"

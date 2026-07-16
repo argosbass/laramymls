@@ -64,38 +64,42 @@ class DoesItExistBulk extends Page
             ->get()
             ->keyBy('competitor_property_link');
 
-        $this->results = $urlList->map(function ($url) use ($competitors) {
+        $this->results = $urlList
+            ->map(function ($url) use ($competitors) {
 
-            $item = $competitors->get($url);
+                $item = $competitors->get($url);
 
-            return [
-                'exists' => $item !== null,
+                return [
+                    'exists' => $item !== null,
 
-                'company' => $item?->company?->company_name,
+                    'company' => $item?->company?->company_name,
 
-                'property_title' => $item?->property?->property_title,
+                    'property_title' => $item?->property?->property_title,
 
-                'added_date' => $item?->property?->property_added_date
-                    ? \Carbon\Carbon::parse($item->property->property_added_date)->format('Y-m-d')
-                    : null,
+                    'added_date' => $item?->property?->property_added_date
+                        ? \Carbon\Carbon::parse($item->property->property_added_date)->format('Y-m-d')
+                        : null,
 
-                'status' => $item?->property?->status?->status_name,
+                    'status' => $item?->property?->status?->status_name,
 
-                'reference_link' => $url,
+                    'reference_link' => $url,
 
-                'view_url' => $item?->property
-                    ? route('filament.admin.resources.properties.view', [
-                        'record' => $item->property->id,
-                    ])
-                    : null,
+                    'view_url' => $item?->property
+                        ? route('filament.admin.resources.properties.view', [
+                            'record' => $item->property->id,
+                        ])
+                        : null,
 
-                'edit_url' => $item?->property
-                    ? route('filament.admin.resources.properties.edit', [
-                        'record' => $item->property->id,
-                    ])
-                    : null,
-            ];
-        })->toArray();
+                    'edit_url' => $item?->property
+                        ? route('filament.admin.resources.properties.edit', [
+                            'record' => $item->property->id,
+                        ])
+                        : null,
+                ];
+            })
+            ->sortByDesc('exists') // Los encontrados primero, los Not Found al final
+            ->values()
+            ->toArray();
     }
 
     public function downloadCsv(): StreamedResponse
