@@ -29,78 +29,138 @@ class RossExternalPriceReport extends Page
 
     public function loadRows(): void
     {
-        $jsonUrl = 'https://www.remax-oceansurf-cr.com/json-properties';
+        $jsonUrl = 'https://www.remax-oceansurf-cr.com/wp-json/remax/v1/property-urls';
 
         $items = Http::withHeaders([
-                'Cache-Control' => 'no-cache',
-                'Pragma' => 'no-cache',
-            ])->get($jsonUrl . '?v=' . now()->timestamp)->json() ?? [];
+            'Cache-Control' => 'no-cache',
+            'Pragma' => 'no-cache',
+        ])
+            ->get($jsonUrl . '?v=' . now()->timestamp)
+            ->json() ?? [];
 
-        foreach ($items['nodes'] as $nodes) {
+        foreach ($items as $item) {
 
-            $item = $nodes['node'];
+            // ---------------------------------------------------------
+            // URL
+            // ---------------------------------------------------------
+            $url = trim($item['Url'] ?? '');
 
-            $url = trim($item['Path'] ?? '');
-            $url = "https://www.remax-oceansurf-cr.com".$url;
+            // Por seguridad, si Url no viene, usamos Path
+            if (empty($url)) {
+                $path = trim($item['Path'] ?? '');
 
-            $externalPrice          = (float) ($item['Price'] ?? 0);
-            $externalPropertyStatus = ($item['PropertyStatus'] ?? null);
+                if (! empty($path)) {
+                    $url = 'https://www.remax-oceansurf-cr.com' . $path;
+                }
+            }
 
+            // Si no tenemos URL, no podemos comparar
+            if (empty($url)) {
+                continue;
+            }
+
+            // ---------------------------------------------------------
+            // Datos externos ROSS
+            // ---------------------------------------------------------
+            $externalPrice = isset($item['Price'])
+                ? (float) $item['Price']
+                : null;
+
+            $externalPropertyStatus = $item['PropertyStatus'] ?? null;
+
+            // Campos adicionales disponibles en el nuevo endpoint
+            $externalPropertyId = $item['PropertyId'] ?? null;
+            $externalTitle      = $item['Title'] ?? '';
+            $externalHidden     = $item['Hidden'] ?? null;
+            $externalWpStatus   = $item['WpStatus'] ?? null;
+            $externalUpdated    = $item['Updated'] ?? null;
+
+
+            // ---------------------------------------------------------
+            // Buscar propiedad local por competitor_property_link
+            // ---------------------------------------------------------
             $property = Property::with([
                 'listingCompetitors' => function ($query) use ($url) {
                     $query->where('competitor_property_link', $url);
                 }
             ])
-            ->whereHas('listingCompetitors', function ($query) use ($url) {
-                $query->where('competitor_property_link', $url);
-            })
-            ->first();
+                ->whereHas('listingCompetitors', function ($query) use ($url) {
+                    $query->where('competitor_property_link', $url);
+                })
+                ->first();
 
 
-
+            // ---------------------------------------------------------
+            // No existe en MLS
+            // ---------------------------------------------------------
             if (! $property) {
 
                 $this->rows[] = [
                     'id' => md5($url),
-                    'title' => '',
+
+                    'title' => $externalTitle,
+
                     'url' => $url,
+
                     'local_price' => null,
                     'external_price' => $externalPrice,
-                    'status' => 'Missing',
-                    'rossPropertyStatus' => $externalPropertyStatus,
-                    'mlsPropertyStatus' => null
-                ];
 
+                    'status' => 'Missing',
+
+                    'rossPropertyStatus' => $externalPropertyStatus,
+                    'mlsPropertyStatus' => null,
+
+                    // Nuevos campos disponibles
+                    'rossPropertyId' => $externalPropertyId,
+                    'rossHidden' => $externalHidden,
+                    'rossWpStatus' => $externalWpStatus,
+                    'rossUpdated' => $externalUpdated,
+                ];
 
                 continue;
             }
 
 
-            $localPrice = (float) $property->property_price;
+            // ---------------------------------------------------------
+            // Existe en MLS
+            // ---------------------------------------------------------
+            $localPrice = $property->property_price !== null
+                ? (float) $property->property_price
+                : null;
+
             $localPropertyStatus = $property->status?->status_name ?? '';
 
 
-
+            // ---------------------------------------------------------
+            // Resultado
+            // ---------------------------------------------------------
             $this->rows[] = [
                 'id' => $property->id,
+
                 'title' => $property->property_title,
+
                 'url' => $url,
+
                 'local_price' => $localPrice,
                 'external_price' => $externalPrice,
+
                 'status' => $localPrice != $externalPrice
                     ? 'Price Different'
                     : 'OK',
 
                 'rossPropertyStatus' => $externalPropertyStatus,
-                'mlsPropertyStatus' => $localPropertyStatus
+                'mlsPropertyStatus' => $localPropertyStatus,
 
+                // Nuevos campos disponibles
+                'rossPropertyId' => $externalPropertyId,
+                'rossHidden' => $externalHidden,
+                'rossWpStatus' => $externalWpStatus,
+                'rossUpdated' => $externalUpdated,
             ];
         }
 
         $this->isLoaded = true;
-
     }
-
     public function mount(): void
     {
 
