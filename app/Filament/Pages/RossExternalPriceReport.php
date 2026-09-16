@@ -8,6 +8,7 @@ use Filament\Pages\Page;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use App\Models\PropertyListingCompetitor;
 
 class RossExternalPriceReport extends Page
 {
@@ -27,6 +28,8 @@ class RossExternalPriceReport extends Page
 
     public bool $isLoaded = false;
 
+
+
     public function loadRows(): void
     {
         $jsonUrl = 'https://www.remax-oceansurf-cr.com/wp-json/remax/v1/property-urls';
@@ -38,21 +41,252 @@ class RossExternalPriceReport extends Page
             ->get($jsonUrl . '?v=' . now()->timestamp)
             ->json() ?? [];
 
+        /*
+         * Cargamos todos los competitor links de ROSS y los indexamos
+         * utilizando la URL normalizada.
+         *
+         * De esta forma:
+         *
+         * http://dominio.com/property/test
+         * https://dominio.com/property/test
+         * https://dominio.com/property/test/
+         *
+         * serán considerados la misma URL.
+         */
+        $competitors = PropertyListingCompetitor::query()
+            ->with([
+                'property.status',
+            ])
+            ->whereNotNull('competitor_property_link')
+            ->where('competitor_property_link', '!=', '')
+            ->get()
+            ->filter(function (PropertyListingCompetitor $competitor) {
+                return $this->normalizeUrl(
+                        $competitor->competitor_property_link
+                    ) !== '';
+            })
+            ->keyBy(function (PropertyListingCompetitor $competitor) {
+                return $this->normalizeUrl(
+                    $competitor->competitor_property_link
+                );
+            });
+
+
         foreach ($items as $item) {
 
-            // ---------------------------------------------------------
-            // URL
-            // ---------------------------------------------------------
+            /*
+             * ---------------------------------------------------------
+             * URL ROSS
+             * ---------------------------------------------------------
+             */
             $url = trim($item['Url'] ?? '');
 
-            // Por seguridad, si Url no viene, usamos Path
-            if (empty($url)) {
+            /*
+             * Si por alguna razón Url no viene,
+             * intentamos construirla usando Path.
+             */
+            if ($url === '') {
+
                 $path = trim($item['Path'] ?? '');
 
-                if (! empty($path)) {
+                if ($path !== '') {
                     $url = 'https://www.remax-oceansurf-cr.com' . $path;
                 }
             }
+
+
+            /*
+             * Si no existe ninguna URL válida,
+             * no podemos hacer la comparación.
+             */
+            if ($url === '') {
+                continue;
+            }
+
+
+            /*
+             * ---------------------------------------------------------
+             * Normalizar URL
+             * ---------------------------------------------------------
+             */
+            $normalizedUrl = $this->normalizeUrl($url);
+
+
+            if ($normalizedUrl === '') {
+                continue;
+            }
+
+
+            /*
+             * ---------------------------------------------------------
+             * Datos externos ROSS
+             * ---------------------------------------------------------
+             */
+            $externalPrice = isset($item['Price'])
+                ? (float) $item['Price']
+                : null;
+
+            $externalPropertyStatus = $item['PropertyStatus'] ?? null;
+
+            $externalPropertyId = $item['PropertyId'] ?? null;
+            $externalTitle      = $item['Title'] ?? '';
+            $externalHidden     = $item['Hidden'] ?? null;
+            $externalWpStatus   = $item['WpStatus'] ?? null;
+            $externalUpdated    = $item['Updated'] ?? null;
+
+
+            /*
+             * ---------------------------------------------------------
+             * Buscar competitor usando URL normalizada
+             * ---------------------------------------------------------
+             */
+            $competitor = $competitors->get($normalizedUrl);
+
+            $property = $competitor?->property;
+
+
+            /*
+             * ---------------------------------------------------------
+             * No existe en MLS
+             * ---------------------------------------------------------
+             */
+            if (! $property) {
+
+                $this->rows[] = [
+                    'id' => md5($url),
+
+                    'title' => $externalTitle,
+
+                    'url' => $url,
+
+                    'local_price' => null,
+                    'external_price' => $externalPrice,
+
+                    'status' => 'Missing',
+
+                    'rossPropertyStatus' => $externalPropertyStatus,
+                    'mlsPropertyStatus' => null,
+
+                    'rossPropertyId' => $externalPropertyId,
+                    'rossHidden' => $externalHidden,
+                    'rossWpStatus' => $externalWpStatus,
+                    'rossUpdated' => $externalUpdated,
+                ];
+
+                continue;
+            }
+
+
+            /*
+             * ---------------------------------------------------------
+             * Existe en MLS
+             * ---------------------------------------------------------
+             */
+            $localPrice = $property->property_price !== null
+                ? (float) $property->property_price
+                : null;
+
+            $localPropertyStatus =
+                $property->status?->status_name ?? '';
+
+
+            /*
+             * ---------------------------------------------------------
+             * Resultado
+             * ---------------------------------------------------------
+             */
+            $this->rows[] = [
+                'id' => $property->id,
+
+                'title' => $property->property_title,
+
+                'url' => $url,
+
+                'local_price' => $localPrice,
+                'external_price' => $externalPrice,
+
+                'status' => $localPrice != $externalPrice
+                    ? 'Price Different'
+                    : 'OK',
+
+                'rossPropertyStatus' => $externalPropertyStatus,
+                'mlsPropertyStatus' => $localPropertyStatus,
+
+                'rossPropertyId' => $externalPropertyId,
+                'rossHidden' => $externalHidden,
+                'rossWpStatus' => $externalWpStatus,
+                'rossUpdated' => $externalUpdated,
+            ];
+        }
+
+
+        $this->isLoaded = true;
+    }
+
+    private function normalizeUrl(?string $url): string
+    {
+        if (! $url) {
+            return '';
+        }
+
+        $url = trim($url);
+
+        // Eliminar espacios internos
+        $url = preg_replace('/\s+/', '', $url);
+
+        // Eliminar slash final
+        $url = rtrim($url, '/');
+
+        // Ignorar diferencia entre http y https
+        $url = preg_replace('#^https?://#i', '', $url);
+
+        return strtolower($url);
+    }
+
+    public function loadRowsDMR(): void
+    {
+        $jsonUrl = 'https://www.remax-oceansurf-cr.com/wp-json/remax/v1/property-urls';
+
+      //  $items = Http::withHeaders([
+      //      'Cache-Control' => 'no-cache',
+      //      'Pragma' => 'no-cache',
+      //  ])
+      //      ->get($jsonUrl . '?v=' . now()->timestamp)
+      //      ->json() ?? [];
+
+
+     $items = [
+
+         [
+    "Url" => "https://www.remax-oceansurf-cr.com/property/mar-y-posa-bb/",
+    "Path" => "/property/mar-y-posa-bb",
+    "PropertyId" => "97144",
+    "Title" => "Cabinas Lilou ~ Versatile 7-Suite Property with Owner’s Residence",
+    "Price" => 639000,
+    "PropertyStatus" => "available",
+    "Hidden" => true,
+    "WpStatus" => "publish",
+    "Updated" => "2026-08-18T22:06:14-04:00",
+  ]
+
+     ];
+
+        foreach ($items as $item) {
+            // ---------------------------------------------------------
+            // URL
+            // ---------------------------------------------------------
+            // $url = trim($item['Url'] ?? '');
+
+            // Por seguridad, si Url no viene, usamos Path
+            //if (empty($url)) {
+            $url = trim($item['Path'] ?? '');
+
+            //    if (! empty($path)) {
+            //        $url = 'https://www.remax-oceansurf-cr.com' . $path;
+            //    }
+            // }
+
+
 
             // Si no tenemos URL, no podemos comparar
             if (empty($url)) {
@@ -76,6 +310,8 @@ class RossExternalPriceReport extends Page
             $externalUpdated    = $item['Updated'] ?? null;
 
 
+
+
             // ---------------------------------------------------------
             // Buscar propiedad local por competitor_property_link
             // ---------------------------------------------------------
@@ -89,7 +325,7 @@ class RossExternalPriceReport extends Page
                 })
                 ->first();
 
-
+            dd($property, $url);
             // ---------------------------------------------------------
             // No existe en MLS
             // ---------------------------------------------------------
