@@ -50,6 +50,12 @@ class UserResource extends Resource
                 TextColumn::make('email'),
                 TextColumn::make('email_verified_at'),
                 TextColumn::make('roles.name'),
+
+                TextColumn::make('last_login_at')
+                    ->label('Last Login at')
+                    ->dateTime('d/m/Y h:i A', 'America/Costa_Rica')
+                    ->sortable()
+                    ->placeholder('Never')
             ])
             ->filters([
                 //
