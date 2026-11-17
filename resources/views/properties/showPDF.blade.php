@@ -91,7 +91,7 @@
 <body>
 
 <div class="section" style="background-color: #ccc; text-align: center">
-    <img src="{{ public_path('images/remax-header-pdf.png') }}" style="width: 40%;">
+    <img src="{{ public_path('images/remax-header-pdf.png') }}" style="width: 25%;">
 </div>
 
 <h3>{{ $property->property_title }}</h3>

@@ -35,7 +35,7 @@
 
     <div class="max-w-7xl mx-auto p-6 lg:p-8">
         <div class="flex justify-center">
-            <img src="{{ asset('/images/remax-header-pdf.png') }}" style="width: 50%;">
+            <img src="{{ asset('/images/remax-header-pdf.png') }}" style="width: 25%;">
         </div>
 
         <div class="mt-16">
