@@ -102,7 +102,8 @@
                         wire:click="downloadExcel"
                         wire:loading.attr="disabled"
                         wire:target="downloadExcel"
-                        class="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded shadow hover:bg-green-700 transition disabled:opacity-60">
+                        style="background-color:#16a34a;color:#fff;"
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded shadow hover:opacity-90 transition disabled:opacity-60">
                     <x-heroicon-o-arrow-down-tray class="w-4 h-4"/>
                     <span>Export to Excel</span>
                 </button>
