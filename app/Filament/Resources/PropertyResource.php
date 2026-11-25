@@ -387,7 +387,8 @@ The photo management section has been temporarily moved below the tabs to improv
                                     Forms\Components\Select::make('real_estate_company_id')
                                         ->label('Company Name')
                                         ->options(fn () =>
-                                        \App\Models\RealEstateCompany::query()
+                                            \App\Models\RealEstateCompany::query()
+                                            ->where('published', 1)
                                             ->orderBy('company_name')
                                             ->pluck('company_name', 'id')
                                         )
