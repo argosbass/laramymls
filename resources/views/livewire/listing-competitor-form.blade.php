@@ -97,6 +97,17 @@
                 <span>Search</span>
             </button>
 
+            @unless(auth()->user()?->hasRole('Agent'))
+                <button type="button"
+                        wire:click="downloadExcel"
+                        wire:loading.attr="disabled"
+                        wire:target="downloadExcel"
+                        class="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded shadow hover:bg-green-700 transition disabled:opacity-60">
+                    <x-heroicon-o-arrow-down-tray class="w-4 h-4"/>
+                    <span>Export to Excel</span>
+                </button>
+            @endunless
+
             <button type="button"
                     onclick="resetFilters()"
                     class="bg-gray-400 text-white px-4 py-2 rounded-md shadow hover:bg-red-600 transition">

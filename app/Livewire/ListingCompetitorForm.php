@@ -6,7 +6,9 @@ use App\Models\PropertyListingCompetitor;
 use App\Models\PropertyStatus;
 use App\Models\RealEstateCompany;
 use Livewire\Component;
+use Carbon\Carbon;
 use Livewire\WithPagination;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ListingCompetitorForm extends Component
 {
@@ -72,21 +74,53 @@ class ListingCompetitorForm extends Component
         return strtolower($url);
     }
 
-    public function render()
+    public function downloadExcel(): StreamedResponse
     {
-        $companies = RealEstateCompany::query()
-            ->orderBy('company_name')
-            ->get();
+        abort_if(auth()->user()?->hasRole('Agent'), 403);
 
-        $statuses = PropertyStatus::query()
-            ->orderBy('status_name')
-            ->get();
+        $filename ='does-it-exist-' . now()->format('Y-m-d_His') . '.csv';
 
+        return response()->streamDownload(function () {
+            $handle = fopen('php://output', 'w');
+
+            // BOM para que Excel reconozca UTF-8.
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            fputcsv($handle, [
+                'Listing Company',
+                'Property Title',
+                'Added Date',
+                'Property Status',
+                'Reference Link',
+            ]);
+
+            $this->buildQuery()->chunk(500, function ($rows) use ($handle) {
+                foreach ($rows as $competitor) {
+                    $added = $competitor->property?->property_added_date;
+
+                    fputcsv($handle, [
+                        $competitor->company->company_name ?? '',
+                        $competitor->property->property_title ?? '',
+                        $added ? Carbon::parse($added)->format('Y-m-d') : '',
+                        $competitor->property?->status?->status_name ?? '',
+                        $competitor->competitor_property_link ?? '',
+                    ]);
+                }
+            });
+
+            fclose($handle);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
+    }
+
+    private function buildQuery()
+    {
         $normalizedReferenceLink = $this->normalizeUrl(
             $this->referenceLink
         );
 
-        $results = PropertyListingCompetitor::query()
+        return PropertyListingCompetitor::query()
             ->with([
                 'company',
                 'property.status',
@@ -147,13 +181,25 @@ class ListingCompetitorForm extends Component
             )
 
             ->orderBy('real_estate_companies.company_name')
+            ->orderBy('property_listing_competitors.id')
 
-            ->select('property_listing_competitors.*')
+            ->select('property_listing_competitors.*');
+    }
 
-            ->paginate(
-                100,
-                pageName: 'page'
-            );
+    public function render()
+    {
+        $companies = RealEstateCompany::query()
+            ->orderBy('company_name')
+            ->get();
+
+        $statuses = PropertyStatus::query()
+            ->orderBy('status_name')
+            ->get();
+
+        $results = $this->buildQuery()->paginate(
+            100,
+            pageName: 'page'
+        );
 
         return view(
             'livewire.listing-competitor-form',
